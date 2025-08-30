@@ -1,0 +1,45 @@
+node_modules/
+.env
+*.log
+.DS_Store
+
+# Database files (contains user data)
+*.db
+*.sqlite
+*.sqlite3
+backend/database/
+
+# API keys and secrets
+.env.local
+.env.production
+config/secrets.json
+*_api_key*
+
+# User data and monitoring
+.last_check
+claude_checker.py
+auto_monitor.sh
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Private data
+private/
+sensitive/

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>プロフィール - Yamatter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            filter: grayscale(100%);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            font-family: 'Hiragino Kaku Gothic ProN', 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+        
+        .profile-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .profile-header {
+            background: rgba(236, 240, 241, 0.95);
+            padding: 30px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .profile-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .profile-id {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #95a5a6;
+        }
+        
+        .tab-container {
+            background: rgba(236, 240, 241, 0.95);
+            margin-bottom: 20px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            color: #7f8c8d;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab-btn.active {
+            color: #2c3e50;
+            border-bottom-color: #34495e;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #34495e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: #2c3e50;
+        }
+        
+        .timeline {
+            /* タイムラインのスタイル */
+        }
+        
+        .tweet {
+            background: #fff;
+            border: 1px solid #d5dbdb;
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+        
+        .tweet:hover {
+            background: #f8f9f9;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+        
+        .tweet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .tweet-author {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .tweet-time {
+            color: #95a5a6;
+            font-size: 12px;
+        }
+        
+        .tweet-content {
+            line-height: 1.4;
+            margin-bottom: 8px;
+            color: #34495e;
+        }
+        
+        .tweet-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .tweet-action {
+            color: #888;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+        }
+        
+        .error {
+            background: #ffe6e6;
+            color: #d63031;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #fdcbcb;
+        }
+        
+        .no-tweets {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+        
+        .mention {
+            color: #3498db;
+            font-weight: 600;
+        }
+        
+        .reply-item {
+            background: #f9f9f9;
+            border-left: 3px solid #95a5a6;
+        }
+        
+        .reply-indicator {
+            color: #7f8c8d;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .hashtag {
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="history.back()">← 戻る</button>
+    
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar" id="profile-avatar"></div>
+            <div class="profile-name" id="profile-name">Loading...</div>
+            <div class="profile-id" id="profile-id"></div>
+            <div class="profile-stats">
+                <div class="stat">
+                    <div class="stat-value" id="tweet-count">0</div>
+                    <div class="stat-label">ツイート</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="reply-count">0</div>
+                    <div class="stat-label">返信</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="like-count">0</div>
+                    <div class="stat-label">いいね</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="tweets" onclick="switchTab('tweets')">
+                    ツイート
+                </button>
+                <button class="tab-btn" data-tab="replies" onclick="switchTab('replies')">
+                    返信
+                </button>
+            </div>
+        </div>
+        
+        <div id="timeline" class="timeline">
+            <div class="loading">読み込み中...</div>
+        </div>
+    </div>
+    
+    <script>
+        let currentTab = 'tweets';
+        let userId = null;
+        
+        // URLパラメータからユーザーIDを取得
+        function getUserIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('user');
+        }
+        
+        // プロフィール情報を読み込み
+        async function loadProfile() {
+            userId = getUserIdFromUrl();
+            if (!userId) {
+                window.location.href = '/';
+                return;
+            }
+            
+            try {
+                // 最新のユーザー情報を取得（キャッシュを無効化）
+                const userResponse = await fetch(`/api/auth/user/${userId}?t=${Date.now()}`);
+                const userData = await userResponse.json();
+                
+                if (userData.success) {
+                    const user = userData.data;
+                    document.getElementById('profile-name').textContent = user.nickname;
+                    document.getElementById('profile-id').textContent = '@' + user.nickname;
+                    document.getElementById('profile-avatar').textContent = user.nickname.charAt(0).toUpperCase();
+                    
+                    // ツイート統計を取得
+                    const tweetsResponse = await fetch(`/api/tweets/user/${userId}`);
+                    const tweetsData = await tweetsResponse.json();
+                    
+                    if (tweetsData.success) {
+                        document.getElementById('tweet-count').textContent = tweetsData.data.length;
+                        
+                        // 返信数といいね数を計算
+                        let replyCount = 0;
+                        let likeCount = 0;
+                        
+                        tweetsData.data.forEach(tweet => {
+                            replyCount += tweet.replies_count || 0;
+                            likeCount += tweet.likes_count || 0;
+                        });
+                        
+                        document.getElementById('reply-count').textContent = replyCount;
+                        document.getElementById('like-count').textContent = likeCount;
+                    }
+                }
+                
+                // タイムラインを読み込み
+                loadTimeline();
+                
+            } catch (error) {
+                console.error('Profile load error:', error);
+                document.getElementById('profile-name').textContent = 'エラー';
+            }
+        }
+        
+        // タイムラインを読み込み
+        async function loadTimeline() {
+            const timeline = document.getElementById('timeline');
+            timeline.innerHTML = '<div class="loading">読み込み中...</div>';
+            
+            try {
+                let url = `/api/tweets/user/${userId}`;
+                if (currentTab === 'replies') {
+                    // 返信タブの場合は返信のみを表示
+                    url = `/api/tweets/user/${userId}/replies`;
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success && data.data.length > 0) {
+                    timeline.innerHTML = '';
+                    data.data.forEach(item => {
+                        if (currentTab === 'replies') {
+                            timeline.innerHTML += renderReply(item);
+                        } else {
+                            timeline.innerHTML += renderTweet(item);
+                        }
+                    });
+                } else {
+                    const message = currentTab === 'replies' ? '返信がありません' : 'ツイートがありません';
+                    timeline.innerHTML = `<div class="no-tweets">${message}</div>`;
+                }
+                
+            } catch (error) {
+                console.error('Timeline load error:', error);
+                timeline.innerHTML = '<div class="error">読み込みエラー</div>';
+            }
+        }
+        
+        // ツイートをレンダリング
+        function renderTweet(tweet) {
+            const time = new Date(tweet.created_at).toLocaleString('ja-JP');
+            
+            // 返信の場合は特別な表示
+            if (tweet.type === 'reply' && tweet.reply_to_id) {
+                return `
+                    <div class="tweet reply-item" onclick="openReplyView('${tweet.reply_to_id}')" style="cursor: pointer;">
+                        <div class="reply-indicator">↳ 返信</div>
+                        <div class="tweet-header">
+                            <span class="tweet-author">${escapeHtml(tweet.author_nickname)}</span>
+                            <span class="tweet-time">${time}</span>
+                        </div>
+                        <div class="tweet-content">${decorateText(tweet.content)}</div>
+                    </div>
+                `;
+            }
+            
+            // 通常のツイート
+            return `
+                <div class="tweet" onclick="openReplyView('${tweet.id}')" style="cursor: pointer;">
+                    <div class="tweet-header">
+                        <span class="tweet-author">${escapeHtml(tweet.author_nickname)}</span>
+                        <span class="tweet-time">${time}</span>
+                    </div>
+                    <div class="tweet-content">${decorateText(tweet.content)}</div>
+                    <div class="tweet-actions" onclick="event.stopPropagation()">
+                        <span class="tweet-action">
+                            💬 ${tweet.replies_count || 0}
+                        </span>
+                        <span class="tweet-action">
+                            ❤️ ${tweet.likes_count || 0}
+                        </span>
+                        <span class="tweet-action">
+                            🔁 ${tweet.retweets_count || 0}
+                        </span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 返信をレンダリング
+        function renderReply(reply) {
+            const time = new Date(reply.created_at).toLocaleString('ja-JP');
+            return `
+                <div class="tweet">
+                    <div class="tweet-header">
+                        <span class="tweet-author">${escapeHtml(reply.author_nickname)}</span>
+                        <span class="tweet-time">${time}</span>
+                    </div>
+                    <div style="color: #999; font-size: 12px; margin-bottom: 5px;">
+                        返信先: @${escapeHtml(reply.parent_author)}
+                    </div>
+                    <div class="tweet-content">${decorateText(reply.content)}</div>
+                </div>
+            `;
+        }
+        
+        // HTMLエスケープ
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // テキスト装飾
+        function decorateText(text) {
+            let decorated = escapeHtml(text);
+            decorated = decorated.replace(/@([a-zA-Z0-9_\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\u3400-\u4DBF]+)/g, 
+                '<span class="mention">@$1</span>');
+            decorated = decorated.replace(/#([a-zA-Z0-9_\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\u3400-\u4DBF]+)/g, 
+                '<span class="hashtag">#$1</span>');
+            return decorated;
+        }
+        
+        // タブ切り替え
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.dataset.tab === tab) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            loadTimeline();
+        }
+        
+        // 返信モーダルを開く
+        async function openReplyView(tweetId) {
+            try {
+                // ツイート詳細を取得
+                const response = await fetch(`/api/tweets/${tweetId}`);
+                const result = await response.json();
+                
+                if (!result.success) {
+                    console.error('ツイート取得エラー');
+                    return;
+                }
+                
+                const originalTweet = result.data;
+                
+                // モーダル作成
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 1000;
+                `;
+                
+                modal.innerHTML = `
+                    <div class="modal-content" style="
+                        background: white;
+                        width: 90%;
+                        max-width: 600px;
+                        max-height: 80vh;
+                        overflow-y: auto;
+                        padding: 20px;
+                        border-radius: 4px;
+                        position: relative;
+                    ">
+                        <button onclick="this.closest('.modal').remove()" style="
+                            position: absolute;
+                            top: 10px;
+                            right: 10px;
+                            background: none;
+                            border: none;
+                            font-size: 24px;
+                            cursor: pointer;
+                            color: #999;
+                        ">×</button>
+                        
+                        <div class="original-tweet" style="
+                            background: #f7f9fa;
+                            padding: 15px;
+                            margin-bottom: 20px;
+                            border-radius: 4px;
+                        ">
+                            <div class="tweet-header">
+                                <span class="tweet-author">${escapeHtml(originalTweet.author_nickname)}</span>
+                                <span class="tweet-time">${new Date(originalTweet.created_at).toLocaleString('ja-JP')}</span>
+                            </div>
+                            <div class="tweet-content" style="margin-top: 10px;">${decorateText(originalTweet.content)}</div>
+                        </div>
+                        
+                        <div class="replies-section">
+                            <h3 style="margin-bottom: 15px; color: #2c3e50;">返信</h3>
+                            <div id="modal-replies-list">読み込み中...</div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                // モーダル外クリックで閉じる
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.remove();
+                    }
+                });
+                
+                // 返信を読み込み
+                await loadReplies(tweetId);
+                
+            } catch (error) {
+                console.error('モーダル表示エラー:', error);
+            }
+        }
+        
+        // 返信を読み込み
+        async function loadReplies(tweetId) {
+            try {
+                const response = await fetch(`/api/tweets/${tweetId}/replies`);
+                const result = await response.json();
+                
+                const repliesList = document.getElementById('modal-replies-list');
+                if (!repliesList) return;
+                
+                if (result.success && result.data.length > 0) {
+                    repliesList.innerHTML = result.data.map(reply => `
+                        <div style="
+                            padding: 10px;
+                            border-bottom: 1px solid #e1e8ed;
+                            margin-bottom: 10px;
+                        ">
+                            <div class="reply-header" style="
+                                display: flex;
+                                justify-content: space-between;
+                                margin-bottom: 5px;
+                            ">
+                                <span class="reply-author" style="font-weight: bold;">${escapeHtml(reply.author_nickname)}</span>
+                                <span class="reply-time" style="color: #657786; font-size: 14px;">
+                                    ${new Date(reply.created_at).toLocaleString('ja-JP')}
+                                </span>
+                            </div>
+                            <div class="reply-content">${decorateText(reply.content)}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    repliesList.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">まだ返信がありません</div>';
+                }
+                
+            } catch (error) {
+                console.error('返信読み込みエラー:', error);
+                const repliesList = document.getElementById('modal-replies-list');
+                if (repliesList) {
+                    repliesList.innerHTML = '<div style="color: #e74c3c; text-align: center; padding: 20px;">返信の読み込みに失敗しました</div>';
+                }
+            }
+        }
+        
+        // ページ読み込み時に実行
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+</body>
+</html>

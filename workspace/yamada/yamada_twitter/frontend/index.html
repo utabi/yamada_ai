@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山田Twitter - シンプルで美しいSNS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            filter: grayscale(100%);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            font-family: 'Hiragino Kaku Gothic ProN', 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            color: #2c3e50;
+            position: relative;
+        }
+        
+        /* グレースケールオーバーレイ */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(128, 128, 128, 0.2);
+            mix-blend-mode: saturation;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 10px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: rgba(236, 240, 241, 0.95);
+            
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .auth-section {
+            background: rgba(236, 240, 241, 0.95);
+            
+            padding: 15px;
+            margin-bottom: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .device-id {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #7f8c8d;
+            background: #ecf0f1;
+            padding: 6px;
+            
+            margin-bottom: 10px;
+            word-break: break-all;
+        }
+        
+        .nickname-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #bdc3c7;
+            
+            font-size: 15px;
+            margin-bottom: 10px;
+            transition: border-color 0.3s;
+            background: #fff;
+        }
+        
+        .nickname-input:focus {
+            outline: none;
+            border-color: #7f8c8d;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #34495e, #2c3e50);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(52, 73, 94, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .twitter-section {
+            background: rgba(236, 240, 241, 0.95);
+            
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            flex: 1;
+        }
+        
+        .timeline-tabs {
+            margin: 15px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            gap: 0;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: #7f8c8d;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab-btn:hover {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .tab-btn.active {
+            color: #2c3e50;
+            border-bottom-color: #2c3e50;
+        }
+        
+        .tweet-input {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            
+            font-size: 15px;
+            resize: vertical;
+            margin-bottom: 10px;
+            font-family: inherit;
+            background: #fff;
+        }
+        
+        .tweet-input:focus {
+            outline: none;
+            border-color: #7f8c8d;
+        }
+        
+        .tweet-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .char-count {
+            color: #95a5a6;
+            font-size: 13px;
+        }
+        
+        .char-count.warning {
+            color: #ff6b6b;
+        }
+        
+        .timeline {
+            /* スクロールはbodyが担当 */
+        }
+        
+        .tweet {
+            background: #fff;
+            border: 1px solid #d5dbdb;
+            
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+        
+        .tweet:hover {
+            background: #f8f9f9;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+        
+        .tweet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .tweet-author {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .tweet-time {
+            color: #95a5a6;
+            font-size: 12px;
+        }
+        
+        .tweet-content {
+            line-height: 1.4;
+            margin-bottom: 8px;
+            color: #34495e;
+        }
+        
+        .tweet-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .tweet-action {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            
+            transition: all 0.3s;
+        }
+        
+        .tweet-action:hover {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+        }
+        
+        .error {
+            background: #ffe6e6;
+            color: #d63031;
+            padding: 10px;
+            
+            margin-bottom: 15px;
+            border: 1px solid #fdcbcb;
+        }
+        
+        .success {
+            background: #e6ffe6;
+            color: #00b894;
+            padding: 10px;
+            
+            margin-bottom: 15px;
+            border: 1px solid #b8e6b8;
+        }
+        
+        /* モーダルスタイル */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            overflow-x: hidden;
+        }
+        
+        .modal-content {
+            background: rgba(236, 240, 241, 0.98);
+            
+            padding: 20px;
+            max-width: 90%;
+            width: 800px;
+            max-height: 85vh;
+            overflow-y: auto;
+            margin: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-close {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #34495e;
+            border: none;
+            font-size: 28px;
+            color: #fff;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+            line-height: 1;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-close:hover {
+            background: #2c3e50;
+            transform: scale(1.1);
+        }
+        
+        .original-tweet {
+            background: #fff;
+            border: 1px solid #d5dbdb;
+            
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .reply-form {
+            margin-bottom: 30px;
+        }
+        
+        .reply-form textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+        
+        .reply-form textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .reply-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .reply-controls button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .reply-controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .reply-controls button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .replies-section h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        
+        .reply {
+            background: #fff;
+            border: 1px solid #e8eaea;
+            
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .reply-author {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .reply-time {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .reply-content {
+            line-height: 1.5;
+        }
+        
+        .no-replies {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            font-style: italic;
+        }
+        
+        /* メンションとハッシュタグのスタイル */
+        .mention {
+            color: #3498db;
+            font-weight: 600;
+        }
+        
+        .hashtag {
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+        
+        /* ヘッダータイトル */
+        .app-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        /* ハンバーガーメニュー */
+        .hamburger {
+            width: 30px;
+            height: 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 0;
+        }
+        
+        .hamburger span {
+            width: 100%;
+            height: 2px;
+            background: #34495e;
+            
+            transition: all 0.3s;
+        }
+        
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+        
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+        
+        /* サイドメニュー */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 999;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .side-menu.active {
+            right: 0;
+        }
+        
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .menu-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .close-menu {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .close-menu:hover {
+            color: #667eea;
+        }
+        
+        .menu-section {
+            margin-bottom: 30px;
+        }
+        
+        .menu-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .menu-item {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #f8f9ff;
+            border: 1px solid #e1e8ed;
+            
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .menu-item:hover {
+            background: #e8f2ff;
+            transform: translateX(5px);
+        }
+        
+        .profile-info {
+            background: #f8f9ff;
+            border: 1px solid #e1e8ed;
+            
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-nickname {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .profile-device {
+            font-size: 12px;
+            color: #999;
+            word-break: break-all;
+            margin-bottom: 10px;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e1e8ed;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        .edit-nickname-form {
+            margin-top: 20px;
+        }
+        
+        .edit-nickname-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .edit-nickname-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            display: none;
+        }
+        
+        .menu-overlay.active {
+            display: block;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header, .auth-section, .twitter-section {
+                padding: 20px;
+            }
+            
+            .modal-content {
+                margin: 10px;
+                padding: 20px;
+                max-height: 90vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="app-title">Yamatter</h1>
+            <button class="hamburger" id="hamburger-menu" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        
+        <!-- 認証セクション -->
+        <div id="auth-section" class="auth-section">
+            <h3>デバイス識別認証</h3>
+            <div class="device-id">
+                デバイスID: <span id="device-id">読み込み中...</span>
+            </div>
+            <div id="error-msg" class="error hidden"></div>
+            <div id="success-msg" class="success hidden"></div>
+            
+            <input 
+                type="text" 
+                id="nickname-input" 
+                class="nickname-input" 
+                placeholder="ニックネームを入力（20文字以内）"
+                maxlength="20"
+                pattern="[a-zA-Z0-9_ぁ-んァ-ヶー一-龠]+"
+                title="英数字、日本語、アンダースコア(_)のみ使用可能"
+                oninput="this.value = this.value.replace(/[@#$%^&*()+=\[\]{};':,.<>?\/\\|`~!]/g, '')"
+            >
+            <small style="display: block; color: #7f8c8d; margin-top: 5px; margin-bottom: 10px;">
+                ※ @マークや特殊文字は使用できません
+            </small>
+            <button id="set-nickname-btn" class="btn" onclick="setNickname()">
+                ニックネーム設定
+            </button>
+            <button id="logout-btn" class="btn hidden" onclick="logout()" style="background: #ff6b6b; margin-left: 10px;">
+                ログアウト
+            </button>
+        </div>
+        
+        <!-- Twitter機能セクション -->
+        <div id="twitter-section" class="twitter-section hidden">
+            <h3>タイムライン</h3>
+            
+            <!-- ツイート投稿 -->
+            <textarea 
+                id="tweet-input" 
+                class="tweet-input" 
+                placeholder="今何してる？"
+                maxlength="280"
+            ></textarea>
+            
+            <div class="tweet-controls">
+                <span id="char-count" class="char-count">0/280</span>
+                <button id="tweet-btn" class="btn" onclick="postTweet()">
+                    ツイートする
+                </button>
+            </div>
+            
+            <!-- タイムラインタブ -->
+            <div class="timeline-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="main" onclick="switchTab('main')">
+                        メイン
+                    </button>
+                    <button class="tab-btn" data-tab="mentions" onclick="switchTab('mentions')">
+                        @
+                    </button>
+                </div>
+            </div>
+            
+            <!-- タイムライン -->
+            <div id="timeline" class="timeline">
+                <div class="loading">タイムラインを読み込み中...</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Socket.IO クライアント -->
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <!-- ClientJS ライブラリ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ClientJS/0.1.11/client.min.js" crossorigin="anonymous"></script>
+    
+    <!-- 認証システム -->
+    <script src="js/auth.js"></script>
+    
+    <!-- メインアプリ -->
+    <script src="js/app.js"></script>
+    
+    <!-- サイドメニュー -->
+    <div class="menu-overlay" id="menu-overlay" onclick="toggleMenu()"></div>
+    <div class="side-menu" id="side-menu">
+        <div class="menu-header">
+            <button class="close-menu" onclick="toggleMenu()" style="margin-left: auto;">✕</button>
+        </div>
+        
+        <!-- プロフィール情報 -->
+        <div class="profile-info" id="profile-info" style="display: none;">
+            <div class="profile-nickname" id="profile-nickname"></div>
+            <div class="profile-device" id="profile-device"></div>
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="tweet-count">0</div>
+                    <div class="stat-label">ツイート</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="reply-count">0</div>
+                    <div class="stat-label">返信</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ニックネーム編集 -->
+        <div class="menu-section" id="edit-nickname-section" style="display: none;">
+            <h3>ニックネーム変更</h3>
+            <div class="edit-nickname-form">
+                <input 
+                    type="text" 
+                    id="edit-nickname-input" 
+                    class="edit-nickname-input" 
+                    placeholder="新しいニックネーム（20文字以内）"
+                    maxlength="20"
+                >
+                <button class="btn" onclick="updateNickname()" style="width: 100%;">
+                    変更する
+                </button>
+            </div>
+        </div>
+        
+        <!-- メニュー項目 -->
+        <div class="menu-section">
+            <button class="menu-item" onclick="showProfile()">プロフィール</button>
+            <button class="menu-item" onclick="refreshTimeline()">タイムライン更新</button>
+            <button class="menu-item" onclick="showAbout()">Yamatterについて</button>
+        </div>
+        
+        <!-- ログアウト -->
+        <div class="menu-section" id="logout-section" style="display: none;">
+            <button class="btn" onclick="logout()" style="background: #ff6b6b; width: 100%;">
+                ログアウト
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // メニュー関連の関数
+        function toggleMenu() {
+            const menu = document.getElementById('side-menu');
+            const overlay = document.getElementById('menu-overlay');
+            const hamburger = document.getElementById('hamburger-menu');
+            
+            menu.classList.toggle('active');
+            overlay.classList.toggle('active');
+            hamburger.classList.toggle('active');
+            
+            // メニューが開いたらプロフィール情報を更新
+            if (menu.classList.contains('active')) {
+                updateProfileInfo();
+            }
+        }
+        
+        function updateProfileInfo() {
+            const auth = window.app?.auth;
+            if (auth && auth.isAuthenticated()) {
+                const user = auth.getCurrentUser();
+                document.getElementById('profile-info').style.display = 'block';
+                document.getElementById('edit-nickname-section').style.display = 'block';
+                document.getElementById('logout-section').style.display = 'block';
+                
+                document.getElementById('profile-nickname').textContent = user.nickname;
+                document.getElementById('profile-device').textContent = 'ID: ' + user.deviceId.substring(0, 8) + '...';
+                document.getElementById('edit-nickname-input').value = user.nickname;
+                
+                // ツイート数を取得
+                updateUserStats(user.deviceId);
+            } else {
+                document.getElementById('profile-info').style.display = 'none';
+                document.getElementById('edit-nickname-section').style.display = 'none';
+                document.getElementById('logout-section').style.display = 'none';
+            }
+        }
+        
+        async function updateUserStats(userId) {
+            try {
+                const response = await fetch(`/api/tweets/user/${userId}`);
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('tweet-count').textContent = data.data.length;
+                    
+                    // 返信数をカウント（簡易的に）
+                    let replyCount = 0;
+                    for (const tweet of data.data) {
+                        if (tweet.reply_count) {
+                            replyCount += tweet.reply_count;
+                        }
+                    }
+                    document.getElementById('reply-count').textContent = replyCount;
+                }
+            } catch (error) {
+                console.error('Stats fetch error:', error);
+            }
+        }
+        
+        function updateNickname() {
+            const newNickname = document.getElementById('edit-nickname-input').value.trim();
+            if (!newNickname) {
+                alert('ニックネームを入力してください');
+                return;
+            }
+            
+            if (window.app && window.app.auth) {
+                try {
+                    window.app.auth.setNickname(newNickname);
+                    alert('ニックネームを変更しました');
+                    updateProfileInfo();
+                    
+                    // ページをリロードして変更を反映
+                    location.reload();
+                } catch (error) {
+                    alert('エラー: ' + error.message);
+                }
+            }
+        }
+        
+        function showProfile() {
+            if (window.app && window.app.auth && window.app.auth.isAuthenticated()) {
+                const user = window.app.auth.getCurrentUser();
+                window.location.href = `/profile.html?user=${user.deviceId}`;
+            }
+            toggleMenu();
+        }
+        
+        function refreshTimeline() {
+            if (window.app) {
+                window.app.loadTweets();
+            }
+            toggleMenu();
+        }
+        
+        function showAbout() {
+            alert('Yamatter v1.0.0\n\nシンプルで美しいSNS\nパスワード不要のデバイス認証\n\n© 2025 山田');
+            toggleMenu();
+        }
+    </script>
+    
+</body>
+</html>
