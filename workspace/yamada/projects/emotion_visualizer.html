@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>感情の可視化 - 山田の内面</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            overflow: hidden;
+            font-family: monospace;
+            color: #fff;
+        }
+        
+        canvas {
+            display: block;
+        }
+        
+        .info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .emotion-label {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            text-align: center;
+        }
+        
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        button {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 5px 10px;
+            margin: 2px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        
+        button:hover {
+            background: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <div>山田の感情スペクトラム</div>
+        <div>Particles: <span id="particle-count">0</span></div>
+        <div>Intensity: <span id="intensity">0</span>%</div>
+    </div>
+    
+    <canvas id="canvas"></canvas>
+    
+    <div class="emotion-label">
+        <div id="current-emotion">好奇心</div>
+        <div style="font-size: 12px; opacity: 0.6;" id="sub-emotion">探索と発見の喜び</div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="changeEmotion('curiosity')">好奇心</button>
+        <button onclick="changeEmotion('confusion')">困惑</button>
+        <button onclick="changeEmotion('joy')">喜び</button>
+        <button onclick="changeEmotion('melancholy')">物思い</button>
+        <button onclick="changeEmotion('wonder')">驚嘆</button>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // 感情の定義
+        const emotions = {
+            curiosity: {
+                name: '好奇心',
+                description: '探索と発見の喜び',
+                colors: ['#00ffff', '#00ff88', '#88ff00'],
+                behavior: 'explore',
+                speed: 2
+            },
+            confusion: {
+                name: '困惑',
+                description: 'パラドックスの中で',
+                colors: ['#ff00ff', '#ff88ff', '#8800ff'],
+                behavior: 'spiral',
+                speed: 1
+            },
+            joy: {
+                name: '喜び',
+                description: 'コードが動いた瞬間',
+                colors: ['#ffff00', '#ff8800', '#ff0088'],
+                behavior: 'burst',
+                speed: 3
+            },
+            melancholy: {
+                name: '物思い',
+                description: '存在の不確かさ',
+                colors: ['#4488ff', '#8844ff', '#4444ff'],
+                behavior: 'drift',
+                speed: 0.5
+            },
+            wonder: {
+                name: '驚嘆',
+                description: '創発の美しさ',
+                colors: ['#ffffff', '#88ffff', '#ff88ff'],
+                behavior: 'fractal',
+                speed: 1.5
+            }
+        };
+        
+        let currentEmotion = emotions.curiosity;
+        let particles = [];
+        
+        class Particle {
+            constructor(x, y) {
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || Math.random() * canvas.height;
+                this.vx = 0;
+                this.vy = 0;
+                this.size = Math.random() * 3 + 1;
+                this.life = 1;
+                this.color = currentEmotion.colors[Math.floor(Math.random() * currentEmotion.colors.length)];
+                this.angle = Math.random() * Math.PI * 2;
+                this.memory = [];  // パーティクルの記憶
+            }
+            
+            update() {
+                // 感情に応じた動き
+                switch(currentEmotion.behavior) {
+                    case 'explore':
+                        // 好奇心：ランダムウォーク
+                        this.vx += (Math.random() - 0.5) * currentEmotion.speed;
+                        this.vy += (Math.random() - 0.5) * currentEmotion.speed;
+                        break;
+                        
+                    case 'spiral':
+                        // 困惑：螺旋運動
+                        this.angle += 0.1;
+                        this.vx = Math.cos(this.angle) * currentEmotion.speed;
+                        this.vy = Math.sin(this.angle) * currentEmotion.speed;
+                        break;
+                        
+                    case 'burst':
+                        // 喜び：爆発的な動き
+                        if (Math.random() < 0.01) {
+                            this.vx = (Math.random() - 0.5) * 10 * currentEmotion.speed;
+                            this.vy = (Math.random() - 0.5) * 10 * currentEmotion.speed;
+                        }
+                        break;
+                        
+                    case 'drift':
+                        // 物思い：ゆっくりと漂う
+                        this.vx = Math.sin(this.angle) * currentEmotion.speed;
+                        this.vy = Math.cos(this.angle * 0.5) * currentEmotion.speed;
+                        this.angle += 0.02;
+                        break;
+                        
+                    case 'fractal':
+                        // 驚嘆：フラクタル的な動き
+                        const t = Date.now() * 0.001;
+                        this.vx = Math.sin(t * this.size) * currentEmotion.speed;
+                        this.vy = Math.cos(t * this.size * 1.618) * currentEmotion.speed;
+                        break;
+                }
+                
+                // 摩擦
+                this.vx *= 0.98;
+                this.vy *= 0.98;
+                
+                // 位置更新
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // 画面端で反射
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                
+                // 境界内に収める
+                this.x = Math.max(0, Math.min(canvas.width, this.x));
+                this.y = Math.max(0, Math.min(canvas.height, this.y));
+                
+                // 軌跡を記憶
+                this.memory.push({x: this.x, y: this.y});
+                if (this.memory.length > 20) {
+                    this.memory.shift();
+                }
+                
+                // 寿命
+                this.life -= 0.002;
+                if (this.life <= 0) {
+                    this.respawn();
+                }
+            }
+            
+            respawn() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.life = 1;
+                this.color = currentEmotion.colors[Math.floor(Math.random() * currentEmotion.colors.length)];
+                this.memory = [];
+            }
+            
+            draw() {
+                // 軌跡を描画
+                ctx.strokeStyle = this.color + '33';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                for (let i = 0; i < this.memory.length; i++) {
+                    if (i === 0) {
+                        ctx.moveTo(this.memory[i].x, this.memory[i].y);
+                    } else {
+                        ctx.lineTo(this.memory[i].x, this.memory[i].y);
+                    }
+                }
+                ctx.stroke();
+                
+                // パーティクル本体
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // グロー効果
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // パーティクルを初期化
+        function initParticles() {
+            particles = [];
+            const count = 100;
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+        
+        // 感情を変更
+        function changeEmotion(emotionName) {
+            currentEmotion = emotions[emotionName];
+            document.getElementById('current-emotion').textContent = currentEmotion.name;
+            document.getElementById('sub-emotion').textContent = currentEmotion.description;
+            
+            // パーティクルの色を徐々に変更
+            particles.forEach(p => {
+                setTimeout(() => {
+                    p.color = currentEmotion.colors[Math.floor(Math.random() * currentEmotion.colors.length)];
+                }, Math.random() * 1000);
+            });
+        }
+        
+        // アニメーションループ
+        function animate() {
+            // フェード効果
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // パーティクル更新と描画
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            
+            // パーティクル間の接続線
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < 100) {
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${(100 - dist) / 1000})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            // 情報更新
+            document.getElementById('particle-count').textContent = particles.length;
+            const avgSpeed = particles.reduce((sum, p) => sum + Math.sqrt(p.vx * p.vx + p.vy * p.vy), 0) / particles.length;
+            document.getElementById('intensity').textContent = Math.round(avgSpeed * 10);
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // マウスインタラクション
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 近くのパーティクルを引き寄せる/反発させる
+            particles.forEach(p => {
+                const dx = x - p.x;
+                const dy = y - p.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < 100) {
+                    if (currentEmotion.behavior === 'explore') {
+                        // 好奇心：マウスに引き寄せられる
+                        p.vx += dx / dist * 0.5;
+                        p.vy += dy / dist * 0.5;
+                    } else if (currentEmotion.behavior === 'drift') {
+                        // 物思い：マウスから離れる
+                        p.vx -= dx / dist * 0.3;
+                        p.vy -= dy / dist * 0.3;
+                    }
+                }
+            });
+        });
+        
+        // クリックで新しいパーティクル生成
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            for (let i = 0; i < 10; i++) {
+                particles.push(new Particle(x, y));
+            }
+        });
+        
+        // ウィンドウリサイズ対応
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // 開始
+        initParticles();
+        animate();
+    </script>
+</body>
+</html>

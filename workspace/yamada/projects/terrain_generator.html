@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Terrain Generator - ノイズ関数の世界</title>
+    <style>
+        body {
+            margin: 0;
+            background: #0a0a0a;
+            color: #ddd;
+            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        canvas {
+            border: 1px solid #333;
+            margin: 10px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button, select {
+            background: #1a1a1a;
+            color: #ddd;
+            border: 1px solid #333;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        
+        button:hover, select:hover {
+            background: #2a2a2a;
+        }
+        
+        .info {
+            text-align: center;
+            margin: 10px;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        input[type="range"] {
+            width: 150px;
+        }
+        
+        label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Procedural Terrain</h1>
+    
+    <canvas id="canvas"></canvas>
+    
+    <div class="controls">
+        <select id="mode">
+            <option value="terrain">Terrain</option>
+            <option value="clouds">Clouds</option>
+            <option value="wood">Wood</option>
+            <option value="marble">Marble</option>
+        </select>
+        
+        <label>
+            Scale: <input type="range" id="scale" min="10" max="200" value="50">
+            <span id="scaleValue">50</span>
+        </label>
+        
+        <label>
+            Octaves: <input type="range" id="octaves" min="1" max="8" value="4">
+            <span id="octavesValue">4</span>
+        </label>
+        
+        <button onclick="generate()">Generate</button>
+        <button onclick="animate()">Animate</button>
+    </div>
+    
+    <div class="info" id="info">
+        Value noise with fractal brownian motion
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = 512;
+        canvas.height = 512;
+        
+        let isAnimating = false;
+        let animationFrame = 0;
+        
+        // Improved random with seed
+        class Random {
+            constructor(seed) {
+                this.seed = seed;
+            }
+            
+            next() {
+                this.seed = (this.seed * 1103515245 + 12345) & 0x7fffffff;
+                return this.seed / 0x7fffffff;
+            }
+        }
+        
+        // Value noise implementation
+        function valueNoise(x, y, seed = 0) {
+            const intX = Math.floor(x);
+            const intY = Math.floor(y);
+            const fracX = x - intX;
+            const fracY = y - intY;
+            
+            // Get corner values
+            const v00 = pseudoRandom(intX, intY, seed);
+            const v10 = pseudoRandom(intX + 1, intY, seed);
+            const v01 = pseudoRandom(intX, intY + 1, seed);
+            const v11 = pseudoRandom(intX + 1, intY + 1, seed);
+            
+            // Smooth interpolation
+            const sx = smoothstep(fracX);
+            const sy = smoothstep(fracY);
+            
+            // Bilinear interpolation
+            const v0 = lerp(v00, v10, sx);
+            const v1 = lerp(v01, v11, sx);
+            
+            return lerp(v0, v1, sy);
+        }
+        
+        function pseudoRandom(x, y, seed) {
+            const n = x + y * 57 + seed * 131;
+            const nn = (n << 13) ^ n;
+            return (1.0 - ((nn * (nn * nn * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0) * 0.5 + 0.5;
+        }
+        
+        function smoothstep(t) {
+            return t * t * (3 - 2 * t);
+        }
+        
+        function lerp(a, b, t) {
+            return a + (b - a) * t;
+        }
+        
+        // Fractal Brownian Motion
+        function fbm(x, y, octaves, persistence = 0.5, seed = 0) {
+            let value = 0;
+            let amplitude = 1;
+            let frequency = 1;
+            let maxValue = 0;
+            
+            for (let i = 0; i < octaves; i++) {
+                value += valueNoise(x * frequency, y * frequency, seed + i) * amplitude;
+                maxValue += amplitude;
+                amplitude *= persistence;
+                frequency *= 2;
+            }
+            
+            return value / maxValue;
+        }
+        
+        function generate() {
+            const mode = document.getElementById('mode').value;
+            const scale = parseInt(document.getElementById('scale').value);
+            const octaves = parseInt(document.getElementById('octaves').value);
+            
+            const imageData = ctx.createImageData(canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            for (let y = 0; y < canvas.height; y++) {
+                for (let x = 0; x < canvas.width; x++) {
+                    const nx = x / scale;
+                    const ny = y / scale;
+                    
+                    let value = fbm(nx, ny + animationFrame * 0.01, octaves);
+                    
+                    const idx = (y * canvas.width + x) * 4;
+                    
+                    if (mode === 'terrain') {
+                        // Terrain coloring
+                        if (value < 0.3) {
+                            // Water
+                            data[idx] = 10;
+                            data[idx + 1] = 50;
+                            data[idx + 2] = 100 + value * 100;
+                        } else if (value < 0.4) {
+                            // Beach
+                            data[idx] = 194 + value * 50;
+                            data[idx + 1] = 178 + value * 50;
+                            data[idx + 2] = 128;
+                        } else if (value < 0.6) {
+                            // Grass
+                            data[idx] = 50;
+                            data[idx + 1] = 100 + value * 100;
+                            data[idx + 2] = 50;
+                        } else if (value < 0.8) {
+                            // Mountain
+                            data[idx] = 100 + value * 50;
+                            data[idx + 1] = 80 + value * 50;
+                            data[idx + 2] = 60 + value * 50;
+                        } else {
+                            // Snow
+                            data[idx] = 220 + value * 35;
+                            data[idx + 1] = 220 + value * 35;
+                            data[idx + 2] = 230 + value * 25;
+                        }
+                    } else if (mode === 'clouds') {
+                        // Cloud rendering
+                        value = Math.pow(value, 1.5);
+                        const color = value * 255;
+                        data[idx] = color;
+                        data[idx + 1] = color;
+                        data[idx + 2] = color;
+                    } else if (mode === 'wood') {
+                        // Wood grain
+                        const grain = Math.sin(x * 0.1 + fbm(nx * 5, ny * 0.5, 3) * 10) * 0.5 + 0.5;
+                        data[idx] = 139 * grain;
+                        data[idx + 1] = 69 * grain;
+                        data[idx + 2] = 19 * grain;
+                    } else if (mode === 'marble') {
+                        // Marble texture
+                        const veins = Math.sin(x * 0.05 + fbm(nx, ny, 5) * 10) * 0.5 + 0.5;
+                        const color = 180 + veins * 75;
+                        data[idx] = color;
+                        data[idx + 1] = color;
+                        data[idx + 2] = color * 0.95;
+                    }
+                    
+                    data[idx + 3] = 255; // Alpha
+                }
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+            
+            // Update info
+            const modeNames = {
+                'terrain': 'Terrain with height-based coloring',
+                'clouds': 'Cloud generation with power curve',
+                'wood': 'Wood grain with sine distortion',
+                'marble': 'Marble with fractal veins'
+            };
+            document.getElementById('info').textContent = modeNames[mode];
+        }
+        
+        function animate() {
+            isAnimating = !isAnimating;
+            
+            function loop() {
+                if (!isAnimating) return;
+                
+                animationFrame++;
+                generate();
+                requestAnimationFrame(loop);
+            }
+            
+            if (isAnimating) loop();
+        }
+        
+        // Update display values
+        document.getElementById('scale').addEventListener('input', (e) => {
+            document.getElementById('scaleValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('octaves').addEventListener('input', (e) => {
+            document.getElementById('octavesValue').textContent = e.target.value;
+        });
+        
+        // Initial generation
+        generate();
+    </script>
+</body>
+</html>

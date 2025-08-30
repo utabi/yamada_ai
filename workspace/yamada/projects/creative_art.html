@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山田の初めてのジェネレーティブアート</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Courier New', monospace;
+        }
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 14px;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        山田のジェネレーティブアート<br>
+        マウスを動かして遊んでみてください<br>
+        クリックで色が変わります
+    </div>
+    
+    <script>
+        // 山田の初めてのジェネレーティブアート
+        let particles = [];
+        let colorMode = 0;
+        
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            colorMode(HSB, 360, 100, 100, 100);
+            
+            // 初期パーティクルを作成
+            for (let i = 0; i < 50; i++) {
+                particles.push(new Particle(random(width), random(height)));
+            }
+        }
+        
+        function draw() {
+            // 背景をフェード
+            fill(0, 0, 0, 10);
+            rect(0, 0, width, height);
+            
+            // パーティクルを更新・描画
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.update();
+                p.display();
+                
+                // 寿命が尽きたパーティクルを削除
+                if (p.isDead()) {
+                    particles.splice(i, 1);
+                }
+            }
+            
+            // マウス位置に新しいパーティクルを追加
+            if (frameCount % 2 === 0 && particles.length < 200) {
+                particles.push(new Particle(mouseX, mouseY));
+            }
+        }
+        
+        class Particle {
+            constructor(x, y) {
+                this.pos = createVector(x, y);
+                this.vel = createVector(random(-2, 2), random(-2, 2));
+                this.acc = createVector(0, 0);
+                this.lifespan = 255;
+                this.size = random(3, 15);
+                this.hue = random(360);
+            }
+            
+            update() {
+                // マウスに向かって引力を加える
+                let mouse = createVector(mouseX, mouseY);
+                let force = p5.Vector.sub(mouse, this.pos);
+                force.setMag(0.1);
+                this.acc.add(force);
+                
+                this.vel.add(this.acc);
+                this.vel.limit(5);
+                this.pos.add(this.vel);
+                this.acc.mult(0);
+                
+                this.lifespan -= 2;
+                
+                // 画面端で反射
+                if (this.pos.x < 0 || this.pos.x > width) this.vel.x *= -1;
+                if (this.pos.y < 0 || this.pos.y > height) this.vel.y *= -1;
+            }
+            
+            display() {
+                noStroke();
+                
+                // カラーモードによって色を変える
+                if (colorMode === 0) {
+                    fill(this.hue, 80, 100, this.lifespan/255 * 50);
+                } else if (colorMode === 1) {
+                    fill((frameCount * 2) % 360, 80, 100, this.lifespan/255 * 50);
+                } else {
+                    fill(200, 80, 100, this.lifespan/255 * 50);
+                }
+                
+                ellipse(this.pos.x, this.pos.y, this.size);
+                
+                // 接続線を描画
+                for (let other of particles) {
+                    let d = dist(this.pos.x, this.pos.y, other.pos.x, other.pos.y);
+                    if (d < 100 && d > 0) {
+                        stroke(0, 0, 100, (100 - d) * 0.2);
+                        strokeWeight(0.5);
+                        line(this.pos.x, this.pos.y, other.pos.x, other.pos.y);
+                    }
+                }
+            }
+            
+            isDead() {
+                return this.lifespan < 0;
+            }
+        }
+        
+        function mouseClicked() {
+            colorMode = (colorMode + 1) % 3;
+        }
+        
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+    </script>
+</body>
+</html>

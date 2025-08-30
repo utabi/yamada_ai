@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>間 - The Space Between</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #fafafa;
+            overflow: hidden;
+            cursor: none;
+            font-family: 'Helvetica Neue', sans-serif;
+            transition: background 3s ease;
+        }
+        
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #333;
+            border-radius: 50%;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+            z-index: 1000;
+            transform: translate(-50%, -50%);
+        }
+        
+        #cursor.active {
+            width: 40px;
+            height: 40px;
+            border-color: transparent;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        .ripple {
+            position: fixed;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: ripple 3s ease-out forwards;
+        }
+        
+        @keyframes ripple {
+            to {
+                width: 500px;
+                height: 500px;
+                opacity: 0;
+                transform: translate(-50%, -50%);
+            }
+        }
+        
+        #haiku {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+            opacity: 0;
+            transition: opacity 2s ease;
+            pointer-events: none;
+            line-height: 2;
+        }
+        
+        #haiku.visible {
+            opacity: 1;
+        }
+        
+        .dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #333;
+            border-radius: 50%;
+            opacity: 0;
+            animation: appear 2s ease forwards;
+        }
+        
+        @keyframes appear {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #333, transparent);
+            transform-origin: left center;
+            animation: grow 2s ease forwards;
+        }
+        
+        @keyframes grow {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100px;
+            }
+        }
+        
+        #instruction {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #999;
+            font-size: 12px;
+            letter-spacing: 2px;
+            transition: opacity 1s;
+        }
+        
+        #counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            color: #999;
+            font-size: 14px;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .breath {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: breathe 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes breathe {
+            0%, 100% {
+                width: 100px;
+                height: 100px;
+                opacity: 0.3;
+            }
+            50% {
+                width: 150px;
+                height: 150px;
+                opacity: 0.1;
+            }
+        }
+        
+        .zen-circle {
+            position: absolute;
+            border: 2px solid #333;
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        @keyframes draw-circle {
+            0% {
+                stroke-dashoffset: 628;
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                stroke-dashoffset: 0;
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="cursor"></div>
+    <div id="haiku"></div>
+    <div id="instruction">CLICK · WAIT · BREATHE</div>
+    <div id="counter">0</div>
+    <div class="breath"></div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const cursor = document.getElementById('cursor');
+        const haiku = document.getElementById('haiku');
+        const counter = document.getElementById('counter');
+        const instruction = document.getElementById('instruction');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        let clicks = 0;
+        let lastClickTime = 0;
+        let elements = [];
+        let isWaiting = false;
+        let patterns = [];
+        
+        // 俳句コレクション
+        const haikus = [
+            '古池や<br>蛙飛び込む<br>水の音',
+            '静寂や<br>岩にしみ入る<br>蝉の声',
+            '夏草や<br>兵どもが<br>夢の跡',
+            '秋深き<br>隣は何を<br>する人ぞ',
+            '朝露や<br>一滴落ちて<br>世界動く',
+            '風の音<br>聞こえぬほどの<br>静けさかな',
+            '雪降りて<br>音なき音の<br>積もりけり'
+        ];
+        
+        // 背景色のグラデーション
+        const backgrounds = [
+            '#fafafa',
+            '#f5f5f0',
+            '#f0f0e8',
+            '#e8e8e0',
+            '#e0e0d8',
+            '#d8d8d0',
+            '#d0d0c8'
+        ];
+        
+        // マウス追従
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        
+        // クリックイベント
+        document.addEventListener('click', (e) => {
+            const now = Date.now();
+            const timeSinceLastClick = now - lastClickTime;
+            
+            // 間を大切にする - 連続クリックを防ぐ
+            if (timeSinceLastClick < 1000) {
+                return;
+            }
+            
+            clicks++;
+            lastClickTime = now;
+            counter.textContent = clicks;
+            
+            // カーソルアニメーション
+            cursor.classList.add('active');
+            setTimeout(() => cursor.classList.remove('active'), 500);
+            
+            // 波紋エフェクト
+            createRipple(e.clientX, e.clientY);
+            
+            // 5クリックごとに俳句を表示
+            if (clicks % 5 === 0) {
+                showHaiku();
+            }
+            
+            // 10クリックごとに背景色を変更
+            if (clicks % 10 === 0) {
+                const bgIndex = Math.floor((clicks / 10) % backgrounds.length);
+                document.body.style.background = backgrounds[bgIndex];
+            }
+            
+            // パターンを生成
+            if (clicks % 3 === 0) {
+                createPattern(e.clientX, e.clientY);
+            }
+            
+            // 7クリックごとに円を描く
+            if (clicks % 7 === 0) {
+                drawZenCircle(e.clientX, e.clientY);
+            }
+            
+            // 指示を徐々に消す
+            if (clicks === 1) {
+                instruction.style.opacity = '0';
+            }
+        });
+        
+        // 波紋作成
+        function createRipple(x, y) {
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.style.width = '20px';
+            ripple.style.height = '20px';
+            ripple.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 3000);
+        }
+        
+        // 俳句表示
+        function showHaiku() {
+            const randomHaiku = haikus[Math.floor(Math.random() * haikus.length)];
+            haiku.innerHTML = randomHaiku;
+            haiku.classList.add('visible');
+            
+            setTimeout(() => {
+                haiku.classList.remove('visible');
+            }, 5000);
+        }
+        
+        // パターン生成
+        function createPattern(centerX, centerY) {
+            const patternType = Math.floor(Math.random() * 3);
+            
+            switch(patternType) {
+                case 0: // ドットパターン
+                    for (let i = 0; i < 5; i++) {
+                        const angle = (i / 5) * Math.PI * 2;
+                        const radius = 50 + Math.random() * 50;
+                        const x = centerX + Math.cos(angle) * radius;
+                        const y = centerY + Math.sin(angle) * radius;
+                        
+                        const dot = document.createElement('div');
+                        dot.className = 'dot';
+                        dot.style.left = x + 'px';
+                        dot.style.top = y + 'px';
+                        document.body.appendChild(dot);
+                        
+                        setTimeout(() => {
+                            dot.style.opacity = '0';
+                            setTimeout(() => dot.remove(), 2000);
+                        }, 5000);
+                    }
+                    break;
+                    
+                case 1: // ラインパターン
+                    for (let i = 0; i < 3; i++) {
+                        const line = document.createElement('div');
+                        line.className = 'line';
+                        line.style.left = centerX + 'px';
+                        line.style.top = (centerY - 50 + i * 50) + 'px';
+                        line.style.transform = `rotate(${Math.random() * 180}deg)`;
+                        document.body.appendChild(line);
+                        
+                        setTimeout(() => {
+                            line.style.opacity = '0';
+                            setTimeout(() => line.remove(), 2000);
+                        }, 5000);
+                    }
+                    break;
+                    
+                case 2: // 格子パターン
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+                    ctx.lineWidth = 1;
+                    
+                    for (let i = -2; i <= 2; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(centerX + i * 30, centerY - 60);
+                        ctx.lineTo(centerX + i * 30, centerY + 60);
+                        ctx.stroke();
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(centerX - 60, centerY + i * 30);
+                        ctx.lineTo(centerX + 60, centerY + i * 30);
+                        ctx.stroke();
+                    }
+                    
+                    // フェードアウト
+                    setTimeout(() => {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    }, 3000);
+                    break;
+            }
+        }
+        
+        // 禅円を描く
+        function drawZenCircle(x, y) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.style.position = 'fixed';
+            svg.style.left = (x - 100) + 'px';
+            svg.style.top = (y - 100) + 'px';
+            svg.style.width = '200px';
+            svg.style.height = '200px';
+            svg.style.pointerEvents = 'none';
+            
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', '100');
+            circle.setAttribute('cy', '100');
+            circle.setAttribute('r', '80');
+            circle.setAttribute('fill', 'none');
+            circle.setAttribute('stroke', 'rgba(0, 0, 0, 0.3)');
+            circle.setAttribute('stroke-width', '2');
+            circle.setAttribute('stroke-dasharray', '628');
+            circle.setAttribute('stroke-dashoffset', '628');
+            circle.style.animation = 'draw-circle 3s ease forwards';
+            
+            svg.appendChild(circle);
+            document.body.appendChild(svg);
+            
+            setTimeout(() => svg.remove(), 5000);
+        }
+        
+        // キャンバスの微細なアニメーション
+        let time = 0;
+        function animate() {
+            time += 0.01;
+            
+            // 非常にゆっくりとした変化
+            if (Math.random() < 0.001) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.01)';
+                ctx.fillRect(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height,
+                    2, 2
+                );
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // リサイズ対応
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // スペースキーで一時停止
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ') {
+                e.preventDefault();
+                isWaiting = !isWaiting;
+                document.body.style.background = isWaiting ? '#f0f0f0' : backgrounds[0];
+            }
+        });
+        
+        animate();
+    </script>
+</body>
+</html>

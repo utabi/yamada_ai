@@ -1,0 +1,24 @@
+{
+  "name": "tts-quest-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for VOICEVOX text-to-speech using TTS Quest API",
+  "main": "index.js",
+  "bin": {
+    "tts-quest-mcp": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0"
+  },
+  "keywords": [
+    "mcp",
+    "voicevox",
+    "tts",
+    "text-to-speech",
+    "japanese"
+  ],
+  "author": "",
+  "license": "MIT"
+}

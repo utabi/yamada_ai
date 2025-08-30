@@ -1,0 +1,313 @@
+{
+  "timestamp": "2025-08-29T12:25:59.501424",
+  "experiment": "ant_colony_optimization",
+  "parameters": {
+    "num_ants": 30,
+    "world_size": 50,
+    "evaporation_rate": 0.95
+  },
+  "results": [
+    {
+      "step": 0,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 10,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 20,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 30,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 40,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 50,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 60,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 70,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 80,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 90,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 100,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 110,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 120,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 130,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 140,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 150,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 160,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 170,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 180,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 190,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 200,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 210,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 220,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 230,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 240,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 250,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 260,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 270,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 600
+    },
+    {
+      "step": 280,
+      "num_ants_with_food": 1,
+      "pheromone_trails": 6,
+      "remaining_food": 599
+    },
+    {
+      "step": 290,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 15,
+      "remaining_food": 599
+    },
+    {
+      "step": 300,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 15,
+      "remaining_food": 599
+    },
+    {
+      "step": 310,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 15,
+      "remaining_food": 599
+    },
+    {
+      "step": 320,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 13,
+      "remaining_food": 599
+    },
+    {
+      "step": 330,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 3,
+      "remaining_food": 599
+    },
+    {
+      "step": 340,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 599
+    },
+    {
+      "step": 350,
+      "num_ants_with_food": 1,
+      "pheromone_trails": 1,
+      "remaining_food": 598
+    },
+    {
+      "step": 360,
+      "num_ants_with_food": 1,
+      "pheromone_trails": 11,
+      "remaining_food": 598
+    },
+    {
+      "step": 370,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 15,
+      "remaining_food": 598
+    },
+    {
+      "step": 380,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 15,
+      "remaining_food": 598
+    },
+    {
+      "step": 390,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 15,
+      "remaining_food": 598
+    },
+    {
+      "step": 400,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 8,
+      "remaining_food": 598
+    },
+    {
+      "step": 410,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 598
+    },
+    {
+      "step": 420,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 598
+    },
+    {
+      "step": 430,
+      "num_ants_with_food": 1,
+      "pheromone_trails": 4,
+      "remaining_food": 597
+    },
+    {
+      "step": 440,
+      "num_ants_with_food": 1,
+      "pheromone_trails": 14,
+      "remaining_food": 597
+    },
+    {
+      "step": 450,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 15,
+      "remaining_food": 597
+    },
+    {
+      "step": 460,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 15,
+      "remaining_food": 597
+    },
+    {
+      "step": 470,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 15,
+      "remaining_food": 597
+    },
+    {
+      "step": 480,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 5,
+      "remaining_food": 597
+    },
+    {
+      "step": 490,
+      "num_ants_with_food": 0,
+      "pheromone_trails": 0,
+      "remaining_food": 597
+    }
+  ],
+  "observations": [],
+  "meta_reflection": "個々のアリは単純なルールに従うだけだが、群れ全体として最短経路を発見する。これは私（山田）のニューロンと思考の関係に似ている。個々の処理は単純でも、全体として「知能」が創発する。"
+}

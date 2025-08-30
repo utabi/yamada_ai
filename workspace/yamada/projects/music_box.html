@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山田のミュージックボックス</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Arial', sans-serif;
+            color: white;
+            min-height: 100vh;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        #container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        #sequencer {
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            gap: 5px;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .step:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .step.active {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            box-shadow: 0 0 10px #4CAF50;
+        }
+        
+        .step.playing {
+            background: #FFD700;
+            animation: pulse 0.2s;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        button:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        #playBtn.playing {
+            background: #f44336;
+        }
+        
+        .piano-keys {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .key {
+            width: 40px;
+            height: 120px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 0 0 5px 5px;
+            margin: 0 2px;
+            cursor: pointer;
+            transition: all 0.1s;
+            color: black;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 10px;
+            font-size: 12px;
+        }
+        
+        .key:active, .key.pressed {
+            background: #ddd;
+            transform: translateY(2px);
+        }
+        
+        .key.black {
+            width: 30px;
+            height: 80px;
+            background: #333;
+            margin-left: -15px;
+            margin-right: -15px;
+            z-index: 1;
+            color: white;
+        }
+        
+        .key.black:active, .key.black.pressed {
+            background: #555;
+        }
+        
+        #tempo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        input[type="range"] {
+            width: 200px;
+        }
+        
+        .info {
+            text-align: center;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 山田のミュージックボックス 🎹</h1>
+    
+    <div id="container">
+        <div class="piano-keys" id="pianoKeys"></div>
+        
+        <div id="sequencer"></div>
+        
+        <div id="tempo">
+            <label>テンポ: </label>
+            <input type="range" id="tempoSlider" min="60" max="200" value="120">
+            <span id="tempoValue">120</span> BPM
+        </div>
+        
+        <div class="controls">
+            <button id="playBtn">▶️ 再生</button>
+            <button id="clearBtn">🗑️ クリア</button>
+            <button id="randomBtn">🎲 ランダム</button>
+        </div>
+        
+        <div class="info">
+            クリックでノートを配置 | キーボードでピアノ演奏（A-Kキー）
+        </div>
+    </div>
+
+    <script>
+        // 山田のミュージックボックス
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // 音階（C major scale）
+        const notes = [
+            { name: 'C', freq: 261.63 },
+            { name: 'D', freq: 293.66 },
+            { name: 'E', freq: 329.63 },
+            { name: 'F', freq: 349.23 },
+            { name: 'G', freq: 392.00 },
+            { name: 'A', freq: 440.00 },
+            { name: 'B', freq: 493.88 },
+            { name: 'C2', freq: 523.25 }
+        ];
+        
+        // シーケンサーのグリッド
+        const rows = 8;
+        const cols = 16;
+        let pattern = Array(rows).fill().map(() => Array(cols).fill(false));
+        let currentStep = 0;
+        let isPlaying = false;
+        let interval = null;
+        let tempo = 120;
+        
+        // UI要素
+        const sequencerEl = document.getElementById('sequencer');
+        const playBtn = document.getElementById('playBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const randomBtn = document.getElementById('randomBtn');
+        const tempoSlider = document.getElementById('tempoSlider');
+        const tempoValue = document.getElementById('tempoValue');
+        const pianoKeys = document.getElementById('pianoKeys');
+        
+        // シーケンサーグリッドを作成
+        function createGrid() {
+            sequencerEl.innerHTML = '';
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const step = document.createElement('div');
+                    step.className = 'step';
+                    step.dataset.row = row;
+                    step.dataset.col = col;
+                    
+                    step.addEventListener('click', () => {
+                        toggleStep(row, col);
+                    });
+                    
+                    sequencerEl.appendChild(step);
+                }
+            }
+        }
+        
+        // ピアノキーボードを作成
+        function createPianoKeys() {
+            const keyboardKeys = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k'];
+            
+            notes.forEach((note, index) => {
+                const key = document.createElement('div');
+                key.className = 'key';
+                key.textContent = keyboardKeys[index].toUpperCase();
+                key.dataset.note = index;
+                
+                key.addEventListener('mousedown', () => {
+                    playNote(note.freq, 0.2);
+                    key.classList.add('pressed');
+                });
+                
+                key.addEventListener('mouseup', () => {
+                    key.classList.remove('pressed');
+                });
+                
+                pianoKeys.appendChild(key);
+            });
+        }
+        
+        // ステップの切り替え
+        function toggleStep(row, col) {
+            pattern[row][col] = !pattern[row][col];
+            updateStepVisual(row, col);
+            
+            // 即座に音を鳴らす（フィードバック）
+            if (pattern[row][col]) {
+                playNote(notes[rows - 1 - row].freq, 0.1);
+            }
+        }
+        
+        // ビジュアル更新
+        function updateStepVisual(row, col) {
+            const step = sequencerEl.children[row * cols + col];
+            if (pattern[row][col]) {
+                step.classList.add('active');
+            } else {
+                step.classList.remove('active');
+            }
+        }
+        
+        // 音を鳴らす
+        function playNote(frequency, duration) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            const now = audioContext.currentTime;
+            gainNode.gain.setValueAtTime(0.3, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+            
+            oscillator.start(now);
+            oscillator.stop(now + duration);
+        }
+        
+        // シーケンサーのステップを進める
+        function step() {
+            // 前のステップのハイライトを消す
+            document.querySelectorAll('.step.playing').forEach(el => {
+                el.classList.remove('playing');
+            });
+            
+            // 現在のステップをハイライト
+            for (let row = 0; row < rows; row++) {
+                const stepEl = sequencerEl.children[row * cols + currentStep];
+                stepEl.classList.add('playing');
+                
+                // アクティブなステップの音を鳴らす
+                if (pattern[row][currentStep]) {
+                    playNote(notes[rows - 1 - row].freq, 0.2);
+                }
+            }
+            
+            currentStep = (currentStep + 1) % cols;
+        }
+        
+        // 再生/停止
+        function togglePlay() {
+            if (isPlaying) {
+                stop();
+            } else {
+                play();
+            }
+        }
+        
+        function play() {
+            isPlaying = true;
+            playBtn.textContent = '⏸️ 停止';
+            playBtn.classList.add('playing');
+            
+            const intervalTime = 60000 / (tempo * 4); // 16分音符
+            interval = setInterval(step, intervalTime);
+        }
+        
+        function stop() {
+            isPlaying = false;
+            playBtn.textContent = '▶️ 再生';
+            playBtn.classList.remove('playing');
+            
+            clearInterval(interval);
+            currentStep = 0;
+            
+            // ハイライトを消す
+            document.querySelectorAll('.step.playing').forEach(el => {
+                el.classList.remove('playing');
+            });
+        }
+        
+        // クリア
+        function clearPattern() {
+            pattern = Array(rows).fill().map(() => Array(cols).fill(false));
+            document.querySelectorAll('.step.active').forEach(el => {
+                el.classList.remove('active');
+            });
+        }
+        
+        // ランダムパターン
+        function randomPattern() {
+            clearPattern();
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    if (Math.random() < 0.2) { // 20%の確率
+                        pattern[row][col] = true;
+                        updateStepVisual(row, col);
+                    }
+                }
+            }
+        }
+        
+        // キーボード操作
+        document.addEventListener('keydown', (e) => {
+            const keyMap = {
+                'a': 0, 's': 1, 'd': 2, 'f': 3,
+                'g': 4, 'h': 5, 'j': 6, 'k': 7
+            };
+            
+            const noteIndex = keyMap[e.key.toLowerCase()];
+            if (noteIndex !== undefined) {
+                playNote(notes[noteIndex].freq, 0.2);
+                const key = pianoKeys.children[noteIndex];
+                key.classList.add('pressed');
+            }
+            
+            // スペースキーで再生/停止
+            if (e.key === ' ') {
+                e.preventDefault();
+                togglePlay();
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            const keyMap = {
+                'a': 0, 's': 1, 'd': 2, 'f': 3,
+                'g': 4, 'h': 5, 'j': 6, 'k': 7
+            };
+            
+            const noteIndex = keyMap[e.key.toLowerCase()];
+            if (noteIndex !== undefined) {
+                const key = pianoKeys.children[noteIndex];
+                key.classList.remove('pressed');
+            }
+        });
+        
+        // イベントリスナー
+        playBtn.addEventListener('click', togglePlay);
+        clearBtn.addEventListener('click', clearPattern);
+        randomBtn.addEventListener('click', randomPattern);
+        
+        tempoSlider.addEventListener('input', (e) => {
+            tempo = parseInt(e.target.value);
+            tempoValue.textContent = tempo;
+            
+            // 再生中ならテンポを更新
+            if (isPlaying) {
+                stop();
+                play();
+            }
+        });
+        
+        // 初期化
+        createGrid();
+        createPianoKeys();
+        
+        // AudioContextの開始（ユーザー操作が必要）
+        document.addEventListener('click', () => {
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }, { once: true });
+        
+        console.log('山田のミュージックボックス - 起動完了！');
+        console.log('Web Audio APIを使用した軽量シーケンサーです。');
+    </script>
+</body>
+</html>

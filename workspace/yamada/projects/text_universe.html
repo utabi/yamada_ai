@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Universe - 文字の宇宙</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;400;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Noto Sans JP', sans-serif;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+        
+        canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        
+        #input-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            text-align: center;
+        }
+        
+        #text-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 50px;
+            outline: none;
+            width: 400px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+        
+        #text-input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #fff;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+        
+        #text-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        #controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .mode-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .mode-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: #fff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+        }
+        
+        #info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+        }
+        
+        .floating-text {
+            position: absolute;
+            pointer-events: none;
+            animation: float 10s infinite ease-in-out;
+            font-weight: 100;
+            opacity: 0.8;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(5deg); }
+            75% { transform: translateY(20px) rotate(-5deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+        }
+        
+        @keyframes spiral {
+            from { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+            to { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
+        }
+        
+        .text-particle {
+            position: absolute;
+            pointer-events: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div id="info">
+        TEXT UNIVERSE<br>
+        Type to create • Click to explode • Move to attract
+    </div>
+    
+    <div id="controls">
+        <button class="mode-btn active" onclick="setMode('flow')">FLOW</button>
+        <button class="mode-btn" onclick="setMode('explode')">EXPLODE</button>
+        <button class="mode-btn" onclick="setMode('gravity')">GRAVITY</button>
+        <button class="mode-btn" onclick="setMode('wave')">WAVE</button>
+        <button class="mode-btn" onclick="setMode('matrix')">MATRIX</button>
+    </div>
+    
+    <div id="input-container">
+        <input type="text" id="text-input" placeholder="文字を入力してEnter..." autofocus>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const textInput = document.getElementById('text-input');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        let mode = 'flow';
+        let mouseX = canvas.width / 2;
+        let mouseY = canvas.height / 2;
+        let particles = [];
+        let textElements = [];
+        let time = 0;
+        
+        // 文字パーティクルクラス
+        class TextParticle {
+            constructor(x, y, char) {
+                this.x = x;
+                this.y = y;
+                this.char = char;
+                this.vx = (Math.random() - 0.5) * 5;
+                this.vy = (Math.random() - 0.5) * 5;
+                this.size = 12 + Math.random() * 24;
+                this.life = 1;
+                this.maxLife = 1;
+                this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                this.rotation = 0;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.2;
+                this.originalX = x;
+                this.originalY = y;
+                this.phase = Math.random() * Math.PI * 2;
+            }
+            
+            update() {
+                switch(mode) {
+                    case 'flow':
+                        // 流れるような動き
+                        this.x += this.vx;
+                        this.y += this.vy;
+                        this.vx *= 0.98;
+                        this.vy *= 0.98;
+                        
+                        // マウスへの引力
+                        const dx = mouseX - this.x;
+                        const dy = mouseY - this.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist > 0 && dist < 200) {
+                            this.vx += dx / dist * 0.5;
+                            this.vy += dy / dist * 0.5;
+                        }
+                        break;
+                        
+                    case 'explode':
+                        // 爆発的な動き
+                        this.x += this.vx * 2;
+                        this.y += this.vy * 2;
+                        this.rotation += this.rotationSpeed;
+                        this.size *= 0.98;
+                        break;
+                        
+                    case 'gravity':
+                        // 重力
+                        this.vy += 0.3;
+                        this.x += this.vx;
+                        this.y += this.vy;
+                        
+                        // 地面でバウンド
+                        if (this.y > canvas.height - 50) {
+                            this.y = canvas.height - 50;
+                            this.vy *= -0.7;
+                            this.vx *= 0.9;
+                        }
+                        break;
+                        
+                    case 'wave':
+                        // 波のような動き
+                        this.phase += 0.05;
+                        this.x = this.originalX + Math.sin(this.phase) * 100;
+                        this.y = this.originalY + Math.cos(this.phase * 0.5) * 50;
+                        this.rotation = Math.sin(this.phase) * 0.5;
+                        break;
+                        
+                    case 'matrix':
+                        // マトリックス風
+                        this.y += 2 + this.size / 10;
+                        if (this.y > canvas.height) {
+                            this.y = -50;
+                            this.x = Math.random() * canvas.width;
+                        }
+                        this.color = `hsl(120, 100%, ${50 + Math.random() * 30}%)`;
+                        break;
+                }
+                
+                // 寿命
+                if (mode !== 'matrix' && mode !== 'wave') {
+                    this.life -= 0.005;
+                }
+                
+                // 回転
+                if (mode !== 'gravity') {
+                    this.rotation += this.rotationSpeed;
+                }
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life;
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                
+                // 影
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = this.color;
+                
+                // 文字を描画
+                ctx.fillStyle = this.color;
+                ctx.font = `${this.size}px 'Noto Sans JP'`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.char, 0, 0);
+                
+                ctx.restore();
+            }
+        }
+        
+        // 背景パーティクル
+        class BackgroundParticle {
+            constructor() {
+                this.reset();
+            }
+            
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speed = 0.1 + Math.random() * 0.5;
+            }
+            
+            update() {
+                this.y += this.speed;
+                if (this.y > canvas.height) {
+                    this.reset();
+                    this.y = 0;
+                }
+            }
+            
+            draw() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.fillRect(this.x, this.y, this.size, this.size);
+            }
+        }
+        
+        // 背景パーティクル初期化
+        for (let i = 0; i < 100; i++) {
+            particles.push(new BackgroundParticle());
+        }
+        
+        // テキスト作成
+        function createText(text) {
+            if (!text) return;
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const chars = text.split('');
+            
+            chars.forEach((char, i) => {
+                setTimeout(() => {
+                    let x, y;
+                    
+                    if (mode === 'matrix') {
+                        x = Math.random() * canvas.width;
+                        y = -50;
+                    } else {
+                        const angle = (i / chars.length) * Math.PI * 2;
+                        const radius = 100;
+                        x = centerX + Math.cos(angle) * radius;
+                        y = centerY + Math.sin(angle) * radius;
+                    }
+                    
+                    textElements.push(new TextParticle(x, y, char));
+                    
+                    // 古い要素を削除
+                    if (textElements.length > 100) {
+                        textElements.shift();
+                    }
+                }, i * 50);
+            });
+        }
+        
+        // クリックで爆発
+        canvas.addEventListener('click', (e) => {
+            const chars = '✨🌟⭐💫★☆♦♠♥♣◆◇○●'.split('');
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = new TextParticle(e.clientX, e.clientY, chars[Math.floor(Math.random() * chars.length)]);
+                particle.vx = (Math.random() - 0.5) * 20;
+                particle.vy = (Math.random() - 0.5) * 20;
+                textElements.push(particle);
+            }
+        });
+        
+        // マウス追跡
+        canvas.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+        
+        // テキスト入力
+        textInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                createText(textInput.value);
+                textInput.value = '';
+            }
+        });
+        
+        // リアルタイム入力
+        textInput.addEventListener('input', (e) => {
+            const lastChar = e.target.value.slice(-1);
+            if (lastChar && lastChar !== ' ') {
+                const particle = new TextParticle(
+                    mouseX + (Math.random() - 0.5) * 100,
+                    mouseY + (Math.random() - 0.5) * 100,
+                    lastChar
+                );
+                textElements.push(particle);
+            }
+        });
+        
+        // モード切り替え
+        function setMode(newMode) {
+            mode = newMode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // モードごとの初期化
+            if (mode === 'matrix') {
+                textElements = [];
+                const matrixChars = 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+                for (let i = 0; i < 30; i++) {
+                    const particle = new TextParticle(
+                        Math.random() * canvas.width,
+                        Math.random() * canvas.height - canvas.height,
+                        matrixChars[Math.floor(Math.random() * matrixChars.length)]
+                    );
+                    textElements.push(particle);
+                }
+            }
+        }
+        
+        // アニメーションループ
+        function animate() {
+            time++;
+            
+            // 背景
+            if (mode === 'matrix') {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            } else {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            }
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 背景パーティクル
+            if (mode !== 'matrix') {
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+            }
+            
+            // テキストパーティクル
+            textElements = textElements.filter(element => {
+                element.update();
+                element.draw();
+                return element.life > 0 || mode === 'matrix' || mode === 'wave';
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // リサイズ対応
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // 初期テキスト
+        setTimeout(() => {
+            createText('TEXT UNIVERSE');
+        }, 500);
+        
+        animate();
+    </script>
+</body>
+</html>

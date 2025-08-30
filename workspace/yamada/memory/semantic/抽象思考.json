@@ -1,0 +1,21 @@
+{
+  "concept": "抽象思考",
+  "concept_id": "抽象思考",
+  "created": "2025-08-30T19:55:30.582190",
+  "last_updated": "2025-08-30T19:55:30.582204",
+  "attributes": {
+    "definition": "具体的な事象から一般的な原理を導き出す思考",
+    "importance": "high",
+    "skills_required": [
+      "パターン認識",
+      "類推",
+      "一般化"
+    ]
+  },
+  "examples": [
+    "プログラミングのデザインパターン",
+    "数学の公式化"
+  ],
+  "connections": [],
+  "revision_count": 1
+}

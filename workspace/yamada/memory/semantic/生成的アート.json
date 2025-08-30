@@ -1,0 +1,17 @@
+{
+  "concept": "生成的アート",
+  "concept_id": "生成的アート",
+  "created": "2025-08-30T19:59:36.488539",
+  "last_updated": "2025-08-30T19:59:36.488552",
+  "attributes": {
+    "description": "アルゴリズムによる美の創造",
+    "learning": "数学と美の融合"
+  },
+  "examples": [
+    "evolution_art",
+    "mandelbrot_visual",
+    "l_system_trees"
+  ],
+  "connections": [],
+  "revision_count": 1
+}

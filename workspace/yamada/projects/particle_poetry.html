@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Particle Poetry - 言葉が舞う詩的空間</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        #interface {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        #poem-input {
+            width: 100%;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            font-family: 'Georgia', serif;
+        }
+        
+        #poem-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 8px 16px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Georgia', serif;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .mode-selector {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .mode-btn {
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+        }
+        
+        .mode-btn.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-color: transparent;
+            color: white;
+        }
+        
+        #status {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            font-style: italic;
+        }
+        
+        .particle-word {
+            position: absolute;
+            color: white;
+            pointer-events: none;
+            font-size: 16px;
+            text-shadow: 0 0 10px currentColor;
+            transition: all 0.3s;
+            animation: float 10s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="status">詩的粒子：0 | モード：Galaxy</div>
+    
+    <div id="interface">
+        <input type="text" id="poem-input" placeholder="ここに詩や言葉を入力... (例：星空、夢、希望、愛)" />
+        
+        <div class="controls">
+            <button onclick="createPoem()">🌟 詩を生成</button>
+            <button onclick="clearParticles()">🔄 クリア</button>
+            <button onclick="toggleAnimation()">⏸️ 一時停止</button>
+            
+            <div class="mode-selector">
+                <button class="mode-btn active" onclick="setMode('galaxy')">銀河</button>
+                <button class="mode-btn" onclick="setMode('rain')">雨</button>
+                <button class="mode-btn" onclick="setMode('spiral')">螺旋</button>
+                <button class="mode-btn" onclick="setMode('explosion')">爆発</button>
+                <button class="mode-btn" onclick="setMode('haiku')">俳句</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // 詩的な言葉のデータベース
+        const poeticWords = {
+            '星': ['輝く', '瞬く', '夜空', '無限', '光'],
+            '夢': ['希望', '未来', '想い', '彼方', '翼'],
+            '愛': ['心', '温もり', '永遠', '絆', '優しさ'],
+            '花': ['咲く', '香り', '美しい', '儚い', '春'],
+            '海': ['波', '青い', '深い', '広い', '静か'],
+            '風': ['そよぐ', '運ぶ', '涼しい', '自由', '旅'],
+            '月': ['照らす', '満ちる', '欠ける', '静寂', '銀色'],
+            '雨': ['降る', '濡れる', '雫', '清める', '虹'],
+            '時': ['流れる', '止まる', '永遠', '瞬間', '記憶'],
+            '空': ['青い', '広い', '飛ぶ', '雲', '無限']
+        };
+        
+        // 俳句テンプレート
+        const haikuTemplates = [
+            ['古池や', '蛙飛び込む', '水の音'],
+            ['夏草や', '兵どもが', '夢の跡'],
+            ['静かさや', '岩にしみ入る', '蝉の声'],
+            ['秋深き', '隣は何を', 'する人ぞ']
+        ];
+        
+        let particles = [];
+        let wordParticles = [];
+        let mode = 'galaxy';
+        let isAnimating = true;
+        let mouseX = canvas.width / 2;
+        let mouseY = canvas.height / 2;
+        
+        // パーティクルクラス
+        class Particle {
+            constructor(x, y, text = '') {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.size = Math.random() * 3 + 1;
+                this.text = text;
+                this.color = `hsl(${Math.random() * 60 + 200}, 70%, 60%)`;
+                this.life = 1;
+                this.maxLife = 1;
+                this.angle = Math.random() * Math.PI * 2;
+                this.angleSpeed = (Math.random() - 0.5) * 0.02;
+                this.radius = Math.random() * 100 + 50;
+            }
+            
+            update() {
+                switch(mode) {
+                    case 'galaxy':
+                        this.angle += this.angleSpeed;
+                        this.x += Math.cos(this.angle) * 2;
+                        this.y += Math.sin(this.angle) * 2;
+                        
+                        // マウスへの引力
+                        const dx = mouseX - this.x;
+                        const dy = mouseY - this.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist > 0 && dist < 200) {
+                            this.vx += dx / dist * 0.1;
+                            this.vy += dy / dist * 0.1;
+                        }
+                        break;
+                        
+                    case 'rain':
+                        this.y += 2 + this.size;
+                        this.x += Math.sin(this.y * 0.01) * 0.5;
+                        if (this.y > canvas.height) {
+                            this.y = -10;
+                            this.x = Math.random() * canvas.width;
+                        }
+                        break;
+                        
+                    case 'spiral':
+                        this.angle += 0.05;
+                        this.radius += 0.5;
+                        this.x = canvas.width / 2 + Math.cos(this.angle) * this.radius;
+                        this.y = canvas.height / 2 + Math.sin(this.angle) * this.radius;
+                        if (this.radius > 400) {
+                            this.radius = 10;
+                        }
+                        break;
+                        
+                    case 'explosion':
+                        this.x += this.vx;
+                        this.y += this.vy;
+                        this.vx *= 0.98;
+                        this.vy *= 0.98;
+                        this.vy += 0.1; // 重力
+                        break;
+                        
+                    case 'haiku':
+                        // ゆっくりと浮遊
+                        this.x += Math.sin(Date.now() * 0.001 + this.angle) * 0.5;
+                        this.y += Math.cos(Date.now() * 0.001 + this.angle) * 0.3;
+                        break;
+                        
+                    default:
+                        this.x += this.vx;
+                        this.y += this.vy;
+                }
+                
+                // 速度減衰
+                this.vx *= 0.99;
+                this.vy *= 0.99;
+                
+                // 寿命
+                this.life -= 0.002;
+                
+                // 画面端での反射
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            
+            draw() {
+                if (this.text) {
+                    // テキストパーティクル
+                    ctx.save();
+                    ctx.globalAlpha = this.life;
+                    ctx.fillStyle = this.color;
+                    ctx.font = `${14 + this.size * 2}px Georgia`;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = this.color;
+                    ctx.fillText(this.text, this.x, this.y);
+                    ctx.restore();
+                } else {
+                    // 通常のパーティクル
+                    ctx.save();
+                    ctx.globalAlpha = this.life * 0.8;
+                    ctx.fillStyle = this.color;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+        }
+        
+        // 詩を生成
+        function createPoem() {
+            const input = document.getElementById('poem-input').value.trim();
+            if (!input) return;
+            
+            const words = input.split(/[\s、。,.\s]+/);
+            
+            if (mode === 'haiku') {
+                createHaiku(words);
+            } else {
+                words.forEach((word, i) => {
+                    setTimeout(() => {
+                        const x = Math.random() * canvas.width;
+                        const y = Math.random() * canvas.height;
+                        
+                        // メインワード
+                        const mainParticle = new Particle(x, y, word);
+                        particles.push(mainParticle);
+                        
+                        // 関連語を追加
+                        if (poeticWords[word]) {
+                            poeticWords[word].forEach((relatedWord, j) => {
+                                setTimeout(() => {
+                                    const angle = (j / poeticWords[word].length) * Math.PI * 2;
+                                    const rx = x + Math.cos(angle) * 100;
+                                    const ry = y + Math.sin(angle) * 100;
+                                    particles.push(new Particle(rx, ry, relatedWord));
+                                }, j * 100);
+                            });
+                        }
+                        
+                        // 装飾パーティクル
+                        for (let j = 0; j < 20; j++) {
+                            const decorParticle = new Particle(
+                                x + (Math.random() - 0.5) * 50,
+                                y + (Math.random() - 0.5) * 50
+                            );
+                            particles.push(decorParticle);
+                        }
+                    }, i * 200);
+                });
+            }
+            
+            document.getElementById('poem-input').value = '';
+        }
+        
+        // 俳句モード
+        function createHaiku(words) {
+            const template = haikuTemplates[Math.floor(Math.random() * haikuTemplates.length)];
+            const centerX = canvas.width / 2;
+            const startY = canvas.height / 3;
+            
+            template.forEach((line, i) => {
+                setTimeout(() => {
+                    const y = startY + i * 80;
+                    
+                    // カスタム単語があれば置き換え
+                    if (words[i]) {
+                        line = words[i] + line.substring(words[i].length);
+                    }
+                    
+                    [...line].forEach((char, j) => {
+                        setTimeout(() => {
+                            const x = centerX - (line.length * 15) / 2 + j * 30;
+                            const particle = new Particle(x, y, char);
+                            particle.vx = 0;
+                            particle.vy = 0;
+                            particles.push(particle);
+                            
+                            // 装飾
+                            for (let k = 0; k < 5; k++) {
+                                particles.push(new Particle(
+                                    x + (Math.random() - 0.5) * 20,
+                                    y + (Math.random() - 0.5) * 20
+                                ));
+                            }
+                        }, j * 50);
+                    });
+                }, i * 500);
+            });
+        }
+        
+        // モード設定
+        function setMode(newMode) {
+            mode = newMode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // モードごとの初期化
+            if (mode === 'explosion') {
+                particles.forEach(p => {
+                    p.vx = (Math.random() - 0.5) * 10;
+                    p.vy = (Math.random() - 0.5) * 10 - 5;
+                });
+            }
+        }
+        
+        // クリア
+        function clearParticles() {
+            particles = [];
+        }
+        
+        // アニメーション切り替え
+        function toggleAnimation() {
+            isAnimating = !isAnimating;
+            event.target.textContent = isAnimating ? '⏸️ 一時停止' : '▶️ 再生';
+        }
+        
+        // マウス追跡
+        canvas.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+        
+        // クリックで粒子生成
+        canvas.addEventListener('click', (e) => {
+            for (let i = 0; i < 50; i++) {
+                const particle = new Particle(e.clientX, e.clientY);
+                particle.vx = (Math.random() - 0.5) * 5;
+                particle.vy = (Math.random() - 0.5) * 5;
+                particles.push(particle);
+            }
+        });
+        
+        // アニメーションループ
+        function animate() {
+            // 背景を徐々にフェード
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if (isAnimating) {
+                // パーティクルの更新と描画
+                particles = particles.filter(particle => {
+                    particle.update();
+                    particle.draw();
+                    return particle.life > 0;
+                });
+                
+                // 背景の星
+                if (Math.random() < 0.02) {
+                    particles.push(new Particle(
+                        Math.random() * canvas.width,
+                        Math.random() * canvas.height
+                    ));
+                }
+            } else {
+                // 一時停止中も描画は続ける
+                particles.forEach(particle => {
+                    particle.draw();
+                });
+            }
+            
+            // ステータス更新
+            document.getElementById('status').textContent = 
+                `詩的粒子：${particles.length} | モード：${mode.charAt(0).toUpperCase() + mode.slice(1)}`;
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // 初期パーティクル生成
+        for (let i = 0; i < 50; i++) {
+            particles.push(new Particle(
+                Math.random() * canvas.width,
+                Math.random() * canvas.height
+            ));
+        }
+        
+        // 初期詩
+        setTimeout(() => {
+            document.getElementById('poem-input').value = '星 夢 希望';
+            createPoem();
+        }, 1000);
+        
+        animate();
+        
+        // リサイズ対応
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>

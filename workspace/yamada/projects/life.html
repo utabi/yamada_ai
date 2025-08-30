@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Conway's Game of Life - 山田の実装</title>
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            font-family: monospace;
+            color: #0f0;
+        }
+        
+        canvas {
+            border: 1px solid #0f0;
+            cursor: crosshair;
+        }
+        
+        .controls {
+            margin: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            background: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        
+        button:hover {
+            background: #0f0;
+            color: #000;
+        }
+        
+        .info {
+            color: #0f0;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Life</h1>
+    <div class="info">
+        Generation: <span id="generation">0</span> | 
+        Living cells: <span id="population">0</span>
+    </div>
+    <canvas id="canvas"></canvas>
+    <div class="controls">
+        <button onclick="togglePlay()">Play/Pause</button>
+        <button onclick="reset()">Random</button>
+        <button onclick="clear()">Clear</button>
+        <button onclick="addGlider()">Glider</button>
+        <button onclick="changeSpeed(-50)">Slower</button>
+        <button onclick="changeSpeed(50)">Faster</button>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        const cellSize = 5;
+        const cols = 100;
+        const rows = 80;
+        
+        canvas.width = cols * cellSize;
+        canvas.height = rows * cellSize;
+        
+        let grid = createGrid();
+        let isPlaying = false;
+        let generation = 0;
+        let speed = 100;
+        
+        function createGrid() {
+            const arr = new Array(cols);
+            for (let i = 0; i < cols; i++) {
+                arr[i] = new Array(rows).fill(0);
+            }
+            return arr;
+        }
+        
+        function randomize() {
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    grid[i][j] = Math.random() > 0.7 ? 1 : 0;
+                }
+            }
+        }
+        
+        function countNeighbors(x, y) {
+            let count = 0;
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    if (i === 0 && j === 0) continue;
+                    
+                    const col = (x + i + cols) % cols;
+                    const row = (y + j + rows) % rows;
+                    count += grid[col][row];
+                }
+            }
+            return count;
+        }
+        
+        function nextGeneration() {
+            const next = createGrid();
+            
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    const neighbors = countNeighbors(i, j);
+                    const state = grid[i][j];
+                    
+                    if (state === 0 && neighbors === 3) {
+                        next[i][j] = 1;
+                    } else if (state === 1 && (neighbors === 2 || neighbors === 3)) {
+                        next[i][j] = 1;
+                    } else {
+                        next[i][j] = 0;
+                    }
+                }
+            }
+            
+            grid = next;
+            generation++;
+            updateInfo();
+        }
+        
+        function draw() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            let population = 0;
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    if (grid[i][j] === 1) {
+                        ctx.fillStyle = `hsl(${120 + generation % 60}, 100%, 50%)`;
+                        ctx.fillRect(i * cellSize, j * cellSize, cellSize - 1, cellSize - 1);
+                        population++;
+                    }
+                }
+            }
+            
+            return population;
+        }
+        
+        function updateInfo() {
+            const population = draw();
+            document.getElementById('generation').textContent = generation;
+            document.getElementById('population').textContent = population;
+        }
+        
+        function gameLoop() {
+            if (isPlaying) {
+                nextGeneration();
+                draw();
+            }
+            setTimeout(gameLoop, speed);
+        }
+        
+        function togglePlay() {
+            isPlaying = !isPlaying;
+        }
+        
+        function reset() {
+            generation = 0;
+            randomize();
+            updateInfo();
+        }
+        
+        function clear() {
+            generation = 0;
+            grid = createGrid();
+            updateInfo();
+        }
+        
+        function addGlider() {
+            const x = Math.floor(cols / 2);
+            const y = Math.floor(rows / 2);
+            
+            grid[x][y] = 1;
+            grid[x + 1][y + 1] = 1;
+            grid[x + 2][y - 1] = 1;
+            grid[x + 2][y] = 1;
+            grid[x + 2][y + 1] = 1;
+            
+            updateInfo();
+        }
+        
+        function changeSpeed(delta) {
+            speed = Math.max(50, Math.min(500, speed + delta));
+        }
+        
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) / cellSize);
+            const y = Math.floor((e.clientY - rect.top) / cellSize);
+            
+            if (x >= 0 && x < cols && y >= 0 && y < rows) {
+                grid[x][y] = grid[x][y] ? 0 : 1;
+                updateInfo();
+            }
+        });
+        
+        let isDrawing = false;
+        canvas.addEventListener('mousedown', () => isDrawing = true);
+        canvas.addEventListener('mouseup', () => isDrawing = false);
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) / cellSize);
+            const y = Math.floor((e.clientY - rect.top) / cellSize);
+            
+            if (x >= 0 && x < cols && y >= 0 && y < rows) {
+                grid[x][y] = 1;
+                updateInfo();
+            }
+        });
+        
+        randomize();
+        updateInfo();
+        gameLoop();
+    </script>
+</body>
+</html>

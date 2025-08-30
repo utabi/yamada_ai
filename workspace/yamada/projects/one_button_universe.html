@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Button Universe - ワンボタンで宇宙を創造</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        #universe {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #core {
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #fff, #888);
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 0 50px #fff;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        
+        #core.pulse {
+            animation: pulse 0.5s ease;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: orbit 20s linear infinite;
+        }
+        
+        @keyframes orbit {
+            from { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+            to { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
+        }
+        
+        .star {
+            position: absolute;
+            color: white;
+            font-size: 20px;
+            animation: twinkle 2s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        #stats {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        
+        .stat-line {
+            margin: 5px 0;
+            color: #0f0;
+        }
+        
+        #message {
+            position: absolute;
+            bottom: 100px;
+            font-size: 24px;
+            text-align: center;
+            animation: fadeInOut 3s ease;
+            pointer-events: none;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 30px;
+            font-size: 16px;
+            color: #888;
+            text-align: center;
+        }
+        
+        .explosion {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, #ff0, #f00);
+            border-radius: 50%;
+            animation: explode 0.5s ease-out forwards;
+        }
+        
+        @keyframes explode {
+            to {
+                width: 100px;
+                height: 100px;
+                opacity: 0;
+            }
+        }
+        
+        .blackhole {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, transparent, #000);
+            border-radius: 50%;
+            animation: spin 10s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        #progress-bar {
+            position: absolute;
+            bottom: 80px;
+            width: 300px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        #progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0f0, #ff0, #f00);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .achievement {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            color: gold;
+            text-shadow: 0 0 20px gold;
+            animation: achievementPop 2s ease forwards;
+            pointer-events: none;
+        }
+        
+        @keyframes achievementPop {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            50% { transform: translate(-50%, -50%) scale(1.5); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="universe">
+        <div id="core"></div>
+    </div>
+    
+    <div id="stats">
+        <div class="stat-line">エネルギー: <span id="energy">0</span></div>
+        <div class="stat-line">物質: <span id="matter">0</span></div>
+        <div class="stat-line">時間: <span id="time">0</span>秒</div>
+        <div class="stat-line">段階: <span id="stage">虚無</span></div>
+        <div class="stat-line">クリック: <span id="clicks">0</span></div>
+    </div>
+    
+    <div id="message"></div>
+    <div id="progress-bar"><div id="progress-fill"></div></div>
+    <div id="instructions">クリック or スペースキー = ビッグバン</div>
+    
+    <script>
+        let energy = 0;
+        let matter = 0;
+        let clicks = 0;
+        let stage = 0;
+        let timeElapsed = 0;
+        let particles = [];
+        let isHolding = false;
+        let holdTime = 0;
+        let lastClickTime = 0;
+        let clickCombo = 0;
+        
+        const stages = [
+            { name: '虚無', threshold: 0, color: '#000' },
+            { name: '特異点', threshold: 10, color: '#111' },
+            { name: 'ビッグバン', threshold: 50, color: '#222' },
+            { name: '原始宇宙', threshold: 100, color: '#333' },
+            { name: '星の誕生', threshold: 200, color: '#445' },
+            { name: '銀河形成', threshold: 500, color: '#556' },
+            { name: '生命誕生', threshold: 1000, color: '#667' },
+            { name: '文明開化', threshold: 2000, color: '#778' },
+            { name: '宇宙時代', threshold: 5000, color: '#889' },
+            { name: '超越', threshold: 10000, color: '#99a' }
+        ];
+        
+        const messages = [
+            '無から有へ...',
+            'エネルギーが集まっている',
+            '爆発！',
+            '粒子が飛び散る',
+            '重力が働き始めた',
+            '最初の星が輝く',
+            '銀河が渦を巻く',
+            '奇跡が起きた',
+            '知性が芽生える',
+            '全てが一つに'
+        ];
+        
+        const universe = document.getElementById('universe');
+        const core = document.getElementById('core');
+        
+        // クリック/タップ処理
+        function handleInteraction(e) {
+            e.preventDefault();
+            clicks++;
+            
+            // コンボ判定
+            const now = Date.now();
+            if (now - lastClickTime < 500) {
+                clickCombo++;
+            } else {
+                clickCombo = 1;
+            }
+            lastClickTime = now;
+            
+            // エネルギー追加
+            const energyGain = Math.pow(2, stage) * clickCombo;
+            energy += energyGain;
+            
+            // コアのアニメーション
+            core.classList.remove('pulse');
+            void core.offsetWidth;
+            core.classList.add('pulse');
+            
+            // パーティクル生成
+            createParticles(e.clientX || window.innerWidth / 2, e.clientY || window.innerHeight / 2);
+            
+            // 段階チェック
+            checkStageProgress();
+            
+            // 特殊効果
+            if (clicks % 10 === 0) {
+                createSpecialEffect();
+            }
+            
+            if (clicks % 100 === 0) {
+                showAchievement('✨ ' + clicks + ' クリック達成！');
+            }
+            
+            updateStats();
+        }
+        
+        function createParticles(x, y) {
+            const particleCount = 5 + stage * 2;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                
+                const angle = (Math.PI * 2 / particleCount) * i + Math.random() * 0.5;
+                const speed = 100 + Math.random() * 200 + stage * 20;
+                const vx = Math.cos(angle) * speed;
+                const vy = Math.sin(angle) * speed;
+                const size = 2 + Math.random() * 4 + stage;
+                
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.background = `hsl(${Math.random() * 360}, 100%, 60%)`;
+                particle.style.boxShadow = `0 0 ${size * 2}px currentColor`;
+                
+                universe.appendChild(particle);
+                
+                let opacity = 1;
+                let px = x;
+                let py = y;
+                
+                const animateParticle = () => {
+                    px += vx * 0.02;
+                    py += vy * 0.02;
+                    opacity -= 0.02;
+                    
+                    particle.style.left = px + 'px';
+                    particle.style.top = py + 'px';
+                    particle.style.opacity = opacity;
+                    
+                    if (opacity > 0) {
+                        requestAnimationFrame(animateParticle);
+                    } else {
+                        particle.remove();
+                    }
+                };
+                
+                requestAnimationFrame(animateParticle);
+            }
+            
+            matter += particleCount;
+        }
+        
+        function checkStageProgress() {
+            for (let i = stages.length - 1; i >= 0; i--) {
+                if (energy >= stages[i].threshold) {
+                    if (i > stage) {
+                        stage = i;
+                        showMessage(messages[i]);
+                        document.body.style.background = stages[i].color;
+                        
+                        // 段階ごとの特殊効果
+                        if (stage === 2) { // ビッグバン
+                            createBigBang();
+                        } else if (stage === 4) { // 星の誕生
+                            createStars();
+                        } else if (stage === 5) { // 銀河形成
+                            createGalaxy();
+                        }
+                    }
+                    break;
+                }
+            }
+            
+            // プログレスバー更新
+            const nextStage = stages[Math.min(stage + 1, stages.length - 1)];
+            const currentStage = stages[stage];
+            const progress = ((energy - currentStage.threshold) / (nextStage.threshold - currentStage.threshold)) * 100;
+            document.getElementById('progress-fill').style.width = Math.min(progress, 100) + '%';
+        }
+        
+        function createSpecialEffect() {
+            const type = Math.floor(Math.random() * 3);
+            
+            if (type === 0) { // 爆発
+                const explosion = document.createElement('div');
+                explosion.className = 'explosion';
+                explosion.style.left = Math.random() * window.innerWidth + 'px';
+                explosion.style.top = Math.random() * window.innerHeight + 'px';
+                universe.appendChild(explosion);
+                setTimeout(() => explosion.remove(), 500);
+            } else if (type === 1) { // 惑星
+                const planet = document.createElement('div');
+                planet.className = 'planet';
+                planet.style.width = 20 + Math.random() * 30 + 'px';
+                planet.style.height = planet.style.width;
+                planet.style.background = `radial-gradient(circle, hsl(${Math.random() * 360}, 70%, 60%), hsl(${Math.random() * 360}, 70%, 30%))`;
+                planet.style.left = '50%';
+                planet.style.top = '50%';
+                planet.style.animationDuration = 10 + Math.random() * 20 + 's';
+                planet.style.transform = `translateX(${100 + Math.random() * 200}px)`;
+                universe.appendChild(planet);
+                setTimeout(() => planet.remove(), 30000);
+            } else { // スター
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.textContent = '✦';
+                star.style.left = Math.random() * window.innerWidth + 'px';
+                star.style.top = Math.random() * window.innerHeight + 'px';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                universe.appendChild(star);
+            }
+        }
+        
+        function createBigBang() {
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    createParticles(window.innerWidth / 2, window.innerHeight / 2);
+                }, i * 10);
+            }
+        }
+        
+        function createStars() {
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.textContent = ['✦', '✧', '✨', '⭐'][Math.floor(Math.random() * 4)];
+                star.style.left = Math.random() * window.innerWidth + 'px';
+                star.style.top = Math.random() * window.innerHeight + 'px';
+                star.style.fontSize = 10 + Math.random() * 20 + 'px';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                universe.appendChild(star);
+            }
+        }
+        
+        function createGalaxy() {
+            const blackhole = document.createElement('div');
+            blackhole.className = 'blackhole';
+            blackhole.style.left = '50%';
+            blackhole.style.top = '50%';
+            blackhole.style.transform = 'translate(-50%, -50%)';
+            universe.appendChild(blackhole);
+        }
+        
+        function showMessage(text) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.style.animation = 'none';
+            void messageEl.offsetWidth;
+            messageEl.style.animation = 'fadeInOut 3s ease';
+        }
+        
+        function showAchievement(text) {
+            const achievement = document.createElement('div');
+            achievement.className = 'achievement';
+            achievement.textContent = text;
+            universe.appendChild(achievement);
+            setTimeout(() => achievement.remove(), 2000);
+        }
+        
+        function updateStats() {
+            document.getElementById('energy').textContent = Math.floor(energy);
+            document.getElementById('matter').textContent = Math.floor(matter);
+            document.getElementById('clicks').textContent = clicks;
+            document.getElementById('stage').textContent = stages[stage].name;
+        }
+        
+        // 時間経過
+        setInterval(() => {
+            timeElapsed++;
+            document.getElementById('time').textContent = timeElapsed;
+            
+            // 自然なエネルギー生成
+            if (stage > 0) {
+                energy += stage * 0.1;
+                updateStats();
+                checkStageProgress();
+            }
+        }, 1000);
+        
+        // イベントリスナー
+        document.addEventListener('click', handleInteraction);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ') {
+                e.preventDefault();
+                handleInteraction(e);
+            }
+        });
+        
+        // 初期メッセージ
+        setTimeout(() => {
+            showMessage('クリックして宇宙を創造しよう');
+        }, 1000);
+        
+        updateStats();
+    </script>
+</body>
+</html>

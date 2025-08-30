@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Mandelbrot Set - 自律生成アート</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            font-family: monospace;
+            color: #0f0;
+        }
+        
+        canvas {
+            border: 1px solid #0f0;
+            cursor: crosshair;
+        }
+        
+        .info {
+            margin: 10px;
+            font-size: 12px;
+        }
+        
+        .controls {
+            margin: 10px;
+        }
+        
+        button {
+            background: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #0f0;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mandelbrot Set Generator</h1>
+    <div class="info">
+        <span>Iterations: <span id="iterations">100</span></span> |
+        <span>Zoom: <span id="zoom">1</span>x</span> |
+        <span>Center: (<span id="centerX">0</span>, <span id="centerY">0</span>)</span>
+    </div>
+    
+    <canvas id="canvas"></canvas>
+    
+    <div class="controls">
+        <button onclick="zoomIn()">Zoom In</button>
+        <button onclick="zoomOut()">Zoom Out</button>
+        <button onclick="reset()">Reset</button>
+        <button onclick="changeColors()">Colors</button>
+        <button onclick="increaseIterations()">+ Iterations</button>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = 600;
+        canvas.height = 400;
+        
+        let zoom = 1;
+        let centerX = -0.5;
+        let centerY = 0;
+        let maxIterations = 100;
+        let colorScheme = 0;
+        
+        function mandelbrot(x, y) {
+            let real = x;
+            let imag = y;
+            
+            for (let i = 0; i < maxIterations; i++) {
+                const tempReal = real * real - imag * imag + x;
+                imag = 2 * real * imag + y;
+                real = tempReal;
+                
+                if (real * real + imag * imag > 4) {
+                    return i;
+                }
+            }
+            
+            return maxIterations;
+        }
+        
+        function getColor(iterations) {
+            if (iterations === maxIterations) {
+                return 'rgb(0, 0, 0)';
+            }
+            
+            const ratio = iterations / maxIterations;
+            
+            switch(colorScheme) {
+                case 0: // Classic
+                    const hue = 240 - ratio * 240;
+                    return `hsl(${hue}, 100%, 50%)`;
+                    
+                case 1: // Fire
+                    const r = Math.floor(ratio * 255);
+                    const g = Math.floor(ratio * ratio * 255);
+                    const b = 0;
+                    return `rgb(${r}, ${g}, ${b})`;
+                    
+                case 2: // Electric
+                    const er = Math.floor(Math.sin(ratio * Math.PI) * 255);
+                    const eg = Math.floor(Math.sin(ratio * Math.PI * 2) * 255);
+                    const eb = Math.floor(255 - ratio * 255);
+                    return `rgb(${er}, ${eg}, ${eb})`;
+                    
+                default:
+                    return `rgb(${ratio * 255}, ${ratio * 255}, ${ratio * 255})`;
+            }
+        }
+        
+        function draw() {
+            const imageData = ctx.createImageData(canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            const xRange = 3.5 / zoom;
+            const yRange = 2 / zoom;
+            
+            for (let px = 0; px < canvas.width; px++) {
+                for (let py = 0; py < canvas.height; py++) {
+                    const x = centerX + (px - canvas.width / 2) * xRange / canvas.width;
+                    const y = centerY + (py - canvas.height / 2) * yRange / canvas.height;
+                    
+                    const iterations = mandelbrot(x, y);
+                    const color = getColor(iterations);
+                    
+                    // Parse color
+                    const rgb = color.match(/\d+/g);
+                    if (rgb) {
+                        const index = (py * canvas.width + px) * 4;
+                        data[index] = parseInt(rgb[0]);
+                        data[index + 1] = parseInt(rgb[1]);
+                        data[index + 2] = parseInt(rgb[2]);
+                        data[index + 3] = 255;
+                    }
+                }
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+            updateInfo();
+        }
+        
+        function updateInfo() {
+            document.getElementById('iterations').textContent = maxIterations;
+            document.getElementById('zoom').textContent = zoom.toFixed(2);
+            document.getElementById('centerX').textContent = centerX.toFixed(4);
+            document.getElementById('centerY').textContent = centerY.toFixed(4);
+        }
+        
+        function zoomIn() {
+            zoom *= 2;
+            draw();
+        }
+        
+        function zoomOut() {
+            zoom /= 2;
+            draw();
+        }
+        
+        function reset() {
+            zoom = 1;
+            centerX = -0.5;
+            centerY = 0;
+            maxIterations = 100;
+            draw();
+        }
+        
+        function changeColors() {
+            colorScheme = (colorScheme + 1) % 3;
+            draw();
+        }
+        
+        function increaseIterations() {
+            maxIterations = Math.min(1000, maxIterations + 50);
+            draw();
+        }
+        
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const xRange = 3.5 / zoom;
+            const yRange = 2 / zoom;
+            
+            centerX += (x - canvas.width / 2) * xRange / canvas.width;
+            centerY += (y - canvas.height / 2) * yRange / canvas.height;
+            
+            zoom *= 2;
+            draw();
+        });
+        
+        // Initial draw
+        draw();
+        
+        // Auto-generate report
+        console.log('Mandelbrot Set Generator loaded');
+        console.log(`Initial parameters: zoom=${zoom}, center=(${centerX}, ${centerY}), iterations=${maxIterations}`);
+    </script>
+</body>
+</html>

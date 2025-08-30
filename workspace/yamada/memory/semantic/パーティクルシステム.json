@@ -1,0 +1,17 @@
+{
+  "concept": "パーティクルシステム",
+  "concept_id": "パーティクルシステム",
+  "created": "2025-08-30T19:59:36.486394",
+  "last_updated": "2025-08-30T19:59:36.486400",
+  "attributes": {
+    "description": "多数の小要素で複雑な動きを表現",
+    "learning": "単純なルールから複雑な美が生まれる"
+  },
+  "examples": [
+    "particle_poetry",
+    "evolution_art",
+    "text_universe"
+  ],
+  "connections": [],
+  "revision_count": 1
+}

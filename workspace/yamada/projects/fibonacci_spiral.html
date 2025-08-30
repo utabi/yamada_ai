@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Fibonacci Spiral - 数学的な美</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+        
+        canvas {
+            border: 1px solid #333;
+        }
+        
+        .info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #fff;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: monospace;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <div>Fibonacci: <span id="fib-numbers">1, 1, 2, 3, 5, 8...</span></div>
+        <div>Golden Ratio: φ = 1.618...</div>
+    </div>
+    
+    <canvas id="canvas"></canvas>
+    
+    <div class="controls">
+        <button onclick="toggleAnimation()">Animate</button>
+        <button onclick="changeMode()">Change Mode</button>
+        <button onclick="reset()">Reset</button>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = 800;
+        canvas.height = 600;
+        
+        let animating = false;
+        let mode = 'spiral';
+        let frame = 0;
+        const phi = (1 + Math.sqrt(5)) / 2;
+        
+        function fibonacci(n) {
+            const seq = [0, 1];
+            for (let i = 2; i <= n; i++) {
+                seq[i] = seq[i-1] + seq[i-2];
+            }
+            return seq;
+        }
+        
+        function drawFibonacciSpiral() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const scale = 3;
+            
+            ctx.strokeStyle = 'rgba(255, 215, 0, 0.5)';
+            ctx.lineWidth = 2;
+            
+            const fib = fibonacci(15);
+            let x = centerX;
+            let y = centerY;
+            let direction = 0;
+            
+            for (let i = 1; i < fib.length; i++) {
+                const size = fib[i] * scale;
+                
+                ctx.strokeStyle = `hsl(${(i * 30 + frame) % 360}, 70%, 50%)`;
+                ctx.beginPath();
+                
+                const startAngle = direction * Math.PI / 2;
+                const endAngle = startAngle + Math.PI / 2;
+                
+                let arcX = x;
+                let arcY = y;
+                
+                if (direction === 0) {
+                    arcX = x - size;
+                    arcY = y - size;
+                } else if (direction === 1) {
+                    arcX = x - size;
+                    arcY = y;
+                } else if (direction === 2) {
+                    arcX = x;
+                    arcY = y;
+                } else {
+                    arcX = x;
+                    arcY = y - size;
+                }
+                
+                ctx.arc(arcX, arcY, size, startAngle, endAngle);
+                ctx.stroke();
+                
+                if (direction === 0) {
+                    x -= fib[i-1] * scale;
+                } else if (direction === 1) {
+                    y += fib[i-1] * scale;
+                } else if (direction === 2) {
+                    x += fib[i-1] * scale;
+                } else {
+                    y -= fib[i-1] * scale;
+                }
+                
+                direction = (direction + 1) % 4;
+            }
+            
+            document.getElementById('fib-numbers').textContent = 
+                fib.slice(1, 10).join(', ') + '...';
+        }
+        
+        function drawGoldenRectangles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const startSize = 200;
+            let x = canvas.width / 2 - startSize / 2;
+            let y = canvas.height / 2 - startSize / 2;
+            let width = startSize;
+            let height = startSize / phi;
+            
+            for (let i = 0; i < 12; i++) {
+                ctx.strokeStyle = `hsla(${(i * 30 + frame) % 360}, 70%, 50%, ${1 - i * 0.08})`;
+                ctx.lineWidth = 2 - i * 0.1;
+                ctx.strokeRect(x, y, width, height);
+                
+                const newWidth = height;
+                const newHeight = width - height;
+                
+                if (i % 4 === 0) {
+                    x += width - newWidth;
+                } else if (i % 4 === 1) {
+                    y += height - newHeight;
+                } else if (i % 4 === 2) {
+                    x -= newWidth - width;
+                    y += height - newHeight;
+                } else {
+                    x -= newWidth - width;
+                }
+                
+                width = newWidth;
+                height = newHeight;
+            }
+        }
+        
+        function drawPhyllotaxis() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const angleIncrement = Math.PI * 2 / phi;
+            const n = 500;
+            
+            for (let i = 0; i < n; i++) {
+                const angle = i * angleIncrement;
+                const radius = Math.sqrt(i) * 8;
+                
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                
+                const size = Math.max(1, 6 - i / 100);
+                const hue = (i * 2 + frame) % 360;
+                
+                ctx.fillStyle = `hsl(${hue}, 70%, 50%)`;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        function draw() {
+            if (mode === 'spiral') {
+                drawFibonacciSpiral();
+            } else if (mode === 'rectangles') {
+                drawGoldenRectangles();
+            } else if (mode === 'phyllotaxis') {
+                drawPhyllotaxis();
+            }
+            
+            if (animating) {
+                frame++;
+                requestAnimationFrame(draw);
+            }
+        }
+        
+        function toggleAnimation() {
+            animating = !animating;
+            if (animating) {
+                draw();
+            }
+        }
+        
+        function changeMode() {
+            const modes = ['spiral', 'rectangles', 'phyllotaxis'];
+            const currentIndex = modes.indexOf(mode);
+            mode = modes[(currentIndex + 1) % modes.length];
+            draw();
+        }
+        
+        function reset() {
+            frame = 0;
+            draw();
+        }
+        
+        draw();
+    </script>
+</body>
+</html>

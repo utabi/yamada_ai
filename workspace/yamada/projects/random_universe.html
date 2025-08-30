@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Universe Generator - ランダム宇宙ジェネレーター</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        #universe-name {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(180deg); }
+        }
+        
+        #universe-box {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #universe-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: rotate 60s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .property {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .property-label {
+            font-size: 0.9em;
+            color: #8892b0;
+            margin-bottom: 5px;
+        }
+        
+        .property-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ccd6f6;
+        }
+        
+        #generate-btn {
+            margin-top: 30px;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        #generate-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(131, 56, 236, 0.5);
+        }
+        
+        #generate-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .emoji-decoration {
+            position: absolute;
+            font-size: 2em;
+            animation: float 10s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        #history {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        #history h3 {
+            margin-bottom: 10px;
+            color: #8892b0;
+        }
+        
+        .history-item {
+            padding: 5px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        #special-effect {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5em;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        @keyframes bigbang {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(10); opacity: 0; }
+        }
+        
+        .bigbang {
+            animation: bigbang 1s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="universe-name">？？？の宇宙</h1>
+    
+    <div id="universe-box">
+        <div class="emoji-decoration" style="top: 10px; left: 10px;">✨</div>
+        <div class="emoji-decoration" style="top: 10px; right: 10px;">🌟</div>
+        <div class="emoji-decoration" style="bottom: 10px; left: 10px;">🌙</div>
+        <div class="emoji-decoration" style="bottom: 10px; right: 10px;">☄️</div>
+        
+        <div class="property">
+            <div class="property-label">物理法則</div>
+            <div class="property-value" id="physics">未知</div>
+        </div>
+        
+        <div class="property">
+            <div class="property-label">主要な生命体</div>
+            <div class="property-value" id="lifeform">未発見</div>
+        </div>
+        
+        <div class="property">
+            <div class="property-label">時間の流れ</div>
+            <div class="property-value" id="time">通常</div>
+        </div>
+        
+        <div class="property">
+            <div class="property-label">主要元素</div>
+            <div class="property-value" id="element">不明</div>
+        </div>
+        
+        <div class="property">
+            <div class="property-label">特殊能力</div>
+            <div class="property-value" id="ability">なし</div>
+        </div>
+        
+        <div class="property">
+            <div class="property-label">危険度</div>
+            <div class="property-value" id="danger">☆☆☆☆☆</div>
+        </div>
+        
+        <button id="generate-btn" onclick="generateUniverse()">🎲 新しい宇宙を生成</button>
+    </div>
+    
+    <div id="history">
+        <h3>📜 発見した宇宙の履歴</h3>
+        <div id="history-list"></div>
+    </div>
+    
+    <div id="special-effect">💥</div>
+    
+    <script>
+        const adjectives = [
+            '量子的な', '超次元の', '虹色の', '液体の', '結晶の', '歌う', '踊る', '夢見る',
+            '浮遊する', '反転した', 'ピクセルの', '折り紙の', '泡の', 'ゼリー状の', '磁気の',
+            '共鳴する', '螺旋の', 'フラクタルの', '万華鏡の', '透明な', '発光する', '脈動する'
+        ];
+        
+        const nouns = [
+            'チーズ', 'クッキー', 'マシュマロ', 'プリン', 'キャンディ', 'チョコレート',
+            'ドーナツ', 'パンケーキ', 'アイスクリーム', 'ゼリービーンズ', 'ラーメン',
+            'ピザ', 'タコス', 'すし', 'カレー', 'パスタ', 'バーガー', 'ポップコーン'
+        ];
+        
+        const physics = [
+            '重力が上向き', '時々重力が反転', '摩擦がない', '光速が歩く速度',
+            '音が見える', '思考が物質化', 'エントロピーが減少', '因果律が逆転',
+            '確率が固定', '温度が感情に依存', '質量が気分で変化', '距離が相対的',
+            '色が音になる', '時間が螺旋状', '空間が5次元', '物理法則が毎日変わる'
+        ];
+        
+        const lifeforms = [
+            'プリン型知的生命体', '光合成する数学者', '液体ネコ', 'データを食べる妖精',
+            '時間旅行するパン', '感情を持つ雲', '哲学するキノコ', '踊る方程式',
+            'Wi-Fi信号で会話する樹木', '夢を見る石', '量子もつれしたタコ', '音楽細菌',
+            '記憶を共有するゼリー', '次元を跳ぶウサギ', 'コードを書くアメーバ'
+        ];
+        
+        const timeFlows = [
+            '逆向き', '螺旋状', 'ランダム', '二重らせん', '感情に連動',
+            '観測者により変化', '週末だけ停止', '音楽のリズムに同期', '素数の日だけ進む',
+            '夢の中でのみ流れる', '笑うと加速', '悲しむと逆流', '思考速度に比例'
+        ];
+        
+        const elements = [
+            'チョコレート', '虹', '音符', '感情', '夢', 'ミーム', 'ピクセル',
+            'ユーモア', '愛', 'カフェイン', 'Wi-Fi電波', '絵文字', 'グリッター',
+            '泡', 'ネコの鳴き声', 'デジタルデータ', '想像力'
+        ];
+        
+        const abilities = [
+            'テレパシーでピザ注文', '思考でWi-Fi接続', '夢の中でコーディング',
+            '感情で天気を変える', '歌で時間旅行', 'ダンスで重力操作', '料理で次元移動',
+            '笑いで物質生成', '涙で星を作る', 'くしゃみで宇宙創造', '昼寝で並行世界アクセス',
+            '落書きが現実化', 'カラオケで精神融合', 'ゲームで歴史改変'
+        ];
+        
+        let history = [];
+        
+        function generateUniverse() {
+            // ビッグバンエフェクト
+            const effect = document.getElementById('special-effect');
+            effect.textContent = ['💥', '✨', '🌟', '⭐', '🎆', '🎇'][Math.floor(Math.random() * 6)];
+            effect.classList.remove('bigbang');
+            void effect.offsetWidth;
+            effect.classList.add('bigbang');
+            
+            // ランダム生成
+            const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const noun = nouns[Math.floor(Math.random() * nouns.length)];
+            const universeName = adj + noun;
+            
+            const physicsLaw = physics[Math.floor(Math.random() * physics.length)];
+            const lifeform = lifeforms[Math.floor(Math.random() * lifeforms.length)];
+            const timeFlow = timeFlows[Math.floor(Math.random() * timeFlows.length)];
+            const element = elements[Math.floor(Math.random() * elements.length)];
+            const ability = abilities[Math.floor(Math.random() * abilities.length)];
+            const dangerLevel = Math.floor(Math.random() * 5) + 1;
+            
+            // 表示更新
+            document.getElementById('universe-name').textContent = universeName + 'の宇宙';
+            document.getElementById('physics').textContent = physicsLaw;
+            document.getElementById('lifeform').textContent = lifeform;
+            document.getElementById('time').textContent = timeFlow;
+            document.getElementById('element').textContent = element;
+            document.getElementById('ability').textContent = ability;
+            
+            // 危険度を星で表示
+            let stars = '';
+            for (let i = 0; i < 5; i++) {
+                stars += i < dangerLevel ? '★' : '☆';
+            }
+            document.getElementById('danger').textContent = stars;
+            
+            // 危険度によって色を変える
+            const dangerElement = document.getElementById('danger');
+            if (dangerLevel <= 2) {
+                dangerElement.style.color = '#4ade80';
+            } else if (dangerLevel <= 4) {
+                dangerElement.style.color = '#facc15';
+            } else {
+                dangerElement.style.color = '#f87171';
+            }
+            
+            // 履歴に追加
+            const universeData = {
+                name: universeName,
+                physics: physicsLaw,
+                lifeform: lifeform,
+                time: timeFlow,
+                element: element,
+                ability: ability,
+                danger: dangerLevel
+            };
+            
+            history.unshift(universeData);
+            if (history.length > 10) history.pop();
+            
+            updateHistory();
+            
+            // アニメーション
+            const box = document.getElementById('universe-box');
+            box.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                box.style.transform = 'scale(1)';
+            }, 100);
+        }
+        
+        function updateHistory() {
+            const historyList = document.getElementById('history-list');
+            historyList.innerHTML = '';
+            
+            history.forEach((universe, index) => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.textContent = `${universe.name}の宇宙 (危険度: ${'★'.repeat(universe.danger)})`;
+                item.onclick = () => loadUniverse(universe);
+                historyList.appendChild(item);
+            });
+        }
+        
+        function loadUniverse(universe) {
+            document.getElementById('universe-name').textContent = universe.name + 'の宇宙';
+            document.getElementById('physics').textContent = universe.physics;
+            document.getElementById('lifeform').textContent = universe.lifeform;
+            document.getElementById('time').textContent = universe.time;
+            document.getElementById('element').textContent = universe.element;
+            document.getElementById('ability').textContent = universe.ability;
+            
+            let stars = '';
+            for (let i = 0; i < 5; i++) {
+                stars += i < universe.danger ? '★' : '☆';
+            }
+            document.getElementById('danger').textContent = stars;
+        }
+        
+        // キーボードショートカット
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                generateUniverse();
+            }
+        });
+        
+        // 初回生成
+        setTimeout(generateUniverse, 500);
+    </script>
+</body>
+</html>

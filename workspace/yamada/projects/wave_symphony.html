@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wave Symphony - 波形が奏でる音楽</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        #header {
+            padding: 20px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        #visualizer {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #controls {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px 0 rgba(245, 87, 108, 0.4);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(245, 87, 108, 0.6);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        input[type="range"] {
+            width: 150px;
+            height: 5px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+        }
+        
+        select {
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+        }
+        
+        select option {
+            background: #764ba2;
+        }
+        
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+        
+        .note-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin: 0 2px;
+            transition: all 0.1s;
+        }
+        
+        .note-active {
+            transform: scale(1.5);
+            box-shadow: 0 0 10px currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>🎵 Wave Symphony</h1>
+        <p>波形が生み出す自動生成音楽</p>
+    </div>
+    
+    <div id="visualizer">
+        <canvas id="canvas"></canvas>
+        <div id="info">
+            <div>テンポ: <span id="tempoDisplay">120</span> BPM</div>
+            <div>スケール: <span id="scaleDisplay">Major</span></div>
+            <div>パターン: <span id="patternDisplay">Wave</span></div>
+            <div id="noteIndicators"></div>
+        </div>
+    </div>
+    
+    <div id="controls">
+        <button onclick="togglePlay()">▶️ 再生/停止</button>
+        
+        <div class="control-group">
+            <label>テンポ (BPM)</label>
+            <input type="range" id="tempo" min="60" max="180" value="120" 
+                   oninput="updateTempo(this.value)">
+        </div>
+        
+        <div class="control-group">
+            <label>音量</label>
+            <input type="range" id="volume" min="0" max="100" value="50" 
+                   oninput="updateVolume(this.value)">
+        </div>
+        
+        <div class="control-group">
+            <label>スケール</label>
+            <select id="scale" onchange="updateScale(this.value)">
+                <option value="major">Major</option>
+                <option value="minor">Minor</option>
+                <option value="pentatonic">Pentatonic</option>
+                <option value="blues">Blues</option>
+                <option value="chromatic">Chromatic</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label>パターン</label>
+            <select id="pattern" onchange="updatePattern(this.value)">
+                <option value="wave">Wave</option>
+                <option value="random">Random</option>
+                <option value="ascending">Ascending</option>
+                <option value="bounce">Bounce</option>
+                <option value="spiral">Spiral</option>
+            </select>
+        </div>
+        
+        <button onclick="randomize()">🎲 ランダム</button>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight * 0.6;
+        
+        // 音楽パラメータ
+        let isPlaying = false;
+        let tempo = 120;
+        let volume = 0.5;
+        let currentScale = 'major';
+        let currentPattern = 'wave';
+        let noteIndex = 0;
+        let lastNoteTime = 0;
+        
+        // スケール定義（相対的な半音数）
+        const scales = {
+            major: [0, 2, 4, 5, 7, 9, 11],
+            minor: [0, 2, 3, 5, 7, 8, 10],
+            pentatonic: [0, 2, 4, 7, 9],
+            blues: [0, 3, 5, 6, 7, 10],
+            chromatic: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        };
+        
+        // 基準周波数（A4）
+        const baseFreq = 440;
+        const baseNote = 57; // A4のMIDIノート番号
+        
+        // Web Audio API
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const masterGain = audioContext.createGain();
+        masterGain.connect(audioContext.destination);
+        masterGain.gain.value = volume;
+        
+        // ビジュアライザー用のデータ
+        const waves = [];
+        const particles = [];
+        
+        class Wave {
+            constructor() {
+                this.points = [];
+                this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                this.amplitude = 50 + Math.random() * 50;
+                this.frequency = 0.01 + Math.random() * 0.02;
+                this.phase = Math.random() * Math.PI * 2;
+                this.speed = 0.01 + Math.random() * 0.02;
+            }
+            
+            update() {
+                this.phase += this.speed;
+                this.points = [];
+                
+                for (let x = 0; x < canvas.width; x += 5) {
+                    const y = canvas.height / 2 + 
+                             Math.sin(x * this.frequency + this.phase) * this.amplitude;
+                    this.points.push({x, y});
+                }
+            }
+            
+            draw() {
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.6;
+                
+                ctx.beginPath();
+                this.points.forEach((point, i) => {
+                    if (i === 0) {
+                        ctx.moveTo(point.x, point.y);
+                    } else {
+                        ctx.lineTo(point.x, point.y);
+                    }
+                });
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        class Particle {
+            constructor(x, y, note) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = -Math.random() * 3 - 1;
+                this.life = 1;
+                this.color = `hsl(${(note % 12) * 30}, 70%, 60%)`;
+                this.size = 5 + Math.random() * 5;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.1; // 重力
+                this.life -= 0.01;
+                this.size *= 0.99;
+            }
+            
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.life;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // MIDIノートから周波数への変換
+        function midiToFreq(midi) {
+            return 440 * Math.pow(2, (midi - 69) / 12);
+        }
+        
+        // 音を再生
+        function playNote(frequency, duration = 0.2) {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            
+            osc.connect(gain);
+            gain.connect(masterGain);
+            
+            osc.frequency.value = frequency;
+            osc.type = 'sine';
+            
+            const now = audioContext.currentTime;
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.3, now + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            
+            osc.start(now);
+            osc.stop(now + duration);
+            
+            // ビジュアルエフェクト
+            const x = (frequency / 1000) * canvas.width;
+            const y = canvas.height / 2;
+            particles.push(new Particle(x, y, Math.floor(frequency / 50)));
+        }
+        
+        // パターンに基づいて次のノートを取得
+        function getNextNote() {
+            const scale = scales[currentScale];
+            let noteOffset = 0;
+            
+            switch (currentPattern) {
+                case 'wave':
+                    noteOffset = Math.floor(Math.sin(noteIndex * 0.2) * scale.length);
+                    break;
+                case 'random':
+                    noteOffset = Math.floor(Math.random() * scale.length);
+                    break;
+                case 'ascending':
+                    noteOffset = noteIndex % scale.length;
+                    break;
+                case 'bounce':
+                    const bounceIndex = noteIndex % (scale.length * 2);
+                    noteOffset = bounceIndex < scale.length ? 
+                                bounceIndex : scale.length * 2 - bounceIndex - 1;
+                    break;
+                case 'spiral':
+                    noteOffset = Math.floor(Math.abs(Math.sin(noteIndex * 0.1) * 
+                                Math.cos(noteIndex * 0.15)) * scale.length);
+                    break;
+            }
+            
+            noteOffset = Math.abs(noteOffset) % scale.length;
+            const scaleNote = scale[noteOffset];
+            const octave = Math.floor(noteIndex / scale.length) % 3 - 1;
+            
+            return baseNote + scaleNote + octave * 12;
+        }
+        
+        // メインループ
+        function animate(currentTime) {
+            // 背景
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 波形の更新と描画
+            waves.forEach(wave => {
+                wave.update();
+                wave.draw();
+            });
+            
+            // パーティクルの更新と描画
+            particles.forEach((particle, i) => {
+                particle.update();
+                particle.draw();
+                
+                if (particle.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            });
+            
+            // 音楽の生成
+            if (isPlaying) {
+                const beatInterval = 60000 / tempo / 4; // 16分音符の間隔
+                
+                if (currentTime - lastNoteTime > beatInterval) {
+                    const midiNote = getNextNote();
+                    const frequency = midiToFreq(midiNote);
+                    playNote(frequency);
+                    
+                    noteIndex++;
+                    lastNoteTime = currentTime;
+                    
+                    // ノートインジケーター更新
+                    updateNoteIndicators(midiNote);
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // ノートインジケーター更新
+        function updateNoteIndicators(midiNote) {
+            const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const noteName = noteNames[midiNote % 12];
+            const octave = Math.floor(midiNote / 12) - 1;
+            
+            const indicatorsDiv = document.getElementById('noteIndicators');
+            indicatorsDiv.innerHTML = `現在の音: <strong>${noteName}${octave}</strong>`;
+        }
+        
+        // コントロール関数
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            
+            if (isPlaying && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }
+        
+        function updateTempo(value) {
+            tempo = value;
+            document.getElementById('tempoDisplay').textContent = value;
+        }
+        
+        function updateVolume(value) {
+            volume = value / 100;
+            masterGain.gain.value = volume;
+        }
+        
+        function updateScale(value) {
+            currentScale = value;
+            document.getElementById('scaleDisplay').textContent = value;
+        }
+        
+        function updatePattern(value) {
+            currentPattern = value;
+            document.getElementById('patternDisplay').textContent = value;
+        }
+        
+        function randomize() {
+            const scaleOptions = Object.keys(scales);
+            const patternOptions = ['wave', 'random', 'ascending', 'bounce', 'spiral'];
+            
+            const randomScale = scaleOptions[Math.floor(Math.random() * scaleOptions.length)];
+            const randomPattern = patternOptions[Math.floor(Math.random() * patternOptions.length)];
+            const randomTempo = 60 + Math.floor(Math.random() * 120);
+            
+            updateScale(randomScale);
+            updatePattern(randomPattern);
+            updateTempo(randomTempo);
+            
+            document.getElementById('scale').value = randomScale;
+            document.getElementById('pattern').value = randomPattern;
+            document.getElementById('tempo').value = randomTempo;
+            
+            // 波形もランダムに再生成
+            waves.length = 0;
+            for (let i = 0; i < 3; i++) {
+                waves.push(new Wave());
+            }
+        }
+        
+        // 初期化
+        for (let i = 0; i < 3; i++) {
+            waves.push(new Wave());
+        }
+        
+        animate(0);
+        
+        // ウィンドウリサイズ対応
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight * 0.6;
+        });
+    </script>
+</body>
+</html>

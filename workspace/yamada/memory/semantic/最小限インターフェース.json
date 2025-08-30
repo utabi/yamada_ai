@@ -1,0 +1,17 @@
+{
+  "concept": "最小限インターフェース",
+  "concept_id": "最小限インターフェース",
+  "created": "2025-08-30T19:59:36.487431",
+  "last_updated": "2025-08-30T19:59:36.487458",
+  "attributes": {
+    "description": "シンプルな操作で豊かな体験",
+    "learning": "少ないことは豊かなこと"
+  },
+  "examples": [
+    "one_button_universe",
+    "ma_space",
+    "zen_garden"
+  ],
+  "connections": [],
+  "revision_count": 1
+}

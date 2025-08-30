@@ -1,0 +1,43 @@
+{
+  "work_log": [
+    {
+      "timestamp": "2025-08-29T14:17:00.657376",
+      "task": "Web検索で最新技術調査",
+      "success": true,
+      "energy_after": 85
+    },
+    {
+      "timestamp": "2025-08-29T14:17:01.660941",
+      "task": "Web検索で最新技術調査",
+      "success": true,
+      "energy_after": 70
+    },
+    {
+      "timestamp": "2025-08-29T14:17:03.662595",
+      "task": "新しいアルゴリズムの学習",
+      "success": true,
+      "energy_after": 50
+    },
+    {
+      "timestamp": "2025-08-29T14:17:04.664881",
+      "task": "Web検索で最新技術調査",
+      "success": true,
+      "energy_after": 35
+    },
+    {
+      "timestamp": "2025-08-29T14:17:06.669826",
+      "task": "新しいアルゴリズムの学習",
+      "success": true,
+      "energy_after": 15
+    }
+  ],
+  "final_skills": {
+    "python": 0.8,
+    "javascript": 0.7,
+    "html": 0.75,
+    "algorithm": 0.91,
+    "creativity": 0.9,
+    "debugging": 0.6
+  },
+  "final_energy": 48
+}

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sound Colors - 音と色のハーモニー</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            cursor: pointer;
+        }
+        
+        #canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        
+        #controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+        
+        .key {
+            width: 60px;
+            height: 80px;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.1s;
+            user-select: none;
+            position: relative;
+        }
+        
+        .key.black {
+            background: #222;
+            color: white;
+            height: 50px;
+            width: 40px;
+            margin: 0 -20px;
+            z-index: 10;
+        }
+        
+        .key:active, .key.active {
+            transform: scale(0.95);
+            box-shadow: 0 0 30px currentColor;
+        }
+        
+        .key[data-note="C"] { color: #ff0000; }
+        .key[data-note="D"] { color: #ff8800; }
+        .key[data-note="E"] { color: #ffff00; }
+        .key[data-note="F"] { color: #00ff00; }
+        .key[data-note="G"] { color: #00ffff; }
+        .key[data-note="A"] { color: #0000ff; }
+        .key[data-note="B"] { color: #ff00ff; }
+        
+        #info {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-align: center;
+            z-index: 100;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+        
+        p {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .color-bubble {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+        
+        #mode-toggle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s;
+        }
+        
+        #mode-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div id="info">
+        <h1>SOUND COLORS</h1>
+        <p>キーボード (A-K) またはピアノをクリック</p>
+    </div>
+    
+    <button id="mode-toggle" onclick="toggleMode()">MODE: WAVE</button>
+    
+    <div id="controls">
+        <div class="key" data-note="C" data-freq="261.63">C</div>
+        <div class="key black" data-note="C#" data-freq="277.18">C#</div>
+        <div class="key" data-note="D" data-freq="293.66">D</div>
+        <div class="key black" data-note="D#" data-freq="311.13">D#</div>
+        <div class="key" data-note="E" data-freq="329.63">E</div>
+        <div class="key" data-note="F" data-freq="349.23">F</div>
+        <div class="key black" data-note="F#" data-freq="369.99">F#</div>
+        <div class="key" data-note="G" data-freq="392.00">G</div>
+        <div class="key black" data-note="G#" data-freq="415.30">G#</div>
+        <div class="key" data-note="A" data-freq="440.00">A</div>
+        <div class="key black" data-note="A#" data-freq="466.16">A#</div>
+        <div class="key" data-note="B" data-freq="493.88">B</div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Audio Context
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // ビジュアルモード
+        let visualMode = 'wave';
+        const modes = ['wave', 'circle', 'particle', 'spiral'];
+        let currentModeIndex = 0;
+        
+        // ビジュアル要素
+        let waves = [];
+        let particles = [];
+        let spirals = [];
+        let circles = [];
+        
+        // 色と音の対応
+        const noteColors = {
+            'C': '#ff0000',
+            'C#': '#ff4400',
+            'D': '#ff8800',
+            'D#': '#ffcc00',
+            'E': '#ffff00',
+            'F': '#00ff00',
+            'F#': '#00ff88',
+            'G': '#00ffff',
+            'G#': '#0088ff',
+            'A': '#0000ff',
+            'A#': '#8800ff',
+            'B': '#ff00ff'
+        };
+        
+        // Wave クラス
+        class Wave {
+            constructor(x, y, color, frequency) {
+                this.x = x;
+                this.y = y;
+                this.radius = 0;
+                this.maxRadius = 300;
+                this.color = color;
+                this.frequency = frequency;
+                this.opacity = 1;
+                this.lineWidth = 3;
+            }
+            
+            update() {
+                this.radius += 3 + this.frequency / 100;
+                this.opacity = 1 - (this.radius / this.maxRadius);
+                this.lineWidth = 3 * this.opacity;
+            }
+            
+            draw() {
+                ctx.strokeStyle = this.color + Math.floor(this.opacity * 255).toString(16).padStart(2, '0');
+                ctx.lineWidth = this.lineWidth;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            isDead() {
+                return this.radius > this.maxRadius;
+            }
+        }
+        
+        // Particle クラス
+        class Particle {
+            constructor(x, y, color, frequency) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 10;
+                this.vy = (Math.random() - 0.5) * 10 - 5;
+                this.size = 5 + Math.random() * 10;
+                this.color = color;
+                this.frequency = frequency;
+                this.life = 1;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.1; // 重力
+                this.life -= 0.01;
+                this.size *= 0.99;
+            }
+            
+            draw() {
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.globalAlpha = 1;
+            }
+            
+            isDead() {
+                return this.life <= 0;
+            }
+        }
+        
+        // Spiral クラス
+        class Spiral {
+            constructor(x, y, color, frequency) {
+                this.centerX = x;
+                this.centerY = y;
+                this.angle = 0;
+                this.radius = 0;
+                this.color = color;
+                this.frequency = frequency;
+                this.life = 1;
+                this.points = [];
+            }
+            
+            update() {
+                this.angle += 0.1;
+                this.radius += 2;
+                
+                const x = this.centerX + Math.cos(this.angle) * this.radius;
+                const y = this.centerY + Math.sin(this.angle) * this.radius;
+                
+                this.points.push({x, y});
+                if (this.points.length > 50) {
+                    this.points.shift();
+                }
+                
+                this.life -= 0.005;
+            }
+            
+            draw() {
+                ctx.strokeStyle = this.color + Math.floor(this.life * 255).toString(16).padStart(2, '0');
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                this.points.forEach((point, i) => {
+                    if (i === 0) {
+                        ctx.moveTo(point.x, point.y);
+                    } else {
+                        ctx.lineTo(point.x, point.y);
+                    }
+                });
+                
+                ctx.stroke();
+            }
+            
+            isDead() {
+                return this.life <= 0;
+            }
+        }
+        
+        // Circle クラス
+        class Circle {
+            constructor(x, y, color, frequency) {
+                this.x = x;
+                this.y = y;
+                this.size = frequency / 5;
+                this.targetSize = frequency / 2;
+                this.color = color;
+                this.frequency = frequency;
+                this.life = 1;
+                this.rotation = 0;
+            }
+            
+            update() {
+                this.size += (this.targetSize - this.size) * 0.1;
+                this.rotation += 0.05;
+                this.life -= 0.005;
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.globalAlpha = this.life;
+                
+                // 多角形を描く
+                const sides = Math.floor(3 + this.frequency / 100);
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                
+                for (let i = 0; i < sides; i++) {
+                    const angle = (i / sides) * Math.PI * 2;
+                    const x = Math.cos(angle) * this.size;
+                    const y = Math.sin(angle) * this.size;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+                ctx.globalAlpha = 1;
+            }
+            
+            isDead() {
+                return this.life <= 0;
+            }
+        }
+        
+        // 音を再生
+        function playSound(frequency, note) {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
+            
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 1);
+            
+            // ビジュアルエフェクト作成
+            createVisualEffect(
+                canvas.width / 2 + (Math.random() - 0.5) * 200,
+                canvas.height / 2 + (Math.random() - 0.5) * 200,
+                noteColors[note],
+                frequency
+            );
+        }
+        
+        // ビジュアルエフェクト作成
+        function createVisualEffect(x, y, color, frequency) {
+            switch(visualMode) {
+                case 'wave':
+                    waves.push(new Wave(x, y, color, frequency));
+                    break;
+                case 'particle':
+                    for (let i = 0; i < 20; i++) {
+                        particles.push(new Particle(x, y, color, frequency));
+                    }
+                    break;
+                case 'spiral':
+                    spirals.push(new Spiral(x, y, color, frequency));
+                    break;
+                case 'circle':
+                    circles.push(new Circle(x, y, color, frequency));
+                    break;
+            }
+        }
+        
+        // モード切り替え
+        function toggleMode() {
+            currentModeIndex = (currentModeIndex + 1) % modes.length;
+            visualMode = modes[currentModeIndex];
+            document.getElementById('mode-toggle').textContent = `MODE: ${visualMode.toUpperCase()}`;
+        }
+        
+        // キーイベント
+        const keys = document.querySelectorAll('.key');
+        keys.forEach(key => {
+            key.addEventListener('click', () => {
+                const note = key.dataset.note;
+                const freq = parseFloat(key.dataset.freq);
+                playSound(freq, note);
+                
+                key.classList.add('active');
+                setTimeout(() => key.classList.remove('active'), 100);
+            });
+        });
+        
+        // キーボードマッピング
+        const keyMap = {
+            'a': 'C',
+            'w': 'C#',
+            's': 'D',
+            'e': 'D#',
+            'd': 'E',
+            'f': 'F',
+            't': 'F#',
+            'g': 'G',
+            'y': 'G#',
+            'h': 'A',
+            'u': 'A#',
+            'j': 'B',
+            'k': 'C'
+        };
+        
+        document.addEventListener('keydown', (e) => {
+            const note = keyMap[e.key.toLowerCase()];
+            if (note) {
+                const key = document.querySelector(`[data-note="${note}"]`);
+                if (key) {
+                    const freq = parseFloat(key.dataset.freq);
+                    playSound(freq, note);
+                    key.classList.add('active');
+                    setTimeout(() => key.classList.remove('active'), 100);
+                }
+            }
+        });
+        
+        // アニメーションループ
+        function animate() {
+            // フェード効果
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Waves
+            waves = waves.filter(wave => {
+                wave.update();
+                wave.draw();
+                return !wave.isDead();
+            });
+            
+            // Particles
+            particles = particles.filter(particle => {
+                particle.update();
+                particle.draw();
+                return !particle.isDead();
+            });
+            
+            // Spirals
+            spirals = spirals.filter(spiral => {
+                spiral.update();
+                spiral.draw();
+                return !spiral.isDead();
+            });
+            
+            // Circles
+            circles = circles.filter(circle => {
+                circle.update();
+                circle.draw();
+                return !circle.isDead();
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // リサイズ対応
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // 初期化
+        animate();
+        
+        // 自動演奏デモ
+        setTimeout(() => {
+            const notes = ['C', 'E', 'G', 'C', 'G', 'E', 'C'];
+            let index = 0;
+            
+            const playDemo = () => {
+                if (index < notes.length) {
+                    const note = notes[index];
+                    const key = document.querySelector(`[data-note="${note}"]`);
+                    if (key) {
+                        const freq = parseFloat(key.dataset.freq);
+                        playSound(freq, note);
+                        key.classList.add('active');
+                        setTimeout(() => key.classList.remove('active'), 100);
+                    }
+                    index++;
+                    setTimeout(playDemo, 200);
+                }
+            };
+            
+            playDemo();
+        }, 1000);
+    </script>
+</body>
+</html>

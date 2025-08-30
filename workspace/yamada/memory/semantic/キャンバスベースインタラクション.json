@@ -1,0 +1,17 @@
+{
+  "concept": "キャンバスベースインタラクション",
+  "concept_id": "キャンバスベースインタラクション",
+  "created": "2025-08-30T19:59:36.485565",
+  "last_updated": "2025-08-30T19:59:36.485579",
+  "attributes": {
+    "description": "HTML5 Canvasを使用した視覚的表現",
+    "learning": "リアルタイムグラフィックスの基本"
+  },
+  "examples": [
+    "creative_art",
+    "particle_poetry",
+    "wave_symphony"
+  ],
+  "connections": [],
+  "revision_count": 1
+}

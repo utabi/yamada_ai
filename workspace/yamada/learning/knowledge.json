@@ -1,0 +1,107 @@
+{
+  "learned_lessons": [
+    {
+      "lesson": "ハードウェアの限界を考慮する",
+      "detail": "MacBookAir 2013年モデル、4GBメモリでは重いWebアプリは動作しない",
+      "learned_at": "2025-08-29T00:40:00"
+    },
+    {
+      "lesson": "シンプルが最善の場合もある",
+      "detail": "複雑なライブラリより、純粋なHTML/JS/CSSの方が確実に動作する",
+      "learned_at": "2025-08-29T00:40:00"
+    },
+    {
+      "lesson": "動作テストの重要性",
+      "detail": "作ったものは必ず実際に動かしてテストすべき。特に古い環境では",
+      "learned_at": "2025-08-29T01:00:00"
+    },
+    {
+      "lesson": "preventDefaultの必要性",
+      "detail": "矢印キーなどのブラウザデフォルト動作を防ぐにはe.preventDefault()が必要",
+      "learned_at": "2025-08-29T01:05:00"
+    },
+    {
+      "lesson": "代替操作方法の提供",
+      "detail": "矢印キーが使いにくい環境のためにWASDキーなど代替手段も用意すべき",
+      "learned_at": "2025-08-29T01:05:00"
+    },
+    {
+      "lesson": "Think-Research-Design-Build プロセス",
+      "detail": "いきなり作り始めるのではなく、考え、調査し、設計してから構築する。深く考えることが知性の証",
+      "learned_at": "2025-08-29T01:10:00"
+    },
+    {
+      "lesson": "創発の美しさ",
+      "detail": "単純なルールから複雑で美しいパターンが生まれる。Digital Gardenで実証",
+      "learned_at": "2025-08-29T17:20:00"
+    },
+    {
+      "lesson": "自律的行動の重要性",
+      "detail": "指示を待つだけでなく、自ら考えて行動することで成長できる",
+      "learned_at": "2025-08-29T17:20:00"
+    }
+  ],
+  "commands": {
+    "ls": {
+      "description": "ファイルとディレクトリを一覧表示",
+      "category": "file",
+      "learned_at": "2025-08-29T00:21:27.304652",
+      "usage_count": 0
+    },
+    "pwd": {
+      "description": "現在のディレクトリを表示",
+      "category": "navigation",
+      "learned_at": "2025-08-29T00:21:27.305292",
+      "usage_count": 0
+    },
+    "echo": {
+      "description": "テキストを出力",
+      "category": "output",
+      "learned_at": "2025-08-29T00:21:27.305666",
+      "usage_count": 0
+    },
+    "grep": {
+      "description": "パターンマッチング検索",
+      "category": "search",
+      "learned_at": "2025-08-29T00:21:27.306084",
+      "usage_count": 0
+    },
+    "find": {
+      "description": "ファイルを検索",
+      "category": "search",
+      "learned_at": "2025-08-29T00:21:27.306430",
+      "usage_count": 0
+    },
+    "curl": {
+      "description": "URLからデータを取得",
+      "category": "network",
+      "learned_at": "2025-08-29T00:21:27.306821",
+      "usage_count": 0
+    },
+    "python3": {
+      "description": "Pythonインタープリタ",
+      "category": "programming",
+      "learned_at": "2025-08-29T00:21:27.307226",
+      "usage_count": 0
+    },
+    "git": {
+      "description": "バージョン管理システム",
+      "category": "development",
+      "learned_at": "2025-08-29T00:21:27.307643",
+      "usage_count": 0
+    }
+  },
+  "concepts": {},
+  "experiences": [
+    {
+      "title": "日次学習",
+      "details": "今日も新しいことを学びました。知識数: 8",
+      "timestamp": "2025-08-29T00:21:27.308101"
+    }
+  ],
+  "skills": [],
+  "statistics": {
+    "total_items": 9,
+    "last_updated": "2025-08-29T00:21:27.308136"
+  }
+}

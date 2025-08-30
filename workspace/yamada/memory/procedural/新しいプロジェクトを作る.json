@@ -1,0 +1,24 @@
+{
+  "task": "新しいプロジェクトを作る",
+  "procedure_id": "新しいプロジェクトを作る",
+  "created": "2025-08-30T19:55:30.583117",
+  "steps": [
+    "アイデアを考える",
+    "類似事例をWeb検索する",
+    "設計を抽象化する",
+    "小さく実装を始める",
+    "テストして改善する"
+  ],
+  "prerequisites": [
+    "創造性",
+    "技術知識"
+  ],
+  "tools_required": [
+    "WebSearch",
+    "Write",
+    "Edit"
+  ],
+  "success_count": 0,
+  "failure_count": 0,
+  "average_duration": null
+}

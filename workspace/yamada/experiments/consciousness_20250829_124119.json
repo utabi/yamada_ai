@@ -1,0 +1,70 @@
+{
+  "phases": [
+    {
+      "step": 0,
+      "activity": 0.4177777777777778,
+      "synchrony": 0.997178478890413,
+      "is_critical": false
+    },
+    {
+      "step": 50,
+      "activity": 0.14666666666666667,
+      "synchrony": 0.9999945941997224,
+      "is_critical": false
+    },
+    {
+      "step": 100,
+      "activity": 0.08888888888888889,
+      "synchrony": 0.9999866969009826,
+      "is_critical": false
+    },
+    {
+      "step": 150,
+      "activity": 0.1288888888888889,
+      "synchrony": 0.9999927559569651,
+      "is_critical": false
+    },
+    {
+      "step": 200,
+      "activity": 0.13777777777777778,
+      "synchrony": 0.9999975071550746,
+      "is_critical": false
+    },
+    {
+      "step": 250,
+      "activity": 0.09333333333333334,
+      "synchrony": 0.999999061728395,
+      "is_critical": false
+    },
+    {
+      "step": 300,
+      "activity": 0.1111111111111111,
+      "synchrony": 0.9999904310308001,
+      "is_critical": false
+    },
+    {
+      "step": 350,
+      "activity": 0.1288888888888889,
+      "synchrony": 0.9999742826852707,
+      "is_critical": false
+    },
+    {
+      "step": 400,
+      "activity": 0.14222222222222222,
+      "synchrony": 0.9999923182441701,
+      "is_critical": false
+    },
+    {
+      "step": 450,
+      "activity": 0.1111111111111111,
+      "synchrony": 0.9999902006172839,
+      "is_critical": false
+    }
+  ],
+  "critical_moments": [],
+  "final_state": {
+    "activity": 0.09333333333333334,
+    "synchrony": 0.999999061728395,
+    "is_critical": false
+  }
+}

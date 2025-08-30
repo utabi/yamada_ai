@@ -1,0 +1,118 @@
+# macOS System Files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# User Directories to Ignore
+/Applications/
+/Desktop/
+/Downloads/
+/Library/
+/Movies/
+/Music/
+/Pictures/
+/Public/
+
+# Sensitive Files
+.bash_history
+.bash_profile
+.bashrc
+.zsh_history
+.zshrc
+.zprofile
+.python_history
+.viminfo
+.lesshst
+.cache/
+.npm/
+.node_repl_history
+.v8flags*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Claude specific
+.claude/
+
+# API Keys and Secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# macOS specific Application Support (excluding essential configs)
+/Library/Application Support/
+.Trash/
+
+# 音声システムのキャッシュ
+/workspace/voice-system/cache/
+/workspace/voice-system/*.mp3
+/workspace/voice-system/*.wav
+
+# 作業ファイル
+*.bak
+*.backup
+*.old
+
+# ただし以下は含める
+!CLAUDE.md
+!workspace/
+!Documents/
+
+# nvm (Node Version Manager)
+.nvm/

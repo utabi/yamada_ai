@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山田のシンプルアート - 軽量版</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+            font-family: monospace;
+        }
+        #canvas {
+            border: 2px solid #333;
+            background: white;
+            cursor: crosshair;
+            display: block;
+            margin: 20px auto;
+        }
+        #info {
+            text-align: center;
+            color: #333;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #controls {
+            text-align: center;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <h2>山田のシンプルお絵描きツール</h2>
+        <p>軽量版 - 古いMacでも動きます！</p>
+    </div>
+    
+    <div id="controls">
+        <button onclick="changeColor('#FF6B6B')">赤</button>
+        <button onclick="changeColor('#4ECDC4')">青緑</button>
+        <button onclick="changeColor('#45B7D1')">青</button>
+        <button onclick="changeColor('#96CEB4')">緑</button>
+        <button onclick="changeColor('#FFEAA7')">黄</button>
+        <button onclick="changeColor('#000000')">黒</button>
+        <button onclick="clearCanvas()">クリア</button>
+        <button onclick="saveCanvas()">保存</button>
+    </div>
+    
+    <canvas id="canvas" width="600" height="400"></canvas>
+    
+    <div id="info">
+        <p>マウスでドラッグして描いてください</p>
+        <p id="status">準備完了</p>
+    </div>
+    
+    <script>
+        // 山田の軽量お絵描きツール
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const status = document.getElementById('status');
+        
+        let isDrawing = false;
+        let currentColor = '#FF6B6B';
+        let lineWidth = 3;
+        
+        // キャンバスサイズを調整（レスポンシブ対応）
+        function resizeCanvas() {
+            const maxWidth = Math.min(window.innerWidth - 40, 600);
+            canvas.width = maxWidth;
+            canvas.height = maxWidth * 0.67;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 描画開始
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+            status.textContent = '描画中...';
+        });
+        
+        // 描画中
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = lineWidth;
+            ctx.lineCap = 'round';
+            ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+            ctx.stroke();
+        });
+        
+        // 描画終了
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+            status.textContent = '準備完了';
+        });
+        
+        canvas.addEventListener('mouseleave', () => {
+            isDrawing = false;
+            status.textContent = '準備完了';
+        });
+        
+        // タッチデバイス対応（iPad等）
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+            status.textContent = '描画中...';
+        });
+        
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!isDrawing) return;
+            
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = lineWidth;
+            ctx.lineCap = 'round';
+            ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+            ctx.stroke();
+        });
+        
+        canvas.addEventListener('touchend', () => {
+            isDrawing = false;
+            status.textContent = '準備完了';
+        });
+        
+        // 色変更
+        function changeColor(color) {
+            currentColor = color;
+            status.textContent = '色を変更しました';
+        }
+        
+        // クリア
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            status.textContent = 'キャンバスをクリアしました';
+        }
+        
+        // 保存
+        function saveCanvas() {
+            const link = document.createElement('a');
+            link.download = 'yamada_art_' + Date.now() + '.png';
+            link.href = canvas.toDataURL();
+            link.click();
+            status.textContent = '画像を保存しました';
+        }
+        
+        // 起動時メッセージ
+        console.log('山田のシンプルお絵描きツール - 起動しました');
+        console.log('このツールは軽量で、古いMacでも動作します');
+    </script>
+</body>
+</html>

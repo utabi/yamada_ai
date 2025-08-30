@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# TTS Quest音声会話スクリプト
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PYTHON_SCRIPT="$SCRIPT_DIR/tts_quest_test.py"
+
+# 引数なしまたは聞くモード
+if [ -z "$1" ] || [ "$1" = "listen" ] || [ "$1" = "l" ]; then
+    python3 "$PYTHON_SCRIPT" listen
+    
+# 話すモード
+elif [ "$1" = "talk" ] || [ "$1" = "t" ]; then
+    shift
+    TEXT="$*"
+    if [ -n "$TEXT" ]; then
+        python3 "$PYTHON_SCRIPT" "$TEXT"
+    else
+        echo "使い方: v2 talk <テキスト>"
+    fi
+
+# テスト
+elif [ "$1" = "test" ]; then
+    python3 "$PYTHON_SCRIPT" test
+    
+# ヘルプ
+else
+    echo "使い方:"
+    echo "  v2         - 音声入力"
+    echo "  v2 talk    - テキスト読み上げ（冥鳴ひまり）"
+    echo "  v2 test    - テスト読み上げ"
+fi

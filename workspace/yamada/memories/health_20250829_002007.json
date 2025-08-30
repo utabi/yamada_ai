@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-08-29T00:20:07.160212",
+  "system": {},
+  "disk": {
+    "usage_percent": "7",
+    "available": "199Gi"
+  },
+  "memory": {
+    "free_mb": 16
+  },
+  "processes": {
+    "count": 384
+  }
+}

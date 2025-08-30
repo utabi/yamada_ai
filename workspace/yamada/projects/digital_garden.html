@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Garden - 山田の生態系</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 100%);
+            font-family: 'Helvetica', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        canvas {
+            display: block;
+            cursor: crosshair;
+        }
+        
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+        }
+        
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+        
+        .plant-btn { background: #4CAF50; }
+        .animal-btn { background: #FF9800; }
+        .rain-btn { background: #2196F3; }
+        .clear-btn { background: #f44336; }
+        
+        #time {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="garden"></canvas>
+    
+    <div id="info">
+        <h3>Digital Garden 🌱</h3>
+        <div>植物: <span id="plantCount">0</span></div>
+        <div>動物: <span id="animalCount">0</span></div>
+        <div>エネルギー: <span id="energy">100</span></div>
+        <div>バランス: <span id="balance">安定</span></div>
+    </div>
+    
+    <div id="time">時刻: <span id="timeDisplay">昼</span></div>
+    
+    <div id="controls">
+        <button class="plant-btn" onclick="addMode='plant'">🌱 植物を植える</button>
+        <button class="animal-btn" onclick="addMode='animal'">🦋 動物を追加</button>
+        <button class="rain-btn" onclick="makeRain()">🌧️ 雨を降らす</button>
+        <button class="clear-btn" onclick="clearGarden()">🔄 リセット</button>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('garden');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        let addMode = 'plant';
+        let time = 0;
+        let dayNight = 'day';
+        
+        // 生態系の要素
+        const plants = [];
+        const animals = [];
+        const particles = [];
+        
+        // 植物クラス
+        class Plant {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = 5;
+                this.maxSize = 20 + Math.random() * 20;
+                this.energy = 50;
+                this.color = `hsl(${100 + Math.random() * 40}, 70%, 50%)`;
+                this.age = 0;
+                this.seedTimer = 0;
+            }
+            
+            update() {
+                // 成長
+                if (this.size < this.maxSize && this.energy > 0) {
+                    this.size += 0.02;
+                    this.energy -= 0.01;
+                }
+                
+                // 光合成（昼間のみ）
+                if (dayNight === 'day') {
+                    this.energy += 0.1;
+                }
+                
+                // 老化
+                this.age++;
+                if (this.age > 3000) {
+                    this.energy -= 0.05;
+                }
+                
+                // 種の散布
+                this.seedTimer++;
+                if (this.seedTimer > 500 && Math.random() < 0.001 && plants.length < 100) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 50 + Math.random() * 50;
+                    const newX = this.x + Math.cos(angle) * dist;
+                    const newY = this.y + Math.sin(angle) * dist;
+                    
+                    if (newX > 0 && newX < canvas.width && newY > 0 && newY < canvas.height) {
+                        plants.push(new Plant(newX, newY));
+                    }
+                    this.seedTimer = 0;
+                }
+                
+                return this.energy > 0;
+            }
+            
+            draw() {
+                // 茎
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = this.size / 5;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x, this.y - this.size * 2);
+                ctx.stroke();
+                
+                // 葉っぱ
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.ellipse(this.x - this.size/2, this.y - this.size * 1.5, 
+                           this.size/2, this.size/3, -Math.PI/6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(this.x + this.size/2, this.y - this.size * 1.5, 
+                           this.size/2, this.size/3, Math.PI/6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 花（成熟した植物のみ）
+                if (this.size > this.maxSize * 0.8) {
+                    ctx.fillStyle = `hsl(${Math.sin(time/100) * 30 + 30}, 80%, 60%)`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y - this.size * 2, this.size/3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+        
+        // 動物クラス
+        class Animal {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.size = 5 + Math.random() * 5;
+                this.energy = 100;
+                this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                this.wingPhase = Math.random() * Math.PI * 2;
+            }
+            
+            update() {
+                // 移動
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // 壁での反射
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                
+                // ランダムな方向転換
+                if (Math.random() < 0.01) {
+                    this.vx = (Math.random() - 0.5) * 2;
+                    this.vy = (Math.random() - 0.5) * 2;
+                }
+                
+                // 植物に引き寄せられる
+                let nearestPlant = null;
+                let minDist = Infinity;
+                
+                plants.forEach(plant => {
+                    const dist = Math.hypot(plant.x - this.x, plant.y - this.y);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        nearestPlant = plant;
+                    }
+                });
+                
+                if (nearestPlant && minDist < 100) {
+                    const angle = Math.atan2(nearestPlant.y - this.y, nearestPlant.x - this.x);
+                    this.vx += Math.cos(angle) * 0.1;
+                    this.vy += Math.sin(angle) * 0.1;
+                }
+                
+                // エネルギー消費
+                this.energy -= 0.05;
+                
+                // 夜は活動が鈍る
+                if (dayNight === 'night') {
+                    this.vx *= 0.95;
+                    this.vy *= 0.95;
+                }
+                
+                this.wingPhase += 0.2;
+                
+                return this.energy > 0;
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                
+                // 体
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, this.size/2, this.size, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 羽
+                const wingSpread = Math.sin(this.wingPhase) * 0.5 + 0.5;
+                ctx.fillStyle = this.color + '88';
+                
+                // 左羽
+                ctx.beginPath();
+                ctx.ellipse(-this.size * wingSpread, -this.size/2, 
+                           this.size * 0.8, this.size * 0.4, -Math.PI/4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 右羽
+                ctx.beginPath();
+                ctx.ellipse(this.size * wingSpread, -this.size/2, 
+                           this.size * 0.8, this.size * 0.4, Math.PI/4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.restore();
+            }
+        }
+        
+        // 雨粒クラス
+        class RainDrop {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vy = 5 + Math.random() * 3;
+                this.life = 100;
+            }
+            
+            update() {
+                this.y += this.vy;
+                this.life--;
+                
+                // 植物に水を与える
+                plants.forEach(plant => {
+                    if (Math.hypot(plant.x - this.x, plant.y - this.y) < 20) {
+                        plant.energy += 0.5;
+                    }
+                });
+                
+                return this.life > 0 && this.y < canvas.height;
+            }
+            
+            draw() {
+                ctx.strokeStyle = `rgba(100, 150, 255, ${this.life / 100})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x, this.y - 10);
+                ctx.stroke();
+            }
+        }
+        
+        // 雨を降らせる
+        function makeRain() {
+            for (let i = 0; i < 100; i++) {
+                particles.push(new RainDrop(Math.random() * canvas.width, -10));
+            }
+        }
+        
+        // 庭をクリア
+        function clearGarden() {
+            plants.length = 0;
+            animals.length = 0;
+            particles.length = 0;
+        }
+        
+        // クリックイベント
+        canvas.addEventListener('click', (e) => {
+            if (addMode === 'plant') {
+                plants.push(new Plant(e.clientX, e.clientY));
+            } else if (addMode === 'animal') {
+                animals.push(new Animal(e.clientX, e.clientY));
+            }
+        });
+        
+        // アニメーションループ
+        function animate() {
+            // 背景（昼夜サイクル）
+            time++;
+            const dayProgress = (time % 2000) / 2000;
+            
+            if (dayProgress < 0.5) {
+                dayNight = 'day';
+                const brightness = 1 - Math.abs(dayProgress - 0.25) * 2;
+                ctx.fillStyle = `hsl(200, 60%, ${50 + brightness * 30}%)`;
+            } else {
+                dayNight = 'night';
+                const brightness = 1 - Math.abs(dayProgress - 0.75) * 2;
+                ctx.fillStyle = `hsl(220, 80%, ${10 + brightness * 20}%)`;
+            }
+            
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 地面
+            ctx.fillStyle = dayNight === 'day' ? '#8B7355' : '#5C4A3A';
+            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+            
+            // 太陽/月
+            ctx.save();
+            const celestialX = canvas.width * dayProgress;
+            const celestialY = 100 + Math.sin(dayProgress * Math.PI) * -80;
+            
+            if (dayNight === 'day') {
+                ctx.fillStyle = '#FFD700';
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = '#FFD700';
+            } else {
+                ctx.fillStyle = '#F0F0F0';
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#F0F0F0';
+            }
+            
+            ctx.beginPath();
+            ctx.arc(celestialX, celestialY, 30, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            
+            // 更新と描画
+            plants.forEach((plant, i) => {
+                if (!plant.update()) {
+                    plants.splice(i, 1);
+                } else {
+                    plant.draw();
+                }
+            });
+            
+            animals.forEach((animal, i) => {
+                if (!animal.update()) {
+                    animals.splice(i, 1);
+                } else {
+                    animal.draw();
+                }
+            });
+            
+            particles.forEach((particle, i) => {
+                if (!particle.update()) {
+                    particles.splice(i, 1);
+                } else {
+                    particle.draw();
+                }
+            });
+            
+            // 統計情報更新
+            document.getElementById('plantCount').textContent = plants.length;
+            document.getElementById('animalCount').textContent = animals.length;
+            
+            const totalEnergy = plants.reduce((sum, p) => sum + p.energy, 0) + 
+                              animals.reduce((sum, a) => sum + a.energy, 0);
+            document.getElementById('energy').textContent = Math.round(totalEnergy);
+            
+            const balance = plants.length > 0 ? animals.length / plants.length : 0;
+            let balanceText = '安定';
+            if (balance > 2) balanceText = '動物過多';
+            else if (balance < 0.1 && plants.length > 10) balanceText = '植物過多';
+            document.getElementById('balance').textContent = balanceText;
+            
+            document.getElementById('timeDisplay').textContent = dayNight === 'day' ? '☀️ 昼' : '🌙 夜';
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // 初期配置
+        for (let i = 0; i < 5; i++) {
+            plants.push(new Plant(
+                Math.random() * canvas.width,
+                canvas.height - 50 - Math.random() * 200
+            ));
+        }
+        
+        for (let i = 0; i < 3; i++) {
+            animals.push(new Animal(
+                Math.random() * canvas.width,
+                Math.random() * (canvas.height - 100)
+            ));
+        }
+        
+        animate();
+        
+        // ウィンドウリサイズ対応
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>

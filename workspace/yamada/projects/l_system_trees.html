@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>L-System Trees - 再帰的な成長</title>
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #C8E6C9 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: monospace;
+            padding: 20px;
+        }
+        
+        canvas {
+            border: 1px solid #333;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .controls {
+            margin: 15px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button, select {
+            background: white;
+            border: 2px solid #4CAF50;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: monospace;
+            transition: all 0.3s;
+        }
+        
+        button:hover, select:hover {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .info {
+            background: rgba(255,255,255,0.9);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px;
+            max-width: 600px;
+        }
+        
+        .rule {
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>L-System Trees 🌳</h1>
+    
+    <canvas id="canvas"></canvas>
+    
+    <div class="controls">
+        <select id="preset">
+            <option value="tree1">Simple Tree</option>
+            <option value="tree2">Binary Tree</option>
+            <option value="bush">Bush</option>
+            <option value="seaweed">Seaweed</option>
+            <option value="fern">Fern</option>
+            <option value="dragon">Dragon Curve</option>
+        </select>
+        
+        <button onclick="generate()">Generate</button>
+        <button onclick="animate()">Grow</button>
+        <button onclick="randomize()">Random</button>
+        
+        <label>
+            Iterations: <input type="number" id="iterations" min="1" max="6" value="4" style="width: 50px;">
+        </label>
+    </div>
+    
+    <div class="info">
+        <strong>Current Rule:</strong> <span id="rule-display" class="rule">F → FF+[+F-F-F]-[-F+F+F]</span>
+        <br>
+        <small>F=forward, +=turn right, -=turn left, []=branch</small>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = 800;
+        canvas.height = 600;
+        
+        let isAnimating = false;
+        let currentIteration = 0;
+        
+        // L-System presets
+        const presets = {
+            tree1: {
+                axiom: 'F',
+                rules: { 'F': 'FF+[+F-F-F]-[-F+F+F]' },
+                angle: 25,
+                length: 4
+            },
+            tree2: {
+                axiom: 'X',
+                rules: { 
+                    'X': 'F+[[X]-X]-F[-FX]+X',
+                    'F': 'FF'
+                },
+                angle: 25,
+                length: 5
+            },
+            bush: {
+                axiom: 'F',
+                rules: { 'F': 'FF-[-F+F+F]+[+F-F-F]' },
+                angle: 22.5,
+                length: 4
+            },
+            seaweed: {
+                axiom: 'F',
+                rules: { 'F': 'F[+F]F[-F]F' },
+                angle: 25.7,
+                length: 5
+            },
+            fern: {
+                axiom: 'X',
+                rules: {
+                    'X': 'F+[[X]-X]-F[-FX]+X',
+                    'F': 'FF'
+                },
+                angle: 20,
+                length: 3
+            },
+            dragon: {
+                axiom: 'FX',
+                rules: {
+                    'X': 'X+YF+',
+                    'Y': '-FX-Y'
+                },
+                angle: 90,
+                length: 8
+            }
+        };
+        
+        class LSystem {
+            constructor(axiom, rules, angle, length) {
+                this.axiom = axiom;
+                this.rules = rules;
+                this.angle = angle * Math.PI / 180;
+                this.length = length;
+            }
+            
+            generate(iterations) {
+                let current = this.axiom;
+                
+                for (let i = 0; i < iterations; i++) {
+                    let next = '';
+                    for (let char of current) {
+                        next += this.rules[char] || char;
+                    }
+                    current = next;
+                }
+                
+                return current;
+            }
+            
+            draw(instructions, startX, startY, startAngle = -Math.PI / 2) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.strokeStyle = '#4A4A4A';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                
+                let x = startX;
+                let y = startY;
+                let angle = startAngle;
+                const stack = [];
+                
+                // Color variation based on depth
+                let depth = 0;
+                const maxDepth = (instructions.match(/\[/g) || []).length;
+                
+                for (let char of instructions) {
+                    switch(char) {
+                        case 'F':
+                        case 'G':
+                            const newX = x + Math.cos(angle) * this.length;
+                            const newY = y + Math.sin(angle) * this.length;
+                            
+                            // Color based on depth
+                            const greenValue = 100 + (depth / maxDepth) * 155;
+                            ctx.strokeStyle = `rgb(${50 + depth * 5}, ${greenValue}, 50)`;
+                            
+                            ctx.moveTo(x, y);
+                            ctx.lineTo(newX, newY);
+                            ctx.stroke();
+                            
+                            x = newX;
+                            y = newY;
+                            break;
+                            
+                        case '+':
+                            angle += this.angle;
+                            break;
+                            
+                        case '-':
+                            angle -= this.angle;
+                            break;
+                            
+                        case '[':
+                            stack.push({x, y, angle});
+                            depth++;
+                            ctx.lineWidth = Math.max(0.5, 3 - depth * 0.5);
+                            break;
+                            
+                        case ']':
+                            const state = stack.pop();
+                            x = state.x;
+                            y = state.y;
+                            angle = state.angle;
+                            depth--;
+                            ctx.lineWidth = Math.max(0.5, 3 - depth * 0.5);
+                            break;
+                    }
+                }
+            }
+        }
+        
+        function generate() {
+            const presetName = document.getElementById('preset').value;
+            const preset = presets[presetName];
+            const iterations = parseInt(document.getElementById('iterations').value);
+            
+            const lsystem = new LSystem(
+                preset.axiom,
+                preset.rules,
+                preset.angle,
+                preset.length
+            );
+            
+            const instructions = lsystem.generate(iterations);
+            
+            // Center the drawing
+            let startX = canvas.width / 2;
+            let startY = canvas.height - 50;
+            
+            // Adjust for dragon curve
+            if (presetName === 'dragon') {
+                startX = canvas.width / 2;
+                startY = canvas.height / 2;
+            }
+            
+            lsystem.draw(instructions, startX, startY);
+            
+            // Update rule display
+            const ruleText = Object.entries(preset.rules)
+                .map(([key, value]) => `${key} → ${value}`)
+                .join(', ');
+            document.getElementById('rule-display').textContent = ruleText;
+        }
+        
+        function animate() {
+            if (isAnimating) {
+                isAnimating = false;
+                return;
+            }
+            
+            isAnimating = true;
+            currentIteration = 1;
+            const maxIterations = parseInt(document.getElementById('iterations').value);
+            
+            function grow() {
+                if (!isAnimating || currentIteration > maxIterations) {
+                    isAnimating = false;
+                    return;
+                }
+                
+                document.getElementById('iterations').value = currentIteration;
+                generate();
+                currentIteration++;
+                
+                setTimeout(grow, 500);
+            }
+            
+            grow();
+        }
+        
+        function randomize() {
+            // Generate random L-System
+            const axioms = ['F', 'X', 'FX'];
+            const angleOptions = [15, 20, 22.5, 25, 30, 45, 60, 90];
+            
+            const randomRules = {
+                'F': generateRandomRule(),
+                'X': Math.random() > 0.5 ? generateRandomRule() : undefined
+            };
+            
+            function generateRandomRule() {
+                const elements = ['F', 'F', '+', '-', '[', ']', 'X'];
+                let rule = '';
+                const length = 5 + Math.floor(Math.random() * 10);
+                
+                for (let i = 0; i < length; i++) {
+                    rule += elements[Math.floor(Math.random() * elements.length)];
+                }
+                
+                // Balance brackets
+                const opens = (rule.match(/\[/g) || []).length;
+                const closes = (rule.match(/\]/g) || []).length;
+                for (let i = 0; i < opens - closes; i++) {
+                    rule += ']';
+                }
+                
+                return rule;
+            }
+            
+            const randomSystem = new LSystem(
+                axioms[Math.floor(Math.random() * axioms.length)],
+                randomRules,
+                angleOptions[Math.floor(Math.random() * angleOptions.length)],
+                3 + Math.random() * 5
+            );
+            
+            const iterations = 3 + Math.floor(Math.random() * 4);
+            document.getElementById('iterations').value = iterations;
+            
+            const instructions = randomSystem.generate(iterations);
+            randomSystem.draw(instructions, canvas.width / 2, canvas.height - 50);
+            
+            // Update rule display
+            const ruleText = Object.entries(randomRules)
+                .filter(([key, value]) => value)
+                .map(([key, value]) => `${key} → ${value}`)
+                .join(', ');
+            document.getElementById('rule-display').textContent = ruleText || 'Random rule';
+        }
+        
+        // Initial generation
+        generate();
+    </script>
+</body>
+</html>

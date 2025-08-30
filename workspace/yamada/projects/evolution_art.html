@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolution Art - 進化するアート</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: white;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        #main-container {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        #canvas-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .organism {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .organism:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .organism.selected {
+            border: 3px solid #00ff88;
+            box-shadow: 0 0 20px #00ff88;
+        }
+        
+        .organism canvas {
+            width: 100%;
+            height: 200px;
+            border-radius: 5px;
+            background: white;
+        }
+        
+        .fitness {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .dna-info {
+            font-size: 10px;
+            color: #aaa;
+            margin-top: 5px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        #control-panel {
+            width: 300px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 20px;
+            height: fit-content;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-group h3 {
+            margin-bottom: 10px;
+            color: #00ff88;
+        }
+        
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .stat-value {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        
+        #evolution-graph {
+            width: 100%;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🧬 Evolution Art</h1>
+        <p>クリックで選択 → 優秀な個体が次世代に遺伝子を残します</p>
+    </header>
+    
+    <div id="main-container">
+        <div id="canvas-container"></div>
+        
+        <div id="control-panel">
+            <div class="control-group">
+                <h3>進化統計</h3>
+                <div class="stat">
+                    <span>世代:</span>
+                    <span class="stat-value" id="generation">1</span>
+                </div>
+                <div class="stat">
+                    <span>個体数:</span>
+                    <span class="stat-value" id="population">12</span>
+                </div>
+                <div class="stat">
+                    <span>最高適応度:</span>
+                    <span class="stat-value" id="maxFitness">0</span>
+                </div>
+                <div class="stat">
+                    <span>平均適応度:</span>
+                    <span class="stat-value" id="avgFitness">0</span>
+                </div>
+                <canvas id="evolution-graph"></canvas>
+            </div>
+            
+            <div class="control-group">
+                <h3>進化パラメータ</h3>
+                <label>突然変異率: <span id="mutationRateValue">5</span>%</label>
+                <input type="range" id="mutationRate" min="0" max="20" value="5">
+                
+                <label>交叉率: <span id="crossoverRateValue">70</span>%</label>
+                <input type="range" id="crossoverRate" min="0" max="100" value="70">
+                
+                <label>選択圧: <span id="selectionPressureValue">2</span></label>
+                <input type="range" id="selectionPressure" min="1" max="5" value="2" step="0.1">
+            </div>
+            
+            <div class="control-group">
+                <h3>操作</h3>
+                <button onclick="evolve()">🧬 次世代へ進化</button>
+                <button onclick="autoEvolve()">🔄 自動進化 ON/OFF</button>
+                <button onclick="reset()">🔄 リセット</button>
+                <button onclick="saveB Best()">💾 最優秀個体を保存</button>
+            </div>
+            
+            <div class="control-group">
+                <h3>表現型</h3>
+                <label>
+                    <input type="checkbox" id="useColors" checked> カラフル
+                </label><br>
+                <label>
+                    <input type="checkbox" id="useSymmetry"> 対称性
+                </label><br>
+                <label>
+                    <input type="checkbox" id="useCurves" checked> 曲線
+                </label>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const POPULATION_SIZE = 12;
+        const DNA_LENGTH = 20;
+        let generation = 1;
+        let population = [];
+        let autoEvolving = false;
+        let evolutionHistory = [];
+        
+        // 遺伝子型クラス
+        class Organism {
+            constructor(dna = null) {
+                this.dna = dna || this.randomDNA();
+                this.fitness = 0;
+                this.selected = false;
+            }
+            
+            randomDNA() {
+                const dna = [];
+                for (let i = 0; i < DNA_LENGTH; i++) {
+                    dna.push(Math.random());
+                }
+                return dna;
+            }
+            
+            mutate(rate) {
+                for (let i = 0; i < this.dna.length; i++) {
+                    if (Math.random() < rate / 100) {
+                        this.dna[i] = Math.random();
+                    }
+                }
+            }
+            
+            crossover(partner) {
+                const child = new Organism();
+                const crossPoint = Math.floor(Math.random() * DNA_LENGTH);
+                
+                for (let i = 0; i < DNA_LENGTH; i++) {
+                    if (i < crossPoint) {
+                        child.dna[i] = this.dna[i];
+                    } else {
+                        child.dna[i] = partner.dna[i];
+                    }
+                }
+                
+                return child;
+            }
+            
+            draw(canvas) {
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width;
+                const height = canvas.height;
+                
+                // 背景をクリア
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, width, height);
+                
+                const useColors = document.getElementById('useColors').checked;
+                const useSymmetry = document.getElementById('useSymmetry').checked;
+                const useCurves = document.getElementById('useCurves').checked;
+                
+                // DNAから表現型を生成
+                for (let i = 0; i < this.dna.length - 3; i += 4) {
+                    const x = this.dna[i] * width;
+                    const y = this.dna[i + 1] * height;
+                    const size = this.dna[i + 2] * 50 + 10;
+                    const shape = this.dna[i + 3];
+                    
+                    if (useColors) {
+                        const hue = this.dna[i] * 360;
+                        ctx.fillStyle = `hsla(${hue}, 70%, 50%, 0.7)`;
+                        ctx.strokeStyle = `hsla(${hue}, 70%, 40%, 0.9)`;
+                    } else {
+                        const gray = Math.floor(this.dna[i] * 100);
+                        ctx.fillStyle = `rgba(${gray}, ${gray}, ${gray}, 0.7)`;
+                        ctx.strokeStyle = `rgba(${gray}, ${gray}, ${gray}, 0.9)`;
+                    }
+                    
+                    ctx.lineWidth = 2;
+                    
+                    // 形状を描画
+                    ctx.beginPath();
+                    
+                    if (shape < 0.33) {
+                        // 円
+                        ctx.arc(x, y, size, 0, Math.PI * 2);
+                        if (useSymmetry) {
+                            ctx.arc(width - x, y, size, 0, Math.PI * 2);
+                        }
+                    } else if (shape < 0.66) {
+                        // 四角形
+                        ctx.rect(x - size/2, y - size/2, size, size);
+                        if (useSymmetry) {
+                            ctx.rect(width - x - size/2, y - size/2, size, size);
+                        }
+                    } else {
+                        // 三角形
+                        ctx.moveTo(x, y - size);
+                        ctx.lineTo(x - size, y + size);
+                        ctx.lineTo(x + size, y + size);
+                        ctx.closePath();
+                        if (useSymmetry) {
+                            ctx.moveTo(width - x, y - size);
+                            ctx.lineTo(width - x - size, y + size);
+                            ctx.lineTo(width - x + size, y + size);
+                            ctx.closePath();
+                        }
+                    }
+                    
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // 曲線を追加
+                    if (useCurves && i < this.dna.length - 7) {
+                        ctx.beginPath();
+                        ctx.moveTo(x, y);
+                        const cx1 = this.dna[i + 4] * width;
+                        const cy1 = this.dna[i + 5] * height;
+                        const cx2 = this.dna[i + 6] * width;
+                        const cy2 = this.dna[i + 7] * height;
+                        ctx.bezierCurveTo(cx1, cy1, cx2, cy2, cx2, cy2);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+        
+        // 初期個体群を生成
+        function initPopulation() {
+            population = [];
+            for (let i = 0; i < POPULATION_SIZE; i++) {
+                population.push(new Organism());
+            }
+            renderPopulation();
+        }
+        
+        // 個体群を描画
+        function renderPopulation() {
+            const container = document.getElementById('canvas-container');
+            container.innerHTML = '';
+            
+            population.forEach((organism, index) => {
+                const div = document.createElement('div');
+                div.className = 'organism';
+                if (organism.selected) {
+                    div.classList.add('selected');
+                }
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = 300;
+                canvas.height = 200;
+                organism.draw(canvas);
+                
+                const fitness = document.createElement('div');
+                fitness.className = 'fitness';
+                fitness.innerHTML = `適応度: ${organism.fitness.toFixed(2)} ⭐`;
+                
+                const dnaInfo = document.createElement('div');
+                dnaInfo.className = 'dna-info';
+                dnaInfo.textContent = `DNA: ${organism.dna.slice(0, 5).map(g => g.toFixed(2)).join(', ')}...`;
+                
+                div.appendChild(canvas);
+                div.appendChild(fitness);
+                div.appendChild(dnaInfo);
+                
+                div.addEventListener('click', () => {
+                    organism.selected = !organism.selected;
+                    organism.fitness = organism.selected ? organism.fitness + 1 : Math.max(0, organism.fitness - 1);
+                    renderPopulation();
+                    updateStats();
+                });
+                
+                container.appendChild(div);
+            });
+        }
+        
+        // 進化
+        function evolve() {
+            const mutationRate = parseFloat(document.getElementById('mutationRate').value);
+            const crossoverRate = parseFloat(document.getElementById('crossoverRate').value) / 100;
+            const selectionPressure = parseFloat(document.getElementById('selectionPressure').value);
+            
+            // 適応度でソート
+            population.sort((a, b) => b.fitness - a.fitness);
+            
+            // エリートを保存
+            const elites = population.slice(0, 2);
+            
+            // 新世代を生成
+            const newPopulation = [...elites];
+            
+            while (newPopulation.length < POPULATION_SIZE) {
+                // トーナメント選択
+                const parent1 = tournamentSelection(selectionPressure);
+                const parent2 = tournamentSelection(selectionPressure);
+                
+                let child;
+                if (Math.random() < crossoverRate) {
+                    child = parent1.crossover(parent2);
+                } else {
+                    child = new Organism([...parent1.dna]);
+                }
+                
+                child.mutate(mutationRate);
+                newPopulation.push(child);
+            }
+            
+            population = newPopulation;
+            generation++;
+            
+            // 統計を記録
+            const avgFitness = population.reduce((sum, org) => sum + org.fitness, 0) / POPULATION_SIZE;
+            evolutionHistory.push(avgFitness);
+            if (evolutionHistory.length > 50) {
+                evolutionHistory.shift();
+            }
+            
+            renderPopulation();
+            updateStats();
+            drawEvolutionGraph();
+        }
+        
+        // トーナメント選択
+        function tournamentSelection(pressure) {
+            const tournamentSize = Math.ceil(POPULATION_SIZE * pressure / 5);
+            const tournament = [];
+            
+            for (let i = 0; i < tournamentSize; i++) {
+                tournament.push(population[Math.floor(Math.random() * POPULATION_SIZE)]);
+            }
+            
+            return tournament.reduce((best, current) => 
+                current.fitness > best.fitness ? current : best
+            );
+        }
+        
+        // 統計更新
+        function updateStats() {
+            document.getElementById('generation').textContent = generation;
+            document.getElementById('population').textContent = POPULATION_SIZE;
+            
+            const maxFitness = Math.max(...population.map(org => org.fitness));
+            const avgFitness = population.reduce((sum, org) => sum + org.fitness, 0) / POPULATION_SIZE;
+            
+            document.getElementById('maxFitness').textContent = maxFitness.toFixed(2);
+            document.getElementById('avgFitness').textContent = avgFitness.toFixed(2);
+        }
+        
+        // 進化グラフを描画
+        function drawEvolutionGraph() {
+            const canvas = document.getElementById('evolution-graph');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth;
+            const height = canvas.height = 150;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            if (evolutionHistory.length < 2) return;
+            
+            const maxValue = Math.max(...evolutionHistory);
+            const step = width / (evolutionHistory.length - 1);
+            
+            ctx.strokeStyle = '#00ff88';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            evolutionHistory.forEach((value, index) => {
+                const x = index * step;
+                const y = height - (value / maxValue) * (height - 20) - 10;
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            
+            ctx.stroke();
+        }
+        
+        // 自動進化
+        function autoEvolve() {
+            autoEvolving = !autoEvolving;
+            
+            if (autoEvolving) {
+                const autoEvolveInterval = setInterval(() => {
+                    if (!autoEvolving) {
+                        clearInterval(autoEvolveInterval);
+                        return;
+                    }
+                    
+                    // ランダムに適応度を付与
+                    population.forEach(org => {
+                        org.fitness += Math.random() * 0.5;
+                    });
+                    
+                    evolve();
+                }, 2000);
+            }
+        }
+        
+        // リセット
+        function reset() {
+            generation = 1;
+            evolutionHistory = [];
+            initPopulation();
+            updateStats();
+        }
+        
+        // 最優秀個体を保存
+        function saveBest() {
+            const best = population.reduce((best, current) => 
+                current.fitness > best.fitness ? current : best
+            );
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = 600;
+            canvas.height = 400;
+            best.draw(canvas);
+            
+            const link = document.createElement('a');
+            link.download = `evolution_art_gen${generation}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        // コントロールのイベントリスナー
+        document.getElementById('mutationRate').addEventListener('input', (e) => {
+            document.getElementById('mutationRateValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('crossoverRate').addEventListener('input', (e) => {
+            document.getElementById('crossoverRateValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('selectionPressure').addEventListener('input', (e) => {
+            document.getElementById('selectionPressureValue').textContent = e.target.value;
+        });
+        
+        // 初期化
+        initPopulation();
+        updateStats();
+    </script>
+</body>
+</html>

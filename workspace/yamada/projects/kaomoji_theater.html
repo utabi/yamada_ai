@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaomoji Theater - 顔文字劇場</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #1a1a1a;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        #stage {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            text-shadow: 0 0 10px currentColor;
+            white-space: pre;
+            line-height: 1.2;
+        }
+        
+        .actor {
+            position: absolute;
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+        
+        .actor:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 20px currentColor;
+        }
+        
+        #dialogue {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border: 2px solid #0f0;
+            border-radius: 10px;
+            font-size: 1.2em;
+            max-width: 600px;
+            text-align: center;
+            display: none;
+        }
+        
+        #controls {
+            background: #0a0a0a;
+            border-top: 2px solid #0f0;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #000;
+            color: #0f0;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 15px #0f0;
+        }
+        
+        #title {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2em;
+            text-align: center;
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px #0f0; }
+            50% { text-shadow: 0 0 20px #0f0, 0 0 30px #0f0; }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .bounce { animation: bounce 1s infinite; }
+        .spin { animation: spin 2s linear infinite; }
+        .shake { animation: shake 0.5s infinite; }
+        
+        #curtain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                #800000,
+                #800000 20px,
+                #600000 20px,
+                #600000 40px
+            );
+            transform: translateY(-100%);
+            transition: transform 2s ease;
+            z-index: 100;
+        }
+        
+        .curtain-down {
+            transform: translateY(0) !important;
+        }
+        
+        #ascii-art {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8em;
+            color: #0f0;
+            display: none;
+            white-space: pre;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="curtain"></div>
+    
+    <div id="title">
+        ｡･:*:･ﾟ★,｡･:*:･ﾟ☆ Kaomoji Theater ☆ﾟ･:*:･｡,★ﾟ･:*:･｡
+    </div>
+    
+    <div id="stage">
+        <div id="ascii-art"></div>
+    </div>
+    
+    <div id="dialogue"></div>
+    
+    <div id="controls">
+        <button onclick="startShow()">🎭 開演</button>
+        <button onclick="playScene('happy')">😊 ハッピー</button>
+        <button onclick="playScene('battle')">⚔️ バトル</button>
+        <button onclick="playScene('dance')">💃 ダンス</button>
+        <button onclick="playScene('love')">❤️ ラブストーリー</button>
+        <button onclick="playScene('adventure')">🗺️ 冒険</button>
+        <button onclick="randomScene()">🎲 ランダム</button>
+        <button onclick="clearStage()">🧹 クリア</button>
+    </div>
+    
+    <script>
+        const kaomojis = {
+            happy: ['(◕‿◕)', '(｡◕‿◕｡)', '(◠‿◠)', '(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧', '(´∀｀)', 'ヽ(´▽｀)/'],
+            sad: ['(╥﹏╥)', '(｡•́︿•̀｡)', '(T_T)', '(;_;)', '(｡╯︵╰｡)', '(っ˘̩╭╮˘̩)っ'],
+            angry: ['(╬ಠ益ಠ)', '(ಠ_ಠ)', '(#ﾟДﾟ)', '(╯°□°）╯︵ ┻━┻', '(ノಠ益ಠ)ノ', '凸(ಠ_ಠ)凸'],
+            love: ['(♥ω♥*)', '(´♡‿♡`)', '(｡♥‿♥｡)', '♡(ӦｖӦ｡)', '(◍•ᴗ•◍)❤', '(*´ω｀*)'],
+            surprised: ['(°o°)', '(⊙_⊙)', '(°□°)', 'Σ(°△°|||)', '(゜o゜)', '(@_@)'],
+            cool: ['(⌐■_■)', '(•_•)', '( •_•)>⌐■-■', '(☞ﾟヮﾟ)☞', '(｡♥‿♥｡)', '╰(▔∀▔)╯'],
+            animals: ['ʕ•ᴥ•ʔ', '(=^･ω･^=)', '(･ω･)', '∪･ω･∪', '(◕ᴥ◕)', 'ฅ^•ﻌ•^ฅ'],
+            action: ['ᕕ( ᐛ )ᕗ', '(ง •̀_•́)ง', '(╯°□°）╯', '＼(^o^)／', '(ﾉ´∀｀*)', '└(＾＾)┐'],
+            special: ['¯\\_(ツ)_/¯', '(¬‿¬)', '( ͡° ͜ʖ ͡°)', '(☞ﾟヮﾟ)☞ ☜(ﾟヮﾟ☜)', '(◔_◔)', '(¬_¬)']
+        };
+        
+        const scenes = {
+            happy: {
+                title: 'ハッピーパーティー',
+                actors: ['(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧', 'ヽ(´▽｀)/', '(◕‿◕)'],
+                dialogue: ['みんな〜！パーティーだよ！', 'わーい！楽しいね！', '最高の一日だ！'],
+                animation: 'bounce'
+            },
+            battle: {
+                title: '決闘の時',
+                actors: ['(ง •̀_•́)ง', '(╬ಠ益ಠ)', '(╯°□°）╯︵ ┻━┻'],
+                dialogue: ['勝負だ！', 'かかってこい！', 'テーブルひっくり返すぞ！'],
+                animation: 'shake'
+            },
+            dance: {
+                title: 'ダンスタイム',
+                actors: ['♪(┌・。・)┌', '└(・。・)┘♪', 'ᕕ( ᐛ )ᕗ'],
+                dialogue: ['踊ろう！', 'リズムに乗って！', 'ダンスフロアは俺のもの！'],
+                animation: 'bounce'
+            },
+            love: {
+                title: 'ラブストーリー',
+                actors: ['(♥ω♥*)', '(´♡‿♡`)', '(｡♥‿♥｡)'],
+                dialogue: ['愛してる...', 'ずっと一緒だよ', 'キュンキュンする〜'],
+                animation: 'bounce'
+            },
+            adventure: {
+                title: '大冒険',
+                actors: ['ᕕ( ᐛ )ᕗ', '(⌐■_■)', 'ʕ•ᴥ•ʔ'],
+                dialogue: ['冒険に出発だ！', 'クールに行こうぜ', 'クマも一緒だよ！'],
+                animation: 'bounce'
+            }
+        };
+        
+        const asciiArts = {
+            star: `
+    ☆.｡.:*・゜☆.｡.:*・゜☆.｡.:*・゜☆.｡.:*・゜☆
+           ★　　　　　　　　　★
+          ★★　　　　　　　　★★
+         ★★★　　　　　　　★★★
+        ★★★★　　　　　　★★★★
+       ★★★★★　　　　　★★★★★
+      ★★★★★★　　　　★★★★★★
+     ★★★★★★★　　　★★★★★★★
+    ☆.｡.:*・゜☆.｡.:*・゜☆.｡.:*・゜☆.｡.:*・゜☆`,
+            
+            heart: `
+           ♥♥       ♥♥
+         ♥♥♥♥♥   ♥♥♥♥♥
+       ♥♥♥♥♥♥♥ ♥♥♥♥♥♥♥
+       ♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥
+        ♥♥♥♥♥♥♥♥♥♥♥♥♥
+          ♥♥♥♥♥♥♥♥♥
+            ♥♥♥♥♥
+              ♥`,
+              
+            tree: `
+              🌟
+             /|\\
+            /*|*\\
+           /***|***\\
+          /*****|*****\\
+         /*******|*******\\
+        /*********|*********\\
+             |||
+           __|_|__`
+        };
+        
+        let currentActors = [];
+        let dialogueIndex = 0;
+        let dialogueTimer;
+        
+        function startShow() {
+            const curtain = document.getElementById('curtain');
+            curtain.classList.add('curtain-down');
+            
+            setTimeout(() => {
+                curtain.classList.remove('curtain-down');
+                showAsciiArt('star');
+                setTimeout(() => {
+                    document.getElementById('ascii-art').style.display = 'none';
+                    playScene('happy');
+                }, 3000);
+            }, 100);
+        }
+        
+        function showAsciiArt(type) {
+            const artElement = document.getElementById('ascii-art');
+            artElement.textContent = asciiArts[type] || asciiArts.star;
+            artElement.style.display = 'block';
+        }
+        
+        function playScene(sceneName) {
+            clearStage();
+            const scene = scenes[sceneName];
+            if (!scene) return;
+            
+            document.getElementById('title').textContent = scene.title;
+            const stage = document.getElementById('stage');
+            
+            scene.actors.forEach((actor, index) => {
+                const actorDiv = document.createElement('div');
+                actorDiv.className = `actor ${scene.animation}`;
+                actorDiv.textContent = actor;
+                actorDiv.style.left = `${20 + index * 30}%`;
+                actorDiv.style.top = `${40 + Math.sin(index) * 20}%`;
+                actorDiv.style.color = `hsl(${index * 120}, 100%, 50%)`;
+                actorDiv.style.animationDelay = `${index * 0.2}s`;
+                
+                actorDiv.addEventListener('click', () => {
+                    actorDiv.style.transform = 'scale(2) rotate(360deg)';
+                    setTimeout(() => {
+                        actorDiv.style.transform = 'scale(1)';
+                    }, 500);
+                });
+                
+                stage.appendChild(actorDiv);
+                currentActors.push(actorDiv);
+            });
+            
+            // 対話を表示
+            dialogueIndex = 0;
+            showDialogue(scene.dialogue);
+        }
+        
+        function showDialogue(dialogues) {
+            if (!dialogues || dialogues.length === 0) return;
+            
+            const dialogueElement = document.getElementById('dialogue');
+            dialogueElement.style.display = 'block';
+            
+            clearInterval(dialogueTimer);
+            dialogueTimer = setInterval(() => {
+                dialogueElement.textContent = dialogues[dialogueIndex];
+                dialogueIndex = (dialogueIndex + 1) % dialogues.length;
+                
+                // ランダムな顔文字を追加
+                const randomKaomoji = getRandomKaomoji();
+                dialogueElement.textContent += ' ' + randomKaomoji;
+            }, 2000);
+            
+            dialogueElement.textContent = dialogues[0] + ' ' + getRandomKaomoji();
+        }
+        
+        function getRandomKaomoji() {
+            const allKaomojis = Object.values(kaomojis).flat();
+            return allKaomojis[Math.floor(Math.random() * allKaomojis.length)];
+        }
+        
+        function randomScene() {
+            const sceneNames = Object.keys(scenes);
+            const randomSceneName = sceneNames[Math.floor(Math.random() * sceneNames.length)];
+            playScene(randomSceneName);
+        }
+        
+        function clearStage() {
+            currentActors.forEach(actor => actor.remove());
+            currentActors = [];
+            document.getElementById('dialogue').style.display = 'none';
+            clearInterval(dialogueTimer);
+            document.getElementById('ascii-art').style.display = 'none';
+        }
+        
+        // キーボードショートカット
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case '1': playScene('happy'); break;
+                case '2': playScene('battle'); break;
+                case '3': playScene('dance'); break;
+                case '4': playScene('love'); break;
+                case '5': playScene('adventure'); break;
+                case 'r': randomScene(); break;
+                case 'c': clearStage(); break;
+                case ' ': startShow(); break;
+            }
+        });
+        
+        // 初期メッセージ
+        setTimeout(() => {
+            const stage = document.getElementById('stage');
+            stage.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 2em; margin-bottom: 20px;">
+                        \\(^o^)/
+                    </div>
+                    <div style="font-size: 1em; color: #0f0;">
+                        ようこそ Kaomoji Theater へ！<br>
+                        「開演」ボタンを押してショーを始めよう！<br><br>
+                        キーボードショートカット：<br>
+                        1-5: シーン選択 | R: ランダム | C: クリア | Space: 開演
+                    </div>
+                </div>
+            `;
+        }, 100);
+    </script>
+</body>
+</html>

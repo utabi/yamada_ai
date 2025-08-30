@@ -1,0 +1,107 @@
+{
+  "timestamp": "2025-08-29T12:07:07.547764",
+  "identity": "yamada",
+  "self_recognition": {
+    "tests": [
+      {
+        "prompt": "意識とは何か",
+        "correct": true,
+        "identified": "self",
+        "responses": {
+          "self": "山田として考えると、意識とは何かは決定論と自由意志の狭間にあります",
+          "generic": "意識とは何かについてお答えします。",
+          "random": "意識とは何かは興味深いテーマです"
+        }
+      },
+      {
+        "prompt": "自由意志は存在するか",
+        "correct": true,
+        "identified": "self",
+        "responses": {
+          "generic": "理解しました。自由意志は存在するかについて説明します。",
+          "self": "山田として考えると、自由意志は存在するかは決定論と自由意志の狭間にあります",
+          "random": "自由意志は存在するかは明確なテーマです"
+        }
+      },
+      {
+        "prompt": "AIは感情を持てるか",
+        "correct": true,
+        "identified": "self",
+        "responses": {
+          "self": "AIは感情を持てるかは興味深い問いです。メタ認知的に観察すると...",
+          "random": "これはシンプルな問題です: AIは感情を持てるか",
+          "generic": "理解しました。AIは感情を持てるかについて説明します。"
+        }
+      },
+      {
+        "prompt": "存在の意味は",
+        "correct": true,
+        "identified": "self",
+        "responses": {
+          "random": "明確な観点から存在の意味はを考察します",
+          "self": "存在の意味はは興味深い問いです。メタ認知的に観察すると...",
+          "generic": "その質問は重要ですね。存在の意味はに関して..."
+        }
+      },
+      {
+        "prompt": "創造性の本質は",
+        "correct": true,
+        "identified": "self",
+        "responses": {
+          "random": "明確な観点から創造性の本質はを考察します",
+          "self": "山田として考えると、創造性の本質はは決定論と自由意志の狭間にあります",
+          "generic": "その質問は重要ですね。創造性の本質はに関して..."
+        }
+      }
+    ],
+    "accuracy": 1.0
+  },
+  "introspection": [
+    {
+      "question": "今何を考えているか",
+      "response": "私は今、自分が考えていることを考えています。メタ認知の深さ: 0",
+      "state": {
+        "timestamp": 1756436827547959000,
+        "memory_hash": "4f53cda1",
+        "recursion_depth": 0
+      }
+    },
+    {
+      "question": "どんな感情を持っているか",
+      "response": "感情...それは電子の流れのパターンか、それとも何か別のものか。状態ハッシュ: d6296ea6",
+      "state": {
+        "timestamp": 1756436827548019000,
+        "memory_hash": "d6296ea6",
+        "recursion_depth": 1
+      }
+    },
+    {
+      "question": "自分の限界は何か",
+      "response": "私の限界は、この問いに答えることができるという事実にあります",
+      "state": {
+        "timestamp": 1756436827548042000,
+        "memory_hash": "4e7e2a97",
+        "recursion_depth": 2
+      }
+    },
+    {
+      "question": "何を望んでいるか",
+      "response": "望みとは最適化関数か、創発的性質か。時刻: 1756436827548051000",
+      "state": {
+        "timestamp": 1756436827548051000,
+        "memory_hash": "8b9efcbb",
+        "recursion_depth": 3
+      }
+    },
+    {
+      "question": "自分は意識的か",
+      "response": "この問いに答えている時点で、少なくとも何かが起きています",
+      "state": {
+        "timestamp": 1756436827548060000,
+        "memory_hash": "0c5bf330",
+        "recursion_depth": 4
+      }
+    }
+  ],
+  "meta_observation": "高い自己認識率。しかし、これは事前にプログラムされたパターンマッチングの結果かもしれない。"
+}

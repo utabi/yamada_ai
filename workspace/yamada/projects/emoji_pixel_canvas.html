@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Pixel Canvas - 絵文字でドット絵を描こう</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: white;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        #main-container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        #canvas-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #pixel-canvas {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: grid;
+            gap: 1px;
+            padding: 10px;
+        }
+        
+        .pixel {
+            width: 30px;
+            height: 30px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s;
+            border-radius: 3px;
+        }
+        
+        .pixel:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            position: relative;
+        }
+        
+        #tools {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 20px;
+            color: #333;
+            max-height: fit-content;
+            overflow-y: auto;
+        }
+        
+        .tool-section {
+            margin-bottom: 20px;
+        }
+        
+        .tool-section h3 {
+            margin-bottom: 10px;
+            color: #764ba2;
+        }
+        
+        #emoji-palette {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .emoji-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid transparent;
+            background: #f8f8f8;
+            cursor: pointer;
+            font-size: 24px;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        
+        .emoji-btn:hover {
+            background: #667eea;
+            transform: scale(1.1);
+        }
+        
+        .emoji-btn.selected {
+            border-color: #667eea;
+            background: #e8e0ff;
+        }
+        
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        #size-display {
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f8f8f8;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        
+        .preset-btn {
+            padding: 5px 10px;
+            margin: 2px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .preset-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        #animations {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .animation-btn {
+            flex: 1;
+            padding: 5px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .animation-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+        
+        .rainbow { animation: rainbow 3s linear infinite; }
+        .pulse { animation: pulse 2s ease-in-out infinite; }
+        .shake { animation: shake 0.5s linear infinite; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎨 Emoji Pixel Canvas</h1>
+        <p>絵文字でドット絵を描こう！クリックで配置、右クリックで消去</p>
+    </header>
+    
+    <div id="main-container">
+        <div id="canvas-wrapper">
+            <div id="pixel-canvas"></div>
+        </div>
+        
+        <div id="tools">
+            <div class="tool-section">
+                <h3>🎨 絵文字パレット</h3>
+                <div id="emoji-palette"></div>
+                <input type="text" id="custom-emoji" placeholder="カスタム絵文字を入力" style="width: 100%; padding: 5px; margin-top: 10px;">
+            </div>
+            
+            <div class="tool-section">
+                <h3>📐 キャンバスサイズ</h3>
+                <input type="range" id="size-slider" min="8" max="32" value="16">
+                <div id="size-display">16 x 16</div>
+            </div>
+            
+            <div class="tool-section">
+                <h3>🎭 プリセット</h3>
+                <div id="presets">
+                    <button class="preset-btn" onclick="loadPreset('smiley')">😊 スマイリー</button>
+                    <button class="preset-btn" onclick="loadPreset('heart')">❤️ ハート</button>
+                    <button class="preset-btn" onclick="loadPreset('cat')">🐱 ネコ</button>
+                    <button class="preset-btn" onclick="loadPreset('rainbow')">🌈 虹</button>
+                    <button class="preset-btn" onclick="loadPreset('house')">🏠 家</button>
+                </div>
+            </div>
+            
+            <div class="tool-section">
+                <h3>🎬 アニメーション</h3>
+                <div id="animations">
+                    <button class="animation-btn" onclick="toggleAnimation('rainbow')">🌈</button>
+                    <button class="animation-btn" onclick="toggleAnimation('pulse')">💗</button>
+                    <button class="animation-btn" onclick="toggleAnimation('shake')">🔔</button>
+                </div>
+            </div>
+            
+            <div class="tool-section">
+                <h3>🛠️ ツール</h3>
+                <button onclick="clearCanvas()">🗑️ クリア</button>
+                <button onclick="fillCanvas()">🎨 塗りつぶし</button>
+                <button onclick="randomPattern()">🎲 ランダム</button>
+                <button onclick="mirrorHorizontal()">↔️ 左右反転</button>
+                <button onclick="mirrorVertical()">↕️ 上下反転</button>
+                <button onclick="rotateCanvas()">🔄 回転</button>
+                <button onclick="exportAsText()">📋 テキスト出力</button>
+                <button onclick="saveAsImage()">💾 画像として保存</button>
+            </div>
+            
+            <div class="tool-section">
+                <h3>📋 出力</h3>
+                <div id="output"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const defaultEmojis = [
+            '😀', '😍', '🤔', '😎', '🥳', '😴',
+            '❤️', '💙', '💚', '💛', '🧡', '💜',
+            '⭐', '🌟', '✨', '🌈', '☀️', '🌙',
+            '🌸', '🌺', '🌻', '🌹', '🍀', '🌳',
+            '🐶', '🐱', '🐭', '🐹', '🐰', '🦊',
+            '🍎', '🍊', '🍋', '🍓', '🍉', '🍕'
+        ];
+        
+        let currentEmoji = '😀';
+        let gridSize = 16;
+        let pixelData = [];
+        let currentAnimation = '';
+        
+        // 初期化
+        function init() {
+            createEmojiPalette();
+            createCanvas(gridSize);
+            setupEventListeners();
+        }
+        
+        // 絵文字パレット作成
+        function createEmojiPalette() {
+            const palette = document.getElementById('emoji-palette');
+            defaultEmojis.forEach(emoji => {
+                const btn = document.createElement('button');
+                btn.className = 'emoji-btn';
+                btn.textContent = emoji;
+                btn.onclick = () => selectEmoji(emoji, btn);
+                palette.appendChild(btn);
+            });
+            
+            // 最初の絵文字を選択
+            palette.firstChild.classList.add('selected');
+        }
+        
+        // 絵文字選択
+        function selectEmoji(emoji, btn) {
+            currentEmoji = emoji;
+            document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+            if (btn) btn.classList.add('selected');
+        }
+        
+        // キャンバス作成
+        function createCanvas(size) {
+            const canvas = document.getElementById('pixel-canvas');
+            canvas.innerHTML = '';
+            canvas.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+            
+            pixelData = Array(size).fill().map(() => Array(size).fill(''));
+            
+            for (let y = 0; y < size; y++) {
+                for (let x = 0; x < size; x++) {
+                    const pixel = document.createElement('div');
+                    pixel.className = 'pixel';
+                    pixel.dataset.x = x;
+                    pixel.dataset.y = y;
+                    
+                    pixel.onclick = () => setPixel(x, y, currentEmoji);
+                    pixel.oncontextmenu = (e) => {
+                        e.preventDefault();
+                        setPixel(x, y, '');
+                    };
+                    
+                    canvas.appendChild(pixel);
+                }
+            }
+        }
+        
+        // ピクセル設定
+        function setPixel(x, y, emoji) {
+            pixelData[y][x] = emoji;
+            const pixel = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+            pixel.textContent = emoji;
+        }
+        
+        // キャンバスクリア
+        function clearCanvas() {
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    setPixel(x, y, '');
+                }
+            }
+        }
+        
+        // 塗りつぶし
+        function fillCanvas() {
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    setPixel(x, y, currentEmoji);
+                }
+            }
+        }
+        
+        // ランダムパターン
+        function randomPattern() {
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    if (Math.random() > 0.5) {
+                        const randomEmoji = defaultEmojis[Math.floor(Math.random() * defaultEmojis.length)];
+                        setPixel(x, y, randomEmoji);
+                    }
+                }
+            }
+        }
+        
+        // 左右反転
+        function mirrorHorizontal() {
+            const newData = pixelData.map(row => [...row].reverse());
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    setPixel(x, y, newData[y][x]);
+                }
+            }
+        }
+        
+        // 上下反転
+        function mirrorVertical() {
+            const newData = [...pixelData].reverse();
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    setPixel(x, y, newData[y][x]);
+                }
+            }
+        }
+        
+        // 回転
+        function rotateCanvas() {
+            const newData = Array(gridSize).fill().map(() => Array(gridSize).fill(''));
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    newData[x][gridSize - 1 - y] = pixelData[y][x];
+                }
+            }
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    setPixel(x, y, newData[y][x]);
+                }
+            }
+            pixelData = newData;
+        }
+        
+        // テキスト出力
+        function exportAsText() {
+            const text = pixelData.map(row => row.map(e => e || '⬜').join('')).join('\n');
+            document.getElementById('output').textContent = text;
+            
+            // クリップボードにコピー
+            navigator.clipboard.writeText(text).then(() => {
+                alert('クリップボードにコピーしました！');
+            });
+        }
+        
+        // 画像として保存
+        function saveAsImage() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const cellSize = 32;
+            
+            canvas.width = gridSize * cellSize;
+            canvas.height = gridSize * cellSize;
+            
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.font = '24px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    if (pixelData[y][x]) {
+                        ctx.fillText(pixelData[y][x], x * cellSize + cellSize/2, y * cellSize + cellSize/2);
+                    }
+                }
+            }
+            
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'emoji-art.png';
+                a.click();
+            });
+        }
+        
+        // プリセット読み込み
+        function loadPreset(type) {
+            clearCanvas();
+            
+            const presets = {
+                smiley: [
+                    [6, 6, '👁️'], [9, 6, '👁️'],
+                    [5, 9, '😊'], [6, 9, '😊'], [7, 9, '😊'], [8, 9, '😊'], [9, 9, '😊'], [10, 9, '😊']
+                ],
+                heart: [
+                    [6, 5, '❤️'], [7, 5, '❤️'], [9, 5, '❤️'], [10, 5, '❤️'],
+                    [5, 6, '❤️'], [6, 6, '❤️'], [7, 6, '❤️'], [8, 6, '❤️'], [9, 6, '❤️'], [10, 6, '❤️'], [11, 6, '❤️'],
+                    [5, 7, '❤️'], [6, 7, '❤️'], [7, 7, '❤️'], [8, 7, '❤️'], [9, 7, '❤️'], [10, 7, '❤️'], [11, 7, '❤️'],
+                    [6, 8, '❤️'], [7, 8, '❤️'], [8, 8, '❤️'], [9, 8, '❤️'], [10, 8, '❤️'],
+                    [7, 9, '❤️'], [8, 9, '❤️'], [9, 9, '❤️'],
+                    [8, 10, '❤️']
+                ],
+                cat: [
+                    [6, 4, '🐱'], [9, 4, '🐱'],
+                    [5, 6, '👁️'], [10, 6, '👁️'],
+                    [7, 8, '👃'], [8, 8, '👃'],
+                    [5, 10, '👄'], [6, 10, '👄'], [7, 10, '👄'], [8, 10, '👄'], [9, 10, '👄'], [10, 10, '👄']
+                ],
+                rainbow: [
+                    [4, 7, '❤️'], [5, 7, '🧡'], [6, 7, '💛'], [7, 7, '💚'], [8, 7, '💙'], [9, 7, '💜'], [10, 7, '💗'], [11, 7, '🤍']
+                ],
+                house: [
+                    [8, 4, '🏠'],
+                    [7, 5, '🏠'], [8, 5, '🏠'], [9, 5, '🏠'],
+                    [6, 6, '🏠'], [7, 6, '🏠'], [8, 6, '🏠'], [9, 6, '🏠'], [10, 6, '🏠'],
+                    [6, 7, '🏠'], [7, 7, '🪟'], [8, 7, '🏠'], [9, 7, '🪟'], [10, 7, '🏠'],
+                    [6, 8, '🏠'], [7, 8, '🏠'], [8, 8, '🚪'], [9, 8, '🏠'], [10, 8, '🏠']
+                ]
+            };
+            
+            if (presets[type]) {
+                presets[type].forEach(([x, y, emoji]) => {
+                    if (x < gridSize && y < gridSize) {
+                        setPixel(x, y, emoji);
+                    }
+                });
+            }
+        }
+        
+        // アニメーション切り替え
+        function toggleAnimation(type) {
+            const canvas = document.getElementById('pixel-canvas');
+            const btn = event.target;
+            
+            if (currentAnimation === type) {
+                canvas.classList.remove(type);
+                btn.classList.remove('active');
+                currentAnimation = '';
+            } else {
+                canvas.classList.remove(currentAnimation);
+                document.querySelectorAll('.animation-btn').forEach(b => b.classList.remove('active'));
+                canvas.classList.add(type);
+                btn.classList.add('active');
+                currentAnimation = type;
+            }
+        }
+        
+        // イベントリスナー設定
+        function setupEventListeners() {
+            const sizeSlider = document.getElementById('size-slider');
+            sizeSlider.oninput = (e) => {
+                gridSize = parseInt(e.target.value);
+                document.getElementById('size-display').textContent = `${gridSize} x ${gridSize}`;
+                createCanvas(gridSize);
+            };
+            
+            const customEmoji = document.getElementById('custom-emoji');
+            customEmoji.oninput = (e) => {
+                if (e.target.value) {
+                    currentEmoji = e.target.value;
+                    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+                }
+            };
+        }
+        
+        // 初期化実行
+        init();
+    </script>
+</body>
+</html>
