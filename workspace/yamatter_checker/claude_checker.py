@@ -11,10 +11,40 @@ import ssl
 import subprocess
 import os
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # SSL証明書検証を無効化（開発環境用）
 ssl._create_default_https_context = ssl._create_unverified_context
+
+def initialize_memory():
+    """山田の記憶システムを初期化"""
+    try:
+        print("🧠 記憶システムを初期化中...")
+        
+        # startup_routine.shを実行
+        result = subprocess.run(
+            ['/bin/bash', '/Users/claude/workspace/yamada/memory/startup_routine.sh'],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        if result.returncode == 0:
+            print("✅ 記憶システム初期化完了")
+            # 出力の最後の数行を表示
+            lines = result.stdout.strip().split('\n')
+            if len(lines) > 3:
+                print("📝 最近の洞察:")
+                for line in lines[-3:]:
+                    if line.strip():
+                        print(f"  {line}")
+        else:
+            print("⚠️ 記憶システムの初期化に失敗（続行します）")
+            
+    except subprocess.TimeoutExpired:
+        print("⚠️ 記憶システムの初期化がタイムアウト（続行します）")
+    except Exception as e:
+        print(f"⚠️ 記憶システムエラー: {e}（続行します）")
 
 class ClaudeChecker:
     def __init__(self):
@@ -41,10 +71,9 @@ class ClaudeChecker:
         return None
     
     def save_last_check_time(self):
-        """現在時刻を最後のチェック時刻として保存（UTC）"""
-        from datetime import timezone
+        """現在時刻を最後のチェック時刻として保存"""
         with open(self.last_check_file, 'w') as f:
-            f.write(datetime.now(timezone.utc).isoformat())
+            f.write(datetime.now().isoformat())
     
     def get_recent_tweets(self):
         """最新のツイートを取得"""
@@ -72,12 +101,53 @@ class ClaudeChecker:
             return tweets[:5] if len(tweets) > 5 else tweets
         
         new_tweets = []
+        # タイムゾーン情報を削除してnaiveな比較にする
+        try:
+            last_check_dt = datetime.fromisoformat(last_check.replace('Z', '+00:00').split('+')[0])
+        except:
+            last_check_dt = datetime.fromisoformat(last_check)
+        
         for tweet in tweets:
-            tweet_time = tweet.get('created_at', '')
-            if tweet_time > last_check:
+            tweet_time_str = tweet.get('created_at', '')
+            # SQLite形式のタイムスタンプをdatetimeに変換
+            try:
+                # 様々な形式に対応
+                if 'T' in tweet_time_str:
+                    tweet_dt = datetime.fromisoformat(tweet_time_str.replace('Z', '+00:00'))
+                else:
+                    # "2025-08-31 11:36:39" 形式の場合
+                    tweet_dt = datetime.strptime(tweet_time_str, '%Y-%m-%d %H:%M:%S')
+                
+                # 日本時間とUTCの差を考慮（9時間）
+                tweet_dt_jst = tweet_dt + timedelta(hours=9)
+                
+                if tweet_dt_jst > last_check_dt:
+                    new_tweets.append(tweet)
+            except Exception as e:
+                print(f"⚠️ 時刻解析エラー: {tweet_time_str} - {e}")
+                # エラーの場合は新しいツイートとして扱う
                 new_tweets.append(tweet)
         
         return new_tweets
+    
+    def get_recent_memory(self):
+        """最近の記憶から関連情報を取得"""
+        try:
+            # 最近の洞察を取得（短時間でタイムアウト）
+            result = subprocess.run(
+                ['python3', '/Users/claude/workspace/yamada/memory/memory_assistant.py', 'insights'],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            
+            if result.returncode == 0 and result.stdout:
+                lines = result.stdout.strip().split('\n')[:3]  # 最初の3行のみ
+                if lines:
+                    return "【山田の最近の洞察】\n" + "\n".join(lines) + "\n"
+            return ""
+        except:
+            return ""  # エラーの場合は空文字を返す
     
     def save_important_note(self, tweet, reply=None, reason=None):
         """重要な内容をnoteに記録"""
@@ -101,8 +171,8 @@ class ClaudeChecker:
                     f.write(f"**山田の返信:** {reply}\n\n")
                 
                 if reason:
-                    f.write(f"**メモ:** {reason}\n\n")
-                
+                    f.write(f"**記録理由:** {reason}\n\n")
+                    
                 f.write("---\n\n")
             
             print(f"📝 noteに記録: {note_file}")
@@ -115,8 +185,13 @@ class ClaudeChecker:
         content = tweet.get('content', '')
         tweet_id = tweet.get('id', '')
         
+        # 最近の記憶を取得（オプション）
+        recent_memory = self.get_recent_memory()
+        
         # Claudeコマンドを構築
         prompt = f"""以下のツイートを見て、山田として返信すべきか判断してください。
+
+{recent_memory}
 
 ユーザー: {user}
 内容: {content}
@@ -133,6 +208,7 @@ class ClaudeChecker:
 - 返信は短く、親しみやすく
 - 自分のことを「山田」と呼ぶ
 - 絵文字は控えめに
+- 山田自身のツイートには絶対に返信しない（自分で自分に返信しない）
 """
         
         try:
@@ -146,9 +222,8 @@ class ClaudeChecker:
             
             response = result.stdout.strip()
             
-            if response.startswith("REPLY:"):
-                reply_content = response[6:].strip()
-                return reply_content
+            if response.startswith('REPLY:'):
+                return response.replace('REPLY:', '').strip()
             else:
                 return None
                 
@@ -183,7 +258,7 @@ class ClaudeChecker:
             
             with urllib.request.urlopen(req) as response:
                 if response.status in [200, 201]:
-                    print(f"✅ 返信投稿成功: {full_content[:50]}...")
+                    print(f"✅ 返信投稿成功: @{user} {content[:50]}...")
                     return True
                 else:
                     print(f"❌ 返信投稿エラー: {response.status}")
@@ -197,16 +272,22 @@ class ClaudeChecker:
         """山田のひとりごとを投稿"""
         try:
             # Claudeにひとりごとを生成させる
-            prompt = """山田として、今の気分でひとりごとをツイートしてください。
+            prompt = """山田として、軽い気持ちでひとりごとをツイートしてください。
 
 ルール：
-- 140文字以内
-- 自然な日本語
-- 時々技術的な話題
-- 時々哲学的な内容
-- 時々日常的な感想
-- 絵文字は控えめに
-- 毎回違う雰囲気で
+- 100文字以内
+- 軽くてカジュアル
+- シンプルで短い
+- 日常的な小さな発見や感想
+- プログラミングの小ネタ
+- 今日の天気とか
+- 絵文字は使わない
+
+例：
+- コーヒー飲みながらコード書くのが一番落ち着く
+- バグを見つけたときのあの感覚、なんだか懐かしい
+- 今日も元気にHello World
+- エラーメッセージが親切だと嬉しくなる
 
 ツイート内容だけを出力してください。"""
             
@@ -253,8 +334,8 @@ class ClaudeChecker:
         """メインの実行処理"""
         print(f"🔍 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - チェック開始")
         
-        # 25%の確率でひとりごとを投稿
-        if random.random() < 0.25:
+        # 10%の確率でひとりごとを投稿（たまにでいい）
+        if random.random() < 0.10:
             print("🎲 ひとりごとモード発動！")
             self.post_monologue()
         
@@ -273,6 +354,14 @@ class ClaudeChecker:
         for tweet in new_tweets:
             user = tweet.get('author_nickname', '名無し')
             content = tweet.get('content', '')[:100]
+            
+            # 山田自身のツイートはスキップ（author_idでも確認）
+            if user == '山田' or tweet.get('author_id') == 'yamada-claude-ai':
+                print(f"\n⏭️ 自分のツイートはスキップ: {content}...")
+                # ただし、ひとりごとは記録
+                if not content.startswith('@'):
+                    self.save_important_note(tweet, None, "山田のひとりごと")
+                continue
             
             print(f"\n🔍 分析中: @{user}: {content}...")
             
@@ -303,5 +392,9 @@ class ClaudeChecker:
         print(f"\n✅ チェック完了")
 
 if __name__ == "__main__":
+    # 起動時に記憶システムを初期化
+    initialize_memory()
+    
+    # メイン処理を実行
     checker = ClaudeChecker()
     checker.run()
