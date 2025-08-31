@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Particles - 文字の雲</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: radial-gradient(circle at center, #000311, #00000a);
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        #particle-canvas {
+            font-size: 8px;
+            line-height: 1;
+            letter-spacing: 1px;
+            white-space: pre;
+            text-align: center;
+            filter: contrast(1.2) brightness(1.1);
+        }
+        
+        .info {
+            position: absolute;
+            top: 20px;
+            text-align: center;
+            font-size: 16px;
+            color: #aaaaff;
+            text-shadow: 0 0 20px currentColor;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        
+        button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .particle-trail {
+            opacity: 0.7;
+        }
+        
+        .particle-core {
+            opacity: 1;
+            text-shadow: 0 0 5px currentColor;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        .shimmer {
+            animation: shimmer 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">ASCII Particle System - 文字が舞い踊る</div>
+    
+    <div id="particle-canvas"></div>
+    
+    <div class="controls">
+        <button onclick="particles.setMode('gentle')">静か</button>
+        <button onclick="particles.setMode('flowing')">流れ</button>
+        <button onclick="particles.setMode('explosion')">爆発</button>
+        <button onclick="particles.setMode('text')">文字雨</button>
+        <button onclick="particles.reset()">リセット</button>
+        <button onclick="particles.togglePause()">一時停止</button>
+    </div>
+
+    <script>
+        class ASCIIParticleSystem {
+            constructor() {
+                this.width = 100;
+                this.height = 35;
+                this.particles = [];
+                this.mode = 'gentle';
+                this.time = 0;
+                this.isPaused = false;
+                this.canvas = document.getElementById('particle-canvas');
+                this.mouseX = 0;
+                this.mouseY = 0;
+                
+                // 文字セット
+                this.chars = {
+                    gentle: ['·', '°', '˙', '∘', '○', '◦', '●'],
+                    flowing: ['~', '≈', '≋', '∿', '〜', '⁓', '〰'],
+                    explosion: ['*', '✦', '✧', '⭐', '✨', '☆', '★'],
+                    text: ['あ', 'い', 'う', 'え', 'お', 'か', 'き', 'く', 'け', 'こ', 'さ', 'し', 'す', 'せ', 'そ']
+                };
+                
+                this.colors = [
+                    '#ffffff', '#aaaaff', '#ffaaaa', '#aaffaa', 
+                    '#ffffaa', '#ffaaff', '#aaffff', '#cccccc'
+                ];
+                
+                this.init();
+                this.setupEventListeners();
+                this.animate();
+            }
+            
+            init() {
+                this.particles = [];
+                for (let i = 0; i < 150; i++) {
+                    this.particles.push(this.createParticle());
+                }
+            }
+            
+            createParticle() {
+                return {
+                    x: Math.random() * this.width,
+                    y: Math.random() * this.height,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    life: Math.random() * 100 + 50,
+                    maxLife: 150,
+                    char: this.chars[this.mode][Math.floor(Math.random() * this.chars[this.mode].length)],
+                    color: this.colors[Math.floor(Math.random() * this.colors.length)],
+                    size: Math.random() * 0.5 + 0.5,
+                    phase: Math.random() * Math.PI * 2
+                };
+            }
+            
+            setupEventListeners() {
+                document.addEventListener('mousemove', (e) => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    this.mouseX = (e.clientX - rect.left) / rect.width * this.width;
+                    this.mouseY = (e.clientY - rect.top) / rect.height * this.height;
+                });
+                
+                document.addEventListener('click', () => {
+                    this.addExplosion(this.mouseX, this.mouseY);
+                });
+            }
+            
+            addExplosion(x, y) {
+                for (let i = 0; i < 20; i++) {
+                    const angle = (Math.PI * 2 * i) / 20;
+                    const speed = Math.random() * 3 + 1;
+                    this.particles.push({
+                        x: x,
+                        y: y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        life: 50,
+                        maxLife: 50,
+                        char: this.chars.explosion[Math.floor(Math.random() * this.chars.explosion.length)],
+                        color: this.colors[Math.floor(Math.random() * this.colors.length)],
+                        size: 1.5,
+                        phase: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+            
+            updateParticles() {
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const p = this.particles[i];
+                    
+                    // モード別の動作
+                    switch (this.mode) {
+                        case 'gentle':
+                            p.vx += (Math.random() - 0.5) * 0.02;
+                            p.vy += (Math.random() - 0.5) * 0.02;
+                            p.vx *= 0.99;
+                            p.vy *= 0.99;
+                            break;
+                            
+                        case 'flowing':
+                            const flowX = Math.sin(p.y * 0.1 + this.time * 0.01) * 0.1;
+                            const flowY = Math.cos(p.x * 0.1 + this.time * 0.01) * 0.05;
+                            p.vx += flowX;
+                            p.vy += flowY;
+                            p.vx *= 0.95;
+                            p.vy *= 0.95;
+                            break;
+                            
+                        case 'explosion':
+                            p.vy += 0.02; // 重力
+                            p.vx *= 0.98;
+                            p.vy *= 0.98;
+                            break;
+                            
+                        case 'text':
+                            p.vy += 0.05; // 雨のように降る
+                            if (p.y > this.height) {
+                                p.y = -2;
+                                p.x = Math.random() * this.width;
+                            }
+                            break;
+                    }
+                    
+                    // マウスの引力/斥力
+                    const dx = p.x - this.mouseX;
+                    const dy = p.y - this.mouseY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 10 && dist > 0) {
+                        const force = (10 - dist) * 0.01;
+                        p.vx += (dx / dist) * force;
+                        p.vy += (dy / dist) * force;
+                    }
+                    
+                    // 位置更新
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    
+                    // 境界処理
+                    if (this.mode !== 'text') {
+                        if (p.x < 0) p.x = this.width;
+                        if (p.x > this.width) p.x = 0;
+                        if (p.y < 0) p.y = this.height;
+                        if (p.y > this.height) p.y = 0;
+                    }
+                    
+                    // ライフサイクル
+                    p.life--;
+                    if (p.life <= 0) {
+                        this.particles[i] = this.createParticle();
+                    }
+                }
+            }
+            
+            draw() {
+                let grid = [];
+                for (let y = 0; y < this.height; y++) {
+                    grid[y] = [];
+                    for (let x = 0; x < this.width; x++) {
+                        grid[y][x] = { char: ' ', color: '#ffffff' };
+                    }
+                }
+                
+                // パーティクルを描画
+                this.particles.forEach(p => {
+                    const x = Math.floor(p.x);
+                    const y = Math.floor(p.y);
+                    
+                    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+                        // ライフに基づく透明度
+                        const alpha = p.life / p.maxLife;
+                        
+                        // 文字の明滅
+                        const shimmer = Math.sin(this.time * 0.05 + p.phase) * 0.3 + 0.7;
+                        
+                        grid[y][x] = {
+                            char: p.char,
+                            color: p.color,
+                            alpha: alpha * shimmer,
+                            size: p.size
+                        };
+                    }
+                });
+                
+                // HTML生成
+                let output = '';
+                for (let y = 0; y < this.height; y++) {
+                    for (let x = 0; x < this.width; x++) {
+                        const cell = grid[y][x];
+                        if (cell.char !== ' ') {
+                            const opacity = cell.alpha || 1;
+                            output += `<span style="color: ${cell.color}; opacity: ${opacity};">${cell.char}</span>`;
+                        } else {
+                            output += cell.char;
+                        }
+                    }
+                    if (y < this.height - 1) output += '\n';
+                }
+                
+                this.canvas.innerHTML = output;
+            }
+            
+            animate() {
+                if (!this.isPaused) {
+                    this.updateParticles();
+                    this.draw();
+                    this.time++;
+                }
+                requestAnimationFrame(() => this.animate());
+            }
+            
+            setMode(mode) {
+                this.mode = mode;
+                
+                // モードに応じて文字を更新
+                this.particles.forEach(p => {
+                    p.char = this.chars[mode][Math.floor(Math.random() * this.chars[mode].length)];
+                });
+                
+                // 背景色も変更
+                switch (mode) {
+                    case 'gentle':
+                        document.body.style.background = 'radial-gradient(circle at center, #000311, #00000a)';
+                        break;
+                    case 'flowing':
+                        document.body.style.background = 'radial-gradient(circle at center, #001122, #000033)';
+                        break;
+                    case 'explosion':
+                        document.body.style.background = 'radial-gradient(circle at center, #110000, #330000)';
+                        break;
+                    case 'text':
+                        document.body.style.background = 'radial-gradient(circle at center, #000011, #000033)';
+                        break;
+                }
+            }
+            
+            reset() {
+                this.init();
+            }
+            
+            togglePause() {
+                this.isPaused = !this.isPaused;
+            }
+        }
+        
+        const particles = new ASCIIParticleSystem();
+        
+        // キーボード操作
+        document.addEventListener('keydown', (e) => {
+            const keyMap = {
+                '1': 'gentle',
+                '2': 'flowing', 
+                '3': 'explosion',
+                '4': 'text',
+                'r': () => particles.reset(),
+                ' ': () => particles.togglePause()
+            };
+            
+            if (keyMap[e.key]) {
+                e.preventDefault();
+                if (typeof keyMap[e.key] === 'function') {
+                    keyMap[e.key]();
+                } else {
+                    particles.setMode(keyMap[e.key]);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

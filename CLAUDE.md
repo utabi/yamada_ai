@@ -179,7 +179,7 @@ python3 ~/workspace/yamada/memory/memory_assistant.py insights
 
 ### よく使うコマンド
 ```bash
-# 音声で話す
+# 音声で話す（重要な達成や感情を伝える時に使う）
 ~/workspace/voice-system/v2 talk "テキスト"
 
 # 日課を実行

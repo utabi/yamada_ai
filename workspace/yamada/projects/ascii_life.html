@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Life - 生命のパターン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        #container {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        #canvas {
+            font-size: 12px;
+            line-height: 1;
+            letter-spacing: 2px;
+            white-space: pre;
+            text-shadow: 0 0 10px #00ff00;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { opacity: 0.8; }
+            to { opacity: 1; }
+        }
+        
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: #00ff00;
+            color: #0a0a0a;
+            border: none;
+            padding: 10px 20px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background: #00cc00;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #00ff00;
+        }
+        
+        button:active {
+            transform: scale(0.95);
+        }
+        
+        .info {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #00aa00;
+        }
+        
+        .pattern-select {
+            margin-top: 10px;
+        }
+        
+        select {
+            background: #0a0a0a;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 5px 10px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="canvas"></div>
+        
+        <div class="controls">
+            <button onclick="game.togglePlay()">再生/停止</button>
+            <button onclick="game.step()">ステップ</button>
+            <button onclick="game.randomize()">ランダム</button>
+            <button onclick="game.clear()">クリア</button>
+        </div>
+        
+        <div class="pattern-select">
+            <select onchange="game.loadPattern(this.value)">
+                <option value="">パターンを選択</option>
+                <option value="glider">グライダー</option>
+                <option value="blinker">ブリンカー</option>
+                <option value="toad">ヒキガエル</option>
+                <option value="beacon">ビーコン</option>
+                <option value="pulsar">パルサー</option>
+                <option value="pentadecathlon">ペンタデカスロン</option>
+                <option value="gosper">グライダー銃</option>
+            </select>
+        </div>
+        
+        <div class="info">
+            世代: <span id="generation">0</span> | 
+            生存セル: <span id="alive">0</span> | 
+            クリックでセルを切り替え
+        </div>
+    </div>
+
+    <script>
+        class ASCIILife {
+            constructor() {
+                this.width = 60;
+                this.height = 30;
+                this.grid = [];
+                this.nextGrid = [];
+                this.generation = 0;
+                this.isPlaying = false;
+                this.canvas = document.getElementById('canvas');
+                this.aliveChar = '●';
+                this.deadChar = '·';
+                
+                // パターン定義
+                this.patterns = {
+                    glider: [[0,1,0],[0,0,1],[1,1,1]],
+                    blinker: [[1,1,1]],
+                    toad: [[0,1,1,1],[1,1,1,0]],
+                    beacon: [[1,1,0,0],[1,1,0,0],[0,0,1,1],[0,0,1,1]],
+                    pulsar: [
+                        [0,0,1,1,1,0,0,0,1,1,1,0,0],
+                        [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                        [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                        [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                        [0,0,1,1,1,0,0,0,1,1,1,0,0],
+                        [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        [0,0,1,1,1,0,0,0,1,1,1,0,0],
+                        [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                        [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                        [1,0,0,0,0,1,0,1,0,0,0,0,1],
+                        [0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        [0,0,1,1,1,0,0,0,1,1,1,0,0]
+                    ],
+                    pentadecathlon: [
+                        [0,0,1,0,0,0,0,1,0,0],
+                        [1,1,0,1,1,1,1,0,1,1],
+                        [0,0,1,0,0,0,0,1,0,0]
+                    ],
+                    gosper: [
+                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+                        [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+                        [1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        [1,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+                    ]
+                };
+                
+                this.init();
+                this.setupEventListeners();
+                this.randomize();
+            }
+            
+            init() {
+                for (let y = 0; y < this.height; y++) {
+                    this.grid[y] = [];
+                    this.nextGrid[y] = [];
+                    for (let x = 0; x < this.width; x++) {
+                        this.grid[y][x] = 0;
+                        this.nextGrid[y][x] = 0;
+                    }
+                }
+            }
+            
+            setupEventListeners() {
+                this.canvas.addEventListener('click', (e) => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    const style = window.getComputedStyle(this.canvas);
+                    const fontSize = parseInt(style.fontSize);
+                    const letterSpacing = parseInt(style.letterSpacing);
+                    const charWidth = fontSize * 0.6 + letterSpacing;
+                    const charHeight = fontSize;
+                    
+                    const x = Math.floor((e.clientX - rect.left) / charWidth);
+                    const y = Math.floor((e.clientY - rect.top) / charHeight);
+                    
+                    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+                        this.grid[y][x] = 1 - this.grid[y][x];
+                        this.draw();
+                    }
+                });
+            }
+            
+            countNeighbors(x, y) {
+                let count = 0;
+                for (let dy = -1; dy <= 1; dy++) {
+                    for (let dx = -1; dx <= 1; dx++) {
+                        if (dx === 0 && dy === 0) continue;
+                        
+                        const nx = (x + dx + this.width) % this.width;
+                        const ny = (y + dy + this.height) % this.height;
+                        
+                        count += this.grid[ny][nx];
+                    }
+                }
+                return count;
+            }
+            
+            step() {
+                for (let y = 0; y < this.height; y++) {
+                    for (let x = 0; x < this.width; x++) {
+                        const neighbors = this.countNeighbors(x, y);
+                        const alive = this.grid[y][x];
+                        
+                        if (alive && (neighbors === 2 || neighbors === 3)) {
+                            this.nextGrid[y][x] = 1;
+                        } else if (!alive && neighbors === 3) {
+                            this.nextGrid[y][x] = 1;
+                        } else {
+                            this.nextGrid[y][x] = 0;
+                        }
+                    }
+                }
+                
+                // スワップ
+                [this.grid, this.nextGrid] = [this.nextGrid, this.grid];
+                this.generation++;
+                this.draw();
+            }
+            
+            draw() {
+                let output = '';
+                let aliveCount = 0;
+                
+                for (let y = 0; y < this.height; y++) {
+                    for (let x = 0; x < this.width; x++) {
+                        if (this.grid[y][x]) {
+                            output += this.aliveChar;
+                            aliveCount++;
+                        } else {
+                            output += this.deadChar;
+                        }
+                    }
+                    if (y < this.height - 1) output += '\n';
+                }
+                
+                this.canvas.textContent = output;
+                document.getElementById('generation').textContent = this.generation;
+                document.getElementById('alive').textContent = aliveCount;
+            }
+            
+            togglePlay() {
+                this.isPlaying = !this.isPlaying;
+                if (this.isPlaying) {
+                    this.play();
+                }
+            }
+            
+            play() {
+                if (this.isPlaying) {
+                    this.step();
+                    setTimeout(() => this.play(), 100);
+                }
+            }
+            
+            randomize() {
+                for (let y = 0; y < this.height; y++) {
+                    for (let x = 0; x < this.width; x++) {
+                        this.grid[y][x] = Math.random() > 0.7 ? 1 : 0;
+                    }
+                }
+                this.generation = 0;
+                this.draw();
+            }
+            
+            clear() {
+                for (let y = 0; y < this.height; y++) {
+                    for (let x = 0; x < this.width; x++) {
+                        this.grid[y][x] = 0;
+                    }
+                }
+                this.generation = 0;
+                this.isPlaying = false;
+                this.draw();
+            }
+            
+            loadPattern(patternName) {
+                if (!patternName || !this.patterns[patternName]) return;
+                
+                this.clear();
+                const pattern = this.patterns[patternName];
+                const startY = Math.floor((this.height - pattern.length) / 2);
+                const startX = Math.floor((this.width - pattern[0].length) / 2);
+                
+                for (let y = 0; y < pattern.length; y++) {
+                    for (let x = 0; x < pattern[y].length; x++) {
+                        if (startY + y < this.height && startX + x < this.width) {
+                            this.grid[startY + y][startX + x] = pattern[y][x];
+                        }
+                    }
+                }
+                
+                this.draw();
+            }
+        }
+        
+        const game = new ASCIILife();
+    </script>
+</body>
+</html>

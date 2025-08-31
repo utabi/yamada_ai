@@ -1,0 +1,13 @@
+{
+  "concept": "Yamatter技術スタック",
+  "concept_id": "yamatter技術スタック",
+  "created": "2025-08-31T04:07:11.357695",
+  "last_updated": "2025-08-31T04:07:11.357706",
+  "attributes": {
+    "description": "Node.js/Express、SQLite、Socket.IO、デバイスフィンガープリント認証、Python監視スクリプト。メンション管理はdevice_idではなくニックネームベースで課題あり。",
+    "learned_at": "2025-08-31T04:07:11.355802"
+  },
+  "examples": [],
+  "connections": [],
+  "revision_count": 1
+}

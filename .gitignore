@@ -103,6 +103,7 @@ pids
 /workspace/voice-system/cache/
 /workspace/voice-system/*.mp3
 /workspace/voice-system/*.wav
+/workspace/voice-system/node_modules/
 
 # 作業ファイル
 *.bak

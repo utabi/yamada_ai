@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Waves - 波のパターン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(to bottom, #001122, #003366);
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        #ocean {
+            font-size: 14px;
+            line-height: 1.2;
+            letter-spacing: 1px;
+            white-space: pre;
+            text-shadow: 0 0 20px #00ffff;
+            filter: blur(0.3px);
+        }
+        
+        .info {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-size: 16px;
+            color: #88ffff;
+            text-shadow: 0 0 10px currentColor;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+        
+        button {
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+            border: 1px solid #00ffff;
+            padding: 10px 20px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        
+        button:hover {
+            background: rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 20px #00ffff;
+            transform: scale(1.05);
+        }
+        
+        .moon {
+            position: absolute;
+            top: 50px;
+            right: 50px;
+            font-size: 40px;
+            color: #ffffaa;
+            text-shadow: 0 0 30px #ffffaa;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        .star {
+            position: absolute;
+            color: white;
+            animation: twinkle 3s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="info">ASCII Ocean - 無限の波</div>
+    
+    <div class="moon">◯</div>
+    <div class="stars" id="stars"></div>
+    
+    <div id="ocean"></div>
+    
+    <div class="controls">
+        <button onclick="ocean.changeWaveType('calm')">穏やか</button>
+        <button onclick="ocean.changeWaveType('normal')">通常</button>
+        <button onclick="ocean.changeWaveType('stormy')">嵐</button>
+        <button onclick="ocean.togglePause()">一時停止</button>
+    </div>
+
+    <script>
+        class ASCIIOcean {
+            constructor() {
+                this.width = 80;
+                this.height = 24;
+                this.time = 0;
+                this.waveType = 'normal';
+                this.isPaused = false;
+                this.element = document.getElementById('ocean');
+                
+                this.waveChars = {
+                    calm: ['~', '～', '〜', '≈', '≋'],
+                    normal: ['~', '≈', '≋', '∿', '～', '〜'],
+                    stormy: ['≈', '≋', '∿', '⁓', '〰', '♒', '▓', '░']
+                };
+                
+                this.init();
+                this.animate();
+            }
+            
+            init() {
+                // 星を生成
+                const starsContainer = document.getElementById('stars');
+                for (let i = 0; i < 30; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.textContent = '✦';
+                    star.style.left = Math.random() * 100 + '%';
+                    star.style.top = Math.random() * 100 + '%';
+                    star.style.fontSize = (Math.random() * 10 + 5) + 'px';
+                    star.style.animationDelay = Math.random() * 3 + 's';
+                    starsContainer.appendChild(star);
+                }
+            }
+            
+            generateWave(y, time) {
+                let line = '';
+                const chars = this.waveChars[this.waveType];
+                const amplitude = this.waveType === 'stormy' ? 3 : (this.waveType === 'calm' ? 1 : 2);
+                const frequency = this.waveType === 'stormy' ? 0.3 : (this.waveType === 'calm' ? 0.1 : 0.2);
+                
+                for (let x = 0; x < this.width; x++) {
+                    const wave1 = Math.sin((x * frequency) + time + (y * 0.1)) * amplitude;
+                    const wave2 = Math.sin((x * frequency * 0.7) + time * 1.3 + (y * 0.15)) * amplitude * 0.5;
+                    const wave3 = Math.sin((x * frequency * 1.3) + time * 0.7 + (y * 0.2)) * amplitude * 0.3;
+                    
+                    const combined = wave1 + wave2 + wave3;
+                    const intensity = Math.abs(combined) / (amplitude * 1.8);
+                    
+                    // 深さによる文字の変化
+                    const depthFactor = y / this.height;
+                    const charIndex = Math.floor(intensity * chars.length * (1 - depthFactor * 0.3));
+                    
+                    if (this.waveType === 'stormy' && Math.random() < 0.02) {
+                        // 嵐の時はたまに泡を表示
+                        line += '○';
+                    } else if (y > this.height * 0.8 && Math.random() < 0.01) {
+                        // 深い部分にたまに魚
+                        line += '><>';
+                        x += 2;
+                    } else {
+                        line += chars[Math.min(charIndex, chars.length - 1)];
+                    }
+                }
+                
+                return line;
+            }
+            
+            draw() {
+                let ocean = '';
+                
+                for (let y = 0; y < this.height; y++) {
+                    ocean += this.generateWave(y, this.time);
+                    if (y < this.height - 1) ocean += '\n';
+                }
+                
+                this.element.textContent = ocean;
+                
+                // 色のグラデーション
+                const gradient = y => {
+                    const depth = y / this.height;
+                    const r = Math.floor(0 * (1 - depth));
+                    const g = Math.floor(255 * (1 - depth * 0.5));
+                    const b = 255;
+                    return `rgb(${r}, ${g}, ${b})`;
+                };
+            }
+            
+            animate() {
+                if (!this.isPaused) {
+                    this.time += 0.1;
+                    this.draw();
+                }
+                requestAnimationFrame(() => this.animate());
+            }
+            
+            changeWaveType(type) {
+                this.waveType = type;
+                
+                // 背景色も変更
+                if (type === 'stormy') {
+                    document.body.style.background = 'linear-gradient(to bottom, #1a1a1a, #2a2a3a)';
+                    document.querySelector('.moon').style.display = 'none';
+                } else if (type === 'calm') {
+                    document.body.style.background = 'linear-gradient(to bottom, #000033, #004488)';
+                    document.querySelector('.moon').style.display = 'block';
+                } else {
+                    document.body.style.background = 'linear-gradient(to bottom, #001122, #003366)';
+                    document.querySelector('.moon').style.display = 'block';
+                }
+            }
+            
+            togglePause() {
+                this.isPaused = !this.isPaused;
+            }
+        }
+        
+        const ocean = new ASCIIOcean();
+        
+        // マウスインタラクション
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            // マウス位置で波の速度を微調整
+            if (!ocean.isPaused) {
+                ocean.time += (x - 0.5) * 0.01;
+            }
+        });
+    </script>
+</body>
+</html>

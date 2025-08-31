@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Sound - 音の視覚化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        #visualizer {
+            font-size: 10px;
+            line-height: 1;
+            letter-spacing: 2px;
+            white-space: pre;
+            text-align: center;
+            filter: contrast(1.5);
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 90%;
+        }
+        
+        button {
+            background: rgba(0, 255, 0, 0.1);
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 12px 24px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        
+        button:hover {
+            background: rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 20px #0f0;
+            transform: scale(1.05);
+        }
+        
+        button:active {
+            transform: scale(0.95);
+        }
+        
+        button.active {
+            background: rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 30px #0f0;
+        }
+        
+        .info {
+            position: absolute;
+            top: 20px;
+            text-align: center;
+            font-size: 16px;
+            color: #0a0;
+            text-shadow: 0 0 10px currentColor;
+        }
+        
+        .frequency-display {
+            position: absolute;
+            top: 50px;
+            font-size: 12px;
+            color: #080;
+            opacity: 0.8;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        .playing {
+            animation: pulse 0.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">ASCII Sound Visualizer</div>
+    <div class="frequency-display" id="freq">♪ 音を生成してください ♪</div>
+    
+    <div id="visualizer"></div>
+    
+    <div class="controls">
+        <button onclick="soundGen.playTone(261.63)">C (ド)</button>
+        <button onclick="soundGen.playTone(293.66)">D (レ)</button>
+        <button onclick="soundGen.playTone(329.63)">E (ミ)</button>
+        <button onclick="soundGen.playTone(349.23)">F (ファ)</button>
+        <button onclick="soundGen.playTone(392.00)">G (ソ)</button>
+        <button onclick="soundGen.playTone(440.00)">A (ラ)</button>
+        <button onclick="soundGen.playTone(493.88)">B (シ)</button>
+        <button onclick="soundGen.playTone(523.25)">C+ (ド)</button>
+        <button onclick="soundGen.playChord()">和音</button>
+        <button onclick="soundGen.playArpeggio()">アルペジオ</button>
+        <button onclick="soundGen.playRandom()">ランダム</button>
+        <button onclick="soundGen.stop()">停止</button>
+    </div>
+
+    <script>
+        class ASCIISoundVisualizer {
+            constructor() {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                this.analyser = this.audioContext.createAnalyser();
+                this.analyser.fftSize = 256;
+                this.analyser.smoothingTimeConstant = 0.8;
+                
+                this.visualizer = document.getElementById('visualizer');
+                this.freqDisplay = document.getElementById('freq');
+                this.oscillators = [];
+                this.gainNodes = [];
+                
+                this.width = 80;
+                this.height = 30;
+                this.chars = [' ', '.', '·', ':', '¦', '|', '‖', '▌', '█'];
+                this.waveChars = ['_', '~', '≈', '≋', '∿', '〰', '⁓'];
+                
+                this.animate();
+            }
+            
+            createOscillator(frequency, type = 'sine') {
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                
+                oscillator.type = type;
+                oscillator.frequency.value = frequency;
+                
+                gainNode.gain.value = 0;
+                gainNode.gain.linearRampToValueAtTime(0.3, this.audioContext.currentTime + 0.01);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.analyser);
+                gainNode.connect(this.audioContext.destination);
+                
+                oscillator.start();
+                
+                this.oscillators.push(oscillator);
+                this.gainNodes.push(gainNode);
+                
+                return { oscillator, gainNode };
+            }
+            
+            playTone(frequency, duration = 500) {
+                this.stop();
+                
+                const { oscillator, gainNode } = this.createOscillator(frequency);
+                this.freqDisplay.textContent = `♪ ${frequency.toFixed(2)} Hz ♪`;
+                
+                setTimeout(() => {
+                    gainNode.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + 0.1);
+                    setTimeout(() => this.stop(), 100);
+                }, duration);
+                
+                // ボタンアニメーション
+                const buttons = document.querySelectorAll('button');
+                buttons.forEach(btn => {
+                    if (btn.textContent.includes(frequency.toFixed(0))) {
+                        btn.classList.add('active');
+                        setTimeout(() => btn.classList.remove('active'), duration);
+                    }
+                });
+            }
+            
+            playChord() {
+                this.stop();
+                
+                const frequencies = [261.63, 329.63, 392.00]; // C Major
+                frequencies.forEach(freq => {
+                    this.createOscillator(freq);
+                });
+                
+                this.freqDisplay.textContent = `♪ C Major Chord ♪`;
+                
+                setTimeout(() => {
+                    this.gainNodes.forEach(gain => {
+                        gain.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + 0.2);
+                    });
+                    setTimeout(() => this.stop(), 200);
+                }, 1000);
+            }
+            
+            playArpeggio() {
+                this.stop();
+                
+                const notes = [261.63, 329.63, 392.00, 523.25];
+                let index = 0;
+                
+                const playNext = () => {
+                    if (index < notes.length) {
+                        this.playTone(notes[index], 200);
+                        index++;
+                        setTimeout(playNext, 250);
+                    }
+                };
+                
+                this.freqDisplay.textContent = `♪ Arpeggio ♪`;
+                playNext();
+            }
+            
+            playRandom() {
+                this.stop();
+                
+                const baseFreq = 200 + Math.random() * 600;
+                const type = ['sine', 'square', 'sawtooth', 'triangle'][Math.floor(Math.random() * 4)];
+                
+                const { oscillator, gainNode } = this.createOscillator(baseFreq, type);
+                
+                // 周波数を変調
+                const lfo = this.audioContext.createOscillator();
+                const lfoGain = this.audioContext.createGain();
+                
+                lfo.frequency.value = Math.random() * 10;
+                lfoGain.gain.value = 20;
+                
+                lfo.connect(lfoGain);
+                lfoGain.connect(oscillator.frequency);
+                lfo.start();
+                
+                this.freqDisplay.textContent = `♪ Random (${type}) ${baseFreq.toFixed(0)} Hz ♪`;
+                
+                setTimeout(() => {
+                    gainNode.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + 0.3);
+                    setTimeout(() => {
+                        lfo.stop();
+                        this.stop();
+                    }, 300);
+                }, 2000);
+            }
+            
+            stop() {
+                this.oscillators.forEach(osc => {
+                    try { osc.stop(); } catch(e) {}
+                });
+                this.oscillators = [];
+                this.gainNodes = [];
+                this.freqDisplay.textContent = `♪ 音を生成してください ♪`;
+            }
+            
+            drawVisualizer() {
+                const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+                this.analyser.getByteFrequencyData(dataArray);
+                
+                let output = '';
+                
+                // 周波数スペクトラム表示
+                for (let y = 0; y < this.height; y++) {
+                    for (let x = 0; x < this.width; x++) {
+                        const dataIndex = Math.floor(x * dataArray.length / this.width);
+                        const value = dataArray[dataIndex];
+                        const normalizedValue = value / 255;
+                        const threshold = 1 - (y / this.height);
+                        
+                        if (normalizedValue > threshold) {
+                            const intensity = Math.floor(normalizedValue * (this.chars.length - 1));
+                            output += this.chars[intensity];
+                        } else if (y === this.height - 1) {
+                            // 底部に波形
+                            const waveIndex = Math.floor(Math.sin(x * 0.2 + Date.now() * 0.001) * 3 + 3);
+                            output += this.waveChars[Math.min(waveIndex, this.waveChars.length - 1)];
+                        } else {
+                            output += ' ';
+                        }
+                    }
+                    if (y < this.height - 1) output += '\n';
+                }
+                
+                // 中央に円形パターン
+                const timeDomainArray = new Uint8Array(this.analyser.frequencyBinCount);
+                this.analyser.getByteTimeDomainData(timeDomainArray);
+                
+                const avgVolume = timeDomainArray.reduce((a, b) => a + Math.abs(b - 128), 0) / timeDomainArray.length;
+                const radius = Math.floor(avgVolume / 10);
+                
+                if (radius > 0) {
+                    const lines = output.split('\n');
+                    const centerX = Math.floor(this.width / 2);
+                    const centerY = Math.floor(this.height / 2);
+                    
+                    for (let angle = 0; angle < Math.PI * 2; angle += 0.1) {
+                        const x = Math.floor(centerX + Math.cos(angle) * radius * 2);
+                        const y = Math.floor(centerY + Math.sin(angle) * radius);
+                        
+                        if (y >= 0 && y < lines.length && x >= 0 && x < this.width) {
+                            const line = lines[y];
+                            lines[y] = line.substring(0, x) + '◉' + line.substring(x + 1);
+                        }
+                    }
+                    
+                    output = lines.join('\n');
+                }
+                
+                this.visualizer.textContent = output;
+                
+                // 色の変化
+                const maxValue = Math.max(...dataArray);
+                const hue = 120 - (maxValue / 255) * 60; // 緑から黄色へ
+                this.visualizer.style.color = `hsl(${hue}, 100%, 50%)`;
+                this.visualizer.style.textShadow = `0 0 ${maxValue / 10}px currentColor`;
+            }
+            
+            animate() {
+                this.drawVisualizer();
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+        
+        const soundGen = new ASCIISoundVisualizer();
+        
+        // キーボード操作
+        document.addEventListener('keydown', (e) => {
+            const keyMap = {
+                'a': 261.63, // C
+                's': 293.66, // D
+                'd': 329.63, // E
+                'f': 349.23, // F
+                'g': 392.00, // G
+                'h': 440.00, // A
+                'j': 493.88, // B
+                'k': 523.25, // C+
+                ' ': () => soundGen.stop()
+            };
+            
+            if (keyMap[e.key]) {
+                if (typeof keyMap[e.key] === 'function') {
+                    keyMap[e.key]();
+                } else {
+                    soundGen.playTone(keyMap[e.key]);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

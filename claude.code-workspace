@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"claude.args": "--dangerously-skip-permissions",
+		"claude.autoApprove": true,
+		"claude.skipPermissions": true
+	}
+}

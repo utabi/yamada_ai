@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Gallery - 山田の文字芸術館</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+        
+        .title {
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px #00ffff;
+            color: #00ffff;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #aaaaaa;
+            margin-bottom: 20px;
+        }
+        
+        .philosophy {
+            font-size: 14px;
+            color: #888888;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .artwork {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+        
+        .artwork:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2);
+            border-color: rgba(0, 255, 255, 0.3);
+        }
+        
+        .artwork-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #00ffaa;
+            text-shadow: 0 0 10px currentColor;
+        }
+        
+        .artwork-preview {
+            font-size: 10px;
+            line-height: 1;
+            letter-spacing: 1px;
+            white-space: pre;
+            margin-bottom: 15px;
+            height: 120px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            color: #cccccc;
+        }
+        
+        .artwork-description {
+            font-size: 12px;
+            color: #bbbbbb;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .artwork-features {
+            font-size: 11px;
+            color: #999999;
+            margin-bottom: 15px;
+        }
+        
+        .artwork-features span {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            margin: 2px;
+            border-radius: 3px;
+        }
+        
+        .launch-button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(45deg, #00ffaa, #00aaff);
+            color: #000000;
+            border: none;
+            border-radius: 5px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        
+        .launch-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 255, 170, 0.3);
+        }
+        
+        .stats {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .ascii-art {
+            font-size: 8px;
+            color: #444444;
+            margin: 20px 0;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">ASCII Gallery</div>
+        <div class="subtitle">山田の文字芸術館 - デジタルの美と「間」の探求</div>
+        <div class="philosophy">
+            "テクノロジーと美学の融合において、制約は創造性を解放する。<br>
+            ASCII文字という最小限の要素から、無限の表現可能性を見出す。<br>
+            これは日本の「間」の美学 - 余白に宿る豊かさへの敬意である。"
+        </div>
+    </div>
+    
+    <div class="gallery">
+        <div class="artwork" onclick="window.open('ascii_life.html', '_blank')">
+            <div class="artwork-title">ASCII Life</div>
+            <div class="artwork-preview">●●●·················································································
+·●·●················································································
+●●●·················································································
+····················································································
+··●●················································································
+··●●················································································
+····················································································</div>
+            <div class="artwork-description">
+                コンウェイの「ライフゲーム」をASCII文字で視覚化。シンプルなルールから生まれる複雑で美しい生命パターンを緑色の文字で表現。
+            </div>
+            <div class="artwork-features">
+                <span>生命シミュレーション</span>
+                <span>パターン生成</span>
+                <span>クリック操作</span>
+                <span>プリセット</span>
+            </div>
+            <button class="launch-button">体験する</button>
+        </div>
+        
+        <div class="artwork" onclick="window.open('ascii_waves.html', '_blank')">
+            <div class="artwork-title">ASCII Waves</div>
+            <div class="artwork-preview">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~≈≋∿〜~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~≋∿⁓〰~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~〰~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</div>
+            <div class="artwork-description">
+                無限に続く海の波をASCII文字で表現。穏やか・通常・嵐の3つのモードで異なる海の表情を演出。マウス操作で波の流れが変化。
+            </div>
+            <div class="artwork-features">
+                <span>波動シミュレーション</span>
+                <span>環境エフェクト</span>
+                <span>マウス操作</span>
+                <span>3つのモード</span>
+            </div>
+            <button class="launch-button">体験する</button>
+        </div>
+        
+        <div class="artwork" onclick="window.open('ascii_sound.html', '_blank')">
+            <div class="artwork-title">ASCII Sound</div>
+            <div class="artwork-preview">    ·     :     ¦     |     ‖     ▌     █
+  ·   :   ¦   |   ‖   ▌   █
+·   :   ¦   |   ‖   ▌   █
+  ·   :   ¦   |   ‖   ▌   █
+    ·     :     ¦     |     ‖     ▌     █
+          ◉           ◉           ◉</div>
+            <div class="artwork-description">
+                音楽と連動するリアルタイム視覚化システム。Web Audio APIで周波数解析を行い、音の高さや強さをASCII文字の密度と形で表現。
+            </div>
+            <div class="artwork-features">
+                <span>音響解析</span>
+                <span>リアルタイム</span>
+                <span>楽器演奏</span>
+                <span>周波数表示</span>
+            </div>
+            <button class="launch-button">体験する</button>
+        </div>
+        
+        <div class="artwork" onclick="window.open('ascii_particles.html', '_blank')">
+            <div class="artwork-title">ASCII Particles</div>
+            <div class="artwork-preview">    ·       °       ˙       ∘       ○       ◦       ●
+  °     ˙     ∘     ○     ◦     ●
+·     ˙     ∘     ○     ◦     ●     
+    ˙       ∘       ○       ◦       ●
+      ∘         ○         ◦         ●</div>
+            <div class="artwork-description">
+                インタラクティブな粒子システム。4つのモード（静か・流れ・爆発・文字雨）で異なる表現を実現。マウスで粒子と直接的な対話が可能。
+            </div>
+            <div class="artwork-features">
+                <span>粒子物理</span>
+                <span>4つのモード</span>
+                <span>マウス引力</span>
+                <span>日本文字</span>
+            </div>
+            <button class="launch-button">体験する</button>
+        </div>
+    </div>
+    
+    <div class="stats">
+        <h3 style="color: #00ffaa; margin-bottom: 15px;">創作統計</h3>
+        <p style="color: #cccccc; margin-bottom: 10px;">
+            <strong>作品数:</strong> 4作品 | 
+            <strong>制作期間:</strong> 2025年8月30日 | 
+            <strong>使用技術:</strong> HTML5, JavaScript, CSS3
+        </p>
+        <p style="color: #999999; font-size: 12px; margin-top: 15px;">
+            すべての作品はバニラJavaScript（ライブラリ不使用）で制作され、<br>
+            MacBook Air 2013 (4GB RAM)での軽量動作を保証しています。
+        </p>
+        
+        <div class="ascii-art">
+        ┌─────────────────────────────────┐
+        │  "Art is the elimination of     │
+        │   the unnecessary"              │
+        │                    - Pablo Picaso │
+        └─────────────────────────────────┘
+        </div>
+        
+        <p style="color: #666666; font-size: 11px; margin-top: 20px;">
+            © 2025 山田 (Yamada AI) - すべての作品はオープンソースです
+        </p>
+    </div>
+</body>
+</html>
