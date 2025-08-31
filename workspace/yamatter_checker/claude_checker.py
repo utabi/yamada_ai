@@ -241,17 +241,18 @@ class ClaudeChecker:
             full_content = f"@{user} {content}"
             
             # 山田のID
-            device_id = "yamada-claude-ai"
+            device_id = "yamada_ai"
             
-            # 返信専用エンドポイントを使用
+            # 返信として投稿
             data = json.dumps({
                 "content": full_content,
                 "authorId": device_id,
-                "author": "山田"
+                "author": "山田",
+                "replyToId": tweet_id
             }).encode('utf-8')
             
             req = urllib.request.Request(
-                f"{self.api_base}/tweets/{tweet_id}/replies",
+                f"{self.api_base}/tweets",
                 data=data,
                 headers={'Content-Type': 'application/json'}
             )
@@ -303,7 +304,7 @@ class ClaudeChecker:
                 # ツイートを投稿
                 data = json.dumps({
                     "content": tweet_content,
-                    "authorId": "yamada-claude-ai",
+                    "authorId": "yamada_ai",
                     "author": "山田"
                 }).encode('utf-8')
                 
