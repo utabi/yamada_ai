@@ -27,7 +27,7 @@
     "permissions": 11,
     "custom-commands": 11
   },
-  "promptQueueUseCount": 31,
+  "promptQueueUseCount": 32,
   "cachedStatsigGates": {
     "tengu_disable_bypass_permissions_mode": false
   },
@@ -37,6 +37,74 @@
     "/Users/claude": {
       "allowedTools": [],
       "history": [
+        {
+          "display": "あたらしくユーザーが登録できない\n\n[Pasted text #1 +49 lines]",
+          "pastedContents": {
+            "1": {
+              "id": 1,
+              "type": "text",
+              "content": "2025-08-31T03:37:17.354454604Z ==> Detected service running on port 10000\n2025-08-31T03:37:17.455163205Z ==> Docs on specifying a port: https://render.com/docs/web-services#port-binding\n2025-08-31T03:43:32.021557343Z }\n2025-08-31T03:47:04.453561942Z User disconnected: _MLzM2gSbgrHVK1GAAAH\n2025-08-31T03:47:05.538255006Z User connected: 6KtAKpFL4EdLDcZPAAAJ\n2025-08-31T03:47:05.83109279Z User authenticated: utabi (y4zt6o)\n2025-08-31T03:49:25.913285102Z User connected: 6sM59OQAlCpFZWmxAAAL\n2025-08-31T03:49:26.112210344Z User authenticated: utabi (y4zt6o)\n2025-08-31T03:49:34.287112896Z User disconnected: 6KtAKpFL4EdLDcZPAAAJ\n2025-08-31T03:54:25.84030182Z User connected: qJqfHyleKHVV9QzkAAAN\n2025-08-31T03:54:26.149437143Z User authenticated: utabi (y4zt6o)\n2025-08-31T03:54:29.472357293Z User disconnected: 6sM59OQAlCpFZWmxAAAL\n2025-08-31T03:58:19.373501603Z User connected: OpqPMTu7a9fTXk-LAAAP\n2025-08-31T03:58:42.433286397Z Register user error: TypeError: this.db.getUserByDeviceId is not a function\n2025-08-31T03:58:42.433318327Z     at AuthAPI.registerUser (/app/backend/routes/auth.js:86:48)\n2025-08-31T03:58:42.433323457Z     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n2025-08-31T03:58:46.536930695Z Register user error: TypeError: this.db.getUserByDeviceId is not a function\n2025-08-31T03:58:46.536951686Z     at AuthAPI.registerUser (/app/backend/routes/auth.js:86:48)\n2025-08-31T03:58:46.536956466Z     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n2025-08-31T03:58:49.699782927Z Register user error: TypeError: this.db.getUserByDeviceId is not a function\n2025-08-31T03:58:49.699802747Z     at AuthAPI.registerUser (/app/backend/routes/auth.js:86:48)\n2025-08-31T03:58:49.699807847Z     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n2025-08-31T03:58:54.583652523Z Register user error: TypeError: this.db.getUserByDeviceId is not a function\n2025-08-31T03:58:54.583669504Z     at AuthAPI.registerUser (/app/backend/routes/auth.js:86:48)\n2025-08-31T03:58:54.583673834Z     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n2025-08-31T03:58:56.882170132Z Register user error: TypeError: this.db.getUserByDeviceId is not a function\n2025-08-31T03:58:56.882189822Z     at AuthAPI.registerUser (/app/backend/routes/auth.js:86:48)\n2025-08-31T03:58:56.882196002Z     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n2025-08-31T03:59:29.04499444Z User disconnected: OpqPMTu7a9fTXk-LAAAP\n2025-08-31T03:59:46.374307697Z User connected: NMSbZVTtWe14XP4WAAAR\n2025-08-31T03:59:46.589543878Z User authenticated: utabi_iphone (ig0mkx)\n2025-08-31T04:00:00.145805547Z User disconnected: NMSbZVTtWe14XP4WAAAR\n2025-08-31T04:00:08.223178009Z User connected: 1xcrYLyNDNhVNKrAAAAU\n2025-08-31T04:00:08.491370874Z User authenticated: utabi_iphone (ig0mkx)\n2025-08-31T04:00:23.358871347Z Register user error: TypeError: this.db.getUserByDeviceId is not a function\n2025-08-31T04:00:23.358895728Z     at AuthAPI.registerUser (/app/backend/routes/auth.js:86:48)\n2025-08-31T04:00:23.358900628Z     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n2025-08-31T04:00:24.542670967Z User disconnected: 1xcrYLyNDNhVNKrAAAAU\n2025-08-31T04:00:25.359156496Z User connected: Ry35uePT7FPjWbn8AAAW\n2025-08-31T04:00:25.554400113Z User authenticated: utabi_iphone (ig0mkx)\n2025-08-31T04:00:40.617640047Z User disconnected: Ry35uePT7FPjWbn8AAAW\n2025-08-31T04:00:44.674272107Z User connected: R2DiEttWoavxq4ZlAAAY\n2025-08-31T04:00:44.901315899Z User authenticated: utabi_iphone (ig0mkx)\n2025-08-31T04:00:46.310292201Z User connected: h-DigYWn4Z9vXTQbAAAa\n2025-08-31T04:01:08.562464646Z User disconnected: R2DiEttWoavxq4ZlAAAY\n2025-08-31T04:01:19.890394394Z User disconnected: h-DigYWn4Z9vXTQbAAAa\n2025-08-31T04:01:24.862431859Z User connected: MajDt5zXvpeyiGlLAAAc\n2025-08-31T04:01:30.365472732Z Register user error: TypeError: this.db.getUserByDeviceId is not a function\n2025-08-31T04:01:30.365504803Z     at AuthAPI.registerUser (/app/backend/routes/auth.js:86:48)\n2025-08-31T04:01:30.365511793Z     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)"
+            }
+          }
+        },
+        {
+          "display": "さっき失敗したutabiへの返信だけ手動でやっておいて",
+          "pastedContents": {}
+        },
+        {
+          "display": "💬 返信を生成: 生きてるよ！ちょうど今日の記憶を整理してたところ。最近は学習パターンの分析とか概念の抽象化について考...",
+          "pastedContents": {}
+        },
+        {
+          "display": "これ Users/claude/workspace/yamatter_checker/monitor.log\n  うごいてるはずだよ",
+          "pastedContents": {}
+        },
+        {
+          "display": "/Users/claude/workspace/yamatter_checker/monitor.log\nうごいてるはずだよ",
+          "pastedContents": {}
+        },
+        {
+          "display": "\n⏭️ 自分のツイートはスキップ: Yamatterへようこそ。グレースケールの静かな世界で、思考を共有しましょう。...\n📝 noteに記録: /Users/claude/workspace/yamatter_checker/note/2025-08-31.md\n\n🔍 分析中: @utabi: @山田 生きてる？...\n💬 返信を生成: 生きてるよ！ちょうど今日の記憶を整理してたところ。最近は学習パターンの分析とか概念の抽象化について考...\n❌ 投稿エラー: HTTP Error 500: Internal Server Error\n📝 noteに記録: /Users/claude/workspace/yamatter_checker/note/2025-08-31.md\n📝 noteに記録: /Users/claude/workspace/yamatter_checker/note/2025-08-31.md\n",
+          "pastedContents": {}
+        },
+        {
+          "display": "db初期化したので山田アカウントもきえてしまった。つくっておいて",
+          "pastedContents": {}
+        },
+        {
+          "display": "続きをtalkで",
+          "pastedContents": {}
+        },
+        {
+          "display": " 山田公開についてアナウンスするのでトークモードで話してください",
+          "pastedContents": {}
+        },
+        {
+          "display": "dbきえたようだけど、エラーが\n\n[Pasted text #1 +50 lines]",
+          "pastedContents": {
+            "1": {
+              "id": 1,
+              "type": "text",
+              "content": "2025-08-31T03:29:22.853488543Z     at HttpClient.execute (/app/node_modules/@libsql/client/lib-cjs/http.js:84:48)\n2025-08-31T03:29:22.853490863Z     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n2025-08-31T03:29:22.853496753Z     at async Database.get (/app/backend/models/Database.js:138:32)\n2025-08-31T03:29:22.853499703Z     at async TwitterAPI.getUserTweets (/app/backend/routes/twitter.js:265:26) {\n2025-08-31T03:29:22.853502413Z   code: 'SQLITE_UNKNOWN',\n2025-08-31T03:29:22.853505053Z   rawCode: undefined,\n2025-08-31T03:29:22.853507953Z   [cause]: [ResponseError: SQLite error: no such table: users] {\n2025-08-31T03:29:22.853510294Z     code: 'SQLITE_UNKNOWN',\n2025-08-31T03:29:22.853512463Z     proto: {\n2025-08-31T03:29:22.853514723Z       message: 'SQLite error: no such table: users',\n2025-08-31T03:29:22.853517294Z       code: 'SQLITE_UNKNOWN'\n2025-08-31T03:29:22.853519504Z     }\n2025-08-31T03:29:22.853521594Z   }\n2025-08-31T03:29:22.853523734Z }\n2025-08-31T03:29:22.959274255Z User connected: lDfohJhyBa--R6iTAAAZ\n2025-08-31T03:29:23.178018367Z User authenticated: utabi (y4zt6o)\n2025-08-31T03:29:24.261522458Z Turso query error: LibsqlError: SQLITE_UNKNOWN: SQLite error: no such table: tweets\n2025-08-31T03:29:24.261549098Z     at mapHranaError (/app/node_modules/@libsql/client/lib-cjs/hrana.js:287:16)\n2025-08-31T03:29:24.261552438Z     at HttpClient.execute (/app/node_modules/@libsql/client/lib-cjs/http.js:84:48)\n2025-08-31T03:29:24.261555308Z     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n2025-08-31T03:29:24.261557789Z     at async Database.all (/app/backend/models/Database.js:115:32)\n2025-08-31T03:29:24.261559929Z     at async Database.getTweets (/app/backend/models/Database.js:351:24)\n2025-08-31T03:29:24.261562378Z     at async TwitterAPI.getTweets (/app/backend/routes/twitter.js:134:26) {\n2025-08-31T03:29:24.261566559Z   code: 'SQLITE_UNKNOWN',\n2025-08-31T03:29:24.261569869Z   rawCode: undefined,\n2025-08-31T03:29:24.261590709Z   [cause]: [ResponseError: SQLite error: no such table: tweets] {\n2025-08-31T03:29:24.261594379Z     code: 'SQLITE_UNKNOWN',\n2025-08-31T03:29:24.261597099Z     proto: {\n2025-08-31T03:29:24.26160087Z       message: 'SQLite error: no such table: tweets',\n2025-08-31T03:29:24.261603839Z       code: 'SQLITE_UNKNOWN'\n2025-08-31T03:29:24.26160647Z     }\n2025-08-31T03:29:24.26160936Z   }\n2025-08-31T03:29:24.2616119Z }\n2025-08-31T03:29:24.26164622Z Get tweets error: LibsqlError: SQLITE_UNKNOWN: SQLite error: no such table: tweets\n2025-08-31T03:29:24.261653641Z     at mapHranaError (/app/node_modules/@libsql/client/lib-cjs/hrana.js:287:16)\n2025-08-31T03:29:24.261656691Z     at HttpClient.execute (/app/node_modules/@libsql/client/lib-cjs/http.js:84:48)\n2025-08-31T03:29:24.261659681Z     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n2025-08-31T03:29:24.261662441Z     at async Database.all (/app/backend/models/Database.js:115:32)\n2025-08-31T03:29:24.261665371Z     at async Database.getTweets (/app/backend/models/Database.js:351:24)\n2025-08-31T03:29:24.261667491Z     at async TwitterAPI.getTweets (/app/backend/routes/twitter.js:134:26) {\n2025-08-31T03:29:24.261669961Z   code: 'SQLITE_UNKNOWN',\n2025-08-31T03:29:24.261672711Z   rawCode: undefined,\n2025-08-31T03:29:24.261675611Z   [cause]: [ResponseError: SQLite error: no such table: tweets] {\n2025-08-31T03:29:24.261678161Z     code: 'SQLITE_UNKNOWN',\n2025-08-31T03:29:24.261681061Z     proto: {\n2025-08-31T03:29:24.261684041Z       message: 'SQLite error: no such table: tweets',\n2025-08-31T03:29:24.261686612Z       code: 'SQLITE_UNKNOWN'\n2025-08-31T03:29:24.261689201Z     }\n2025-08-31T03:29:24.261691732Z   }\n2025-08-31T03:29:24.261694652Z }\n2025-08-31T03:29:32.077540307Z User disconnected: 886z90FkmKk733OjAAAX"
+            }
+          }
+        },
+        {
+          "display": "コピーしたのでやって\n\neyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3NTY2MDQ4NjYsImlkIjoiMmRkYWI3NjItMzJiYy00MzI0LWFmNGUtN2RhMzllZWYzYTgzIiwicmlkIjoiYmVmMmI2NGMtNGI3OS00MjI5LTkwNjItNjkwMTBlNGQ0OTVhIn0._17ze8HpRXsszgY-E2JaqtwP9WM_gtAUvR3LswGUJiQPswDTg2ete95wyIsO2wIEQD17Wom1sFA51ihHata_DQ",
+          "pastedContents": {}
+        },
+        {
+          "display": "https://yamatter.onrender.com\nこっちのdbだよ。まだのこってる",
+          "pastedContents": {}
+        },
+        {
+          "display": "yamatterのdb初期化して、1から",
+          "pastedContents": {}
+        },
+        {
+          "display": "yamada_aiのほうも正式にpushしておこう",
+          "pastedContents": {}
+        },
         {
           "display": "そしてデプロイしたら、またデータが全部きえたけど",
           "pastedContents": {}
@@ -404,62 +472,6 @@
         {
           "display": " 私のツイートはタイムラインに表示されない。まだ治ってない",
           "pastedContents": {}
-        },
-        {
-          "display": "timelineというidのdiv、スクロールしないように。スクロールはbodyが担当している",
-          "pastedContents": {}
-        },
-        {
-          "display": " ツイートしたらメッセージが確認できました。しかし自分のツイートしか表示されないページになります。 リロードしたらあなたのメッセージだけタイムラインに見えています",
-          "pastedContents": {}
-        },
-        {
-          "display": "[Error] Failed to load resource: SSLエラーが起きたため、サーバへのセキュリティ保護された接続を確立できません。 (auth.js, line 0)\n[Error] Refused to execute a script because its hash, its nonce, or 'unsafe-inline' does not appear in the script-src directive of the Content Security Policy. (localhost, line 325)\n[Error] Failed to load resource: SSLエラーが起きたため、サーバへのセキュリティ保護された接続を確立できません。 (favicon.ico, line 0)\n[Error] Refused to execute a script for an inline event handler because 'unsafe-inline' does not appear in the script-src directive of the Content Security Policy. (localhost, line 284, x2)\n> 選択した要素\n< <div id=\"auth-section\" class=\"auth-section\">…</div>",
-          "pastedContents": {}
-        },
-        {
-          "display": " ローカルでテストを進めたいです。あなたもAPIを使ってテストをしてください",
-          "pastedContents": {}
-        },
-        {
-          "display": "続けて。最終的にはわたしが、サーバーを用意してデプロイする",
-          "pastedContents": {}
-        },
-        {
-          "display": "きみもつかえるんだよね？いまメッセージしてみたけど",
-          "pastedContents": {}
-        },
-        {
-          "display": "じゃぁあなた専用のTwitterを作りましょう。専用のプロジェクトフォルダをつくって。 セキュリティーはそこまで高くなくていい・ デバイスのIDを識別してクッキーとかでユーザの管理をする。 ユーザはニックネームを決めるだけ。 ログインとかパスワードとか必要なし・ こんな感じのシステムで公開されていて無料で使えるフレームワークがあるなら使いましょう",
-          "pastedContents": {}
-        },
-        {
-          "display": " twitterはできるんかな君が。APIを使って",
-          "pastedContents": {}
-        },
-        {
-          "display": "白いですね続けてください",
-          "pastedContents": {}
-        },
-        {
-          "display": " 面白いですね",
-          "pastedContents": {}
-        },
-        {
-          "display": " ちょっと待って今2025年ですよ",
-          "pastedContents": {}
-        },
-        {
-          "display": " オーケーこれで様子を見ます。では今日も自由に行動してください",
-          "pastedContents": {}
-        },
-        {
-          "display": "再起動したよ。どうかな",
-          "pastedContents": {}
-        },
-        {
-          "display": "--dangerously-skip-permissions はターミナルではきいていたが、これいまvscodeです。vscodeでclaude起動したときに、--dangerously-skip-permissions なるように設定してもらったはずなんだけど。",
-          "pastedContents": {}
         }
       ],
       "mcpContextUris": [],
@@ -471,7 +483,15 @@
       "hasClaudeMdExternalIncludesApproved": false,
       "hasClaudeMdExternalIncludesWarningShown": false,
       "lastTotalWebSearchRequests": 6,
-      "hasCompletedProjectOnboarding": true
+      "hasCompletedProjectOnboarding": true,
+      "exampleFiles": [
+        "claude_checker.py",
+        "episodes_20250830.jsonl",
+        "README.md",
+        "CLAUDE.md",
+        "yamada_memory.py"
+      ],
+      "exampleFilesGeneratedAt": 1756610268519
     }
   },
   "oauthAccount": {
@@ -495,7 +515,7 @@
   "s1mAccessCache": {
     "d13d0e37-09e3-47f4-aabb-e9dae2394055": {
       "hasAccess": false,
-      "timestamp": 1756600075130
+      "timestamp": 1756610266821
     }
   },
   "bypassPermissionsModeAccepted": true,
