@@ -1,4 +1,0 @@
-npm install -g @anthropic-ai/claude-code
-node -v
-brew install node
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"

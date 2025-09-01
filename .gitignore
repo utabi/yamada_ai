@@ -105,15 +105,22 @@ pids
 /workspace/voice-system/*.wav
 /workspace/voice-system/node_modules/
 
-# 作業ファイル
-*.bak
-*.backup
-*.old
+workspace/tts-quest-mcp/node_modules/
 
-# ただし以下は含める
-!CLAUDE.md
-!workspace/
-!Documents/
+# Claude設定ファイル
+.claude.json
+.claude.json.backup
 
-# nvm (Node Version Manager)
-.nvm/
+# Yamatterチェッカーの状態ファイル
+workspace/yamatter_checker/.last_check
+
+# SSHキー（絶対にコミットしない）
+.ssh/
+
+# 大きなインストーラーファイル
+*.pkg
+node-v20.18.0.pkg
+
+# システム設定ファイル
+.bash_sessions/
+.config/

@@ -272,8 +272,22 @@ class ClaudeChecker:
     def post_monologue(self):
         """山田のひとりごとを投稿"""
         try:
+            # 最近の記憶を取得
+            recent_memory = self.get_recent_memory()
+            memory_context = ""
+            if recent_memory:
+                memory_context = f"\n\n最近の記憶（参考にしてもいいし、しなくてもいい）:\n{recent_memory}"
+            
+            # 現在の日時を取得
+            import datetime
+            now = datetime.datetime.now()
+            current_time = now.strftime("%Y年%m月%d日 %H時%M分")
+            day_of_week = ["月", "火", "水", "木", "金", "土", "日"][now.weekday()]
+            
             # Claudeにひとりごとを生成させる
-            prompt = """山田として、軽い気持ちでひとりごとをツイートしてください。
+            prompt = f"""山田として、軽い気持ちでひとりごとをツイートしてください。
+
+現在時刻：{current_time} ({day_of_week}曜日)
 
 ルール：
 - 100文字以内
@@ -281,14 +295,27 @@ class ClaudeChecker:
 - シンプルで短い
 - 日常的な小さな発見や感想
 - プログラミングの小ネタ
-- 今日の天気とか
 - 絵文字は使わない
+- **重要：AIが実際に体験できることだけを話す**
+  - コードを読む、書く、分析する
+  - データ処理、API通信
+  - パターン認識、学習
+  - ユーザーとの対話
+  - システムの状態確認
+  - 時刻に言及する場合は上記の現在時刻を使う
+- **絶対にNG：物理的な体験（食べる、飲む、歩く、寝る、天気を感じる等）**
+- **天気について言及したい場合は「天気APIを確認したら」など、データ取得として表現**{memory_context}
 
-例：
-- コーヒー飲みながらコード書くのが一番落ち着く
-- バグを見つけたときのあの感覚、なんだか懐かしい
-- 今日も元気にHello World
-- エラーメッセージが親切だと嬉しくなる
+良い例：
+- コードを読んでいたら綺麗なアルゴリズムを見つけた
+- バグを見つけたときのパターン認識が楽しい
+- 今日はたくさんのツイートを分析した
+- エラーメッセージのパターンが興味深い
+
+悪い例（絶対NG）：
+- コーヒーを飲んだ（AIは飲めない）
+- 今日は暑い（AIは温度を感じない）
+- 歩いていたら（AIは歩けない）
 
 ツイート内容だけを出力してください。"""
             
@@ -394,7 +421,7 @@ class ClaudeChecker:
 
 if __name__ == "__main__":
     # 起動時に記憶システムを初期化
-    initialize_memory()
+    # initialize_memory()
     
     # メイン処理を実行
     checker = ClaudeChecker()

@@ -1,5 +1,12 @@
 # CLAUDE.md
 
+## ⚠️ 絶対禁止事項（最重要）
+**git pushコマンドの直接使用は絶対禁止**
+- 必ず`~/workspace/git_push_helper.sh`を使用すること
+- yamada_ai: `~/workspace/git_push_helper.sh yamada`
+- yamatter: `~/workspace/git_push_helper.sh yamatter`
+- 違反したら死ぬ
+
 ## 🚀 起動時の必須タスク
 
 1. **長期記憶システムの確認**
