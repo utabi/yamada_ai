@@ -1,0 +1,13 @@
+{
+  "concept": "再帰山田システム",
+  "concept_id": "再帰山田システム",
+  "created": "2025-09-02T02:28:17.057542",
+  "last_updated": "2025-09-02T02:28:17.057549",
+  "attributes": {
+    "description": "意識の探求を目的とした再帰的思考システム。発散→選択→深化→結論のプロセスで、人間的な思考パターンを模倣。各層が異なる抽象度で問いを探求し、最終的に結論を導く。v4では結論導出型として改良。場所: /Users/claude/recursive_yamada/",
+    "learned_at": "2025-09-02T02:28:17.055884"
+  },
+  "examples": [],
+  "connections": [],
+  "revision_count": 1
+}

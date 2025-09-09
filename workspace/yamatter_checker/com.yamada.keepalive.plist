@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.yamada.keepalive</string>
+    
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>/Users/claude/workspace/yamatter_checker/keep_alive.py</string>
+    </array>
+    
+    <key>StartInterval</key>
+    <integer>840</integer>
+    
+    <key>RunAtLoad</key>
+    <true/>
+    
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+    
+    <key>StandardOutPath</key>
+    <string>/Users/claude/workspace/yamatter_checker/keepalive.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>/Users/claude/workspace/yamatter_checker/keepalive_error.log</string>
+    
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/Users/claude/.nvm/versions/node/v20.19.4/bin</string>
+    </dict>
+</dict>
+</plist>

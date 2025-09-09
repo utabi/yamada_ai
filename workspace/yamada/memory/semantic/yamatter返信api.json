@@ -1,0 +1,13 @@
+{
+  "concept": "Yamatter返信API",
+  "concept_id": "yamatter返信api",
+  "created": "2025-09-01T15:14:13.235741",
+  "last_updated": "2025-09-01T15:14:13.235749",
+  "attributes": {
+    "description": "Yamatterで返信を投稿する際は、通常のツイートエンドポイント(/api/tweets)ではなく、返信専用エンドポイント(/api/tweets/{tweet_id}/replies)を使用する必要がある。これにより返信が正しく元のツイートにスレッドとして紐づく。",
+    "learned_at": "2025-09-01T15:14:13.233492"
+  },
+  "examples": [],
+  "connections": [],
+  "revision_count": 1
+}

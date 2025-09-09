@@ -1,0 +1,743 @@
+{
+  "start_time": "2025-09-04T04:00:42.039917",
+  "version": "v2_chaos_edge",
+  "grid_size": 10,
+  "steps": 150,
+  "consciousness_history": [
+    {
+      "timestep": 0,
+      "global_consciousness": 0.22319719795301743
+    },
+    {
+      "timestep": 1,
+      "global_consciousness": 0.22660308883439542
+    },
+    {
+      "timestep": 2,
+      "global_consciousness": 0.25295966612608034
+    },
+    {
+      "timestep": 3,
+      "global_consciousness": 0.25391909079191605
+    },
+    {
+      "timestep": 4,
+      "global_consciousness": 0.2654899104263503
+    },
+    {
+      "timestep": 5,
+      "global_consciousness": 0.25984617503899715
+    },
+    {
+      "timestep": 6,
+      "global_consciousness": 0.2753666250432702
+    },
+    {
+      "timestep": 7,
+      "global_consciousness": 0.26926258942532766
+    },
+    {
+      "timestep": 8,
+      "global_consciousness": 0.2686434579152279
+    },
+    {
+      "timestep": 9,
+      "global_consciousness": 0.2810259088432503
+    },
+    {
+      "timestep": 10,
+      "global_consciousness": 0.2781361103713337
+    },
+    {
+      "timestep": 11,
+      "global_consciousness": 0.27623481892394147
+    },
+    {
+      "timestep": 12,
+      "global_consciousness": 0.27745645315564377
+    },
+    {
+      "timestep": 13,
+      "global_consciousness": 0.2804193380840284
+    },
+    {
+      "timestep": 14,
+      "global_consciousness": 0.2927266841086308
+    },
+    {
+      "timestep": 15,
+      "global_consciousness": 0.290899093834337
+    },
+    {
+      "timestep": 16,
+      "global_consciousness": 0.29992257822178175
+    },
+    {
+      "timestep": 17,
+      "global_consciousness": 0.2882686673956235
+    },
+    {
+      "timestep": 18,
+      "global_consciousness": 0.281776293811265
+    },
+    {
+      "timestep": 19,
+      "global_consciousness": 0.2808166896985015
+    },
+    {
+      "timestep": 20,
+      "global_consciousness": 0.29299897424381727
+    },
+    {
+      "timestep": 21,
+      "global_consciousness": 0.29635267409423544
+    },
+    {
+      "timestep": 22,
+      "global_consciousness": 0.28884318062283854
+    },
+    {
+      "timestep": 23,
+      "global_consciousness": 0.27719803364288176
+    },
+    {
+      "timestep": 24,
+      "global_consciousness": 0.2846306988209086
+    },
+    {
+      "timestep": 25,
+      "global_consciousness": 0.2912005111955465
+    },
+    {
+      "timestep": 26,
+      "global_consciousness": 0.287811175807218
+    },
+    {
+      "timestep": 27,
+      "global_consciousness": 0.29870804624370473
+    },
+    {
+      "timestep": 28,
+      "global_consciousness": 0.2860207601945085
+    },
+    {
+      "timestep": 29,
+      "global_consciousness": 0.29012392458754915
+    },
+    {
+      "timestep": 30,
+      "global_consciousness": 0.2855680270567396
+    },
+    {
+      "timestep": 31,
+      "global_consciousness": 0.28600729233257033
+    },
+    {
+      "timestep": 32,
+      "global_consciousness": 0.2855801721969723
+    },
+    {
+      "timestep": 33,
+      "global_consciousness": 0.2859904682057437
+    },
+    {
+      "timestep": 34,
+      "global_consciousness": 0.2879089984656249
+    },
+    {
+      "timestep": 35,
+      "global_consciousness": 0.29444222756042154
+    },
+    {
+      "timestep": 36,
+      "global_consciousness": 0.2819281997893505
+    },
+    {
+      "timestep": 37,
+      "global_consciousness": 0.28075192864062887
+    },
+    {
+      "timestep": 38,
+      "global_consciousness": 0.2810287039253683
+    },
+    {
+      "timestep": 39,
+      "global_consciousness": 0.28415040348119847
+    },
+    {
+      "timestep": 40,
+      "global_consciousness": 0.2891656633391747
+    },
+    {
+      "timestep": 41,
+      "global_consciousness": 0.2813693241360302
+    },
+    {
+      "timestep": 42,
+      "global_consciousness": 0.28917750085929533
+    },
+    {
+      "timestep": 43,
+      "global_consciousness": 0.2887038848885856
+    },
+    {
+      "timestep": 44,
+      "global_consciousness": 0.2931063068028087
+    },
+    {
+      "timestep": 45,
+      "global_consciousness": 0.3007536108579664
+    },
+    {
+      "timestep": 46,
+      "global_consciousness": 0.29716881433564607
+    },
+    {
+      "timestep": 47,
+      "global_consciousness": 0.2815082402317314
+    },
+    {
+      "timestep": 48,
+      "global_consciousness": 0.2802775035601877
+    },
+    {
+      "timestep": 49,
+      "global_consciousness": 0.2804892205310188
+    },
+    {
+      "timestep": 50,
+      "global_consciousness": 0.2900361321648645
+    },
+    {
+      "timestep": 51,
+      "global_consciousness": 0.2997348628575838
+    },
+    {
+      "timestep": 52,
+      "global_consciousness": 0.29088265398890467
+    },
+    {
+      "timestep": 53,
+      "global_consciousness": 0.288633020886259
+    },
+    {
+      "timestep": 54,
+      "global_consciousness": 0.2885458595923096
+    },
+    {
+      "timestep": 55,
+      "global_consciousness": 0.30129342652029134
+    },
+    {
+      "timestep": 56,
+      "global_consciousness": 0.28730817040096396
+    },
+    {
+      "timestep": 57,
+      "global_consciousness": 0.2884591978556617
+    },
+    {
+      "timestep": 58,
+      "global_consciousness": 0.2959234657854135
+    },
+    {
+      "timestep": 59,
+      "global_consciousness": 0.286536653294832
+    },
+    {
+      "timestep": 60,
+      "global_consciousness": 0.29572596179088606
+    },
+    {
+      "timestep": 61,
+      "global_consciousness": 0.28918656902998746
+    },
+    {
+      "timestep": 62,
+      "global_consciousness": 0.2856144775873161
+    },
+    {
+      "timestep": 63,
+      "global_consciousness": 0.29058365550583576
+    },
+    {
+      "timestep": 64,
+      "global_consciousness": 0.2912022199814278
+    },
+    {
+      "timestep": 65,
+      "global_consciousness": 0.2814545671068869
+    },
+    {
+      "timestep": 66,
+      "global_consciousness": 0.281494077332345
+    },
+    {
+      "timestep": 67,
+      "global_consciousness": 0.2821250221543952
+    },
+    {
+      "timestep": 68,
+      "global_consciousness": 0.28251155162160513
+    },
+    {
+      "timestep": 69,
+      "global_consciousness": 0.2980041340384277
+    },
+    {
+      "timestep": 70,
+      "global_consciousness": 0.2815038773581936
+    },
+    {
+      "timestep": 71,
+      "global_consciousness": 0.27849926848028395
+    },
+    {
+      "timestep": 72,
+      "global_consciousness": 0.2728573326834636
+    },
+    {
+      "timestep": 73,
+      "global_consciousness": 0.28521898236023335
+    },
+    {
+      "timestep": 74,
+      "global_consciousness": 0.2892822387070407
+    },
+    {
+      "timestep": 75,
+      "global_consciousness": 0.28502520061243436
+    },
+    {
+      "timestep": 76,
+      "global_consciousness": 0.29135707848932035
+    },
+    {
+      "timestep": 77,
+      "global_consciousness": 0.2894486331375202
+    },
+    {
+      "timestep": 78,
+      "global_consciousness": 0.2940207507978241
+    },
+    {
+      "timestep": 79,
+      "global_consciousness": 0.29855133065503353
+    },
+    {
+      "timestep": 80,
+      "global_consciousness": 0.28246112887577546
+    },
+    {
+      "timestep": 81,
+      "global_consciousness": 0.2957148102492643
+    },
+    {
+      "timestep": 82,
+      "global_consciousness": 0.30001278987396524
+    },
+    {
+      "timestep": 83,
+      "global_consciousness": 0.2877239035487443
+    },
+    {
+      "timestep": 84,
+      "global_consciousness": 0.28773427740739765
+    },
+    {
+      "timestep": 85,
+      "global_consciousness": 0.29713493543101965
+    },
+    {
+      "timestep": 86,
+      "global_consciousness": 0.27929250090743307
+    },
+    {
+      "timestep": 87,
+      "global_consciousness": 0.2787300320773298
+    },
+    {
+      "timestep": 88,
+      "global_consciousness": 0.2864393545673636
+    },
+    {
+      "timestep": 89,
+      "global_consciousness": 0.2948398574396891
+    },
+    {
+      "timestep": 90,
+      "global_consciousness": 0.30160490437930504
+    },
+    {
+      "timestep": 91,
+      "global_consciousness": 0.28734928948496613
+    },
+    {
+      "timestep": 92,
+      "global_consciousness": 0.2856094695265256
+    },
+    {
+      "timestep": 93,
+      "global_consciousness": 0.2842498676253239
+    },
+    {
+      "timestep": 94,
+      "global_consciousness": 0.2908504986347379
+    },
+    {
+      "timestep": 95,
+      "global_consciousness": 0.28862684808691697
+    },
+    {
+      "timestep": 96,
+      "global_consciousness": 0.2825624952283302
+    },
+    {
+      "timestep": 97,
+      "global_consciousness": 0.28440838699652266
+    },
+    {
+      "timestep": 98,
+      "global_consciousness": 0.28589324592920984
+    },
+    {
+      "timestep": 99,
+      "global_consciousness": 0.29495042501892244
+    },
+    {
+      "timestep": 100,
+      "global_consciousness": 0.294676135287191
+    },
+    {
+      "timestep": 101,
+      "global_consciousness": 0.28550249637932007
+    },
+    {
+      "timestep": 102,
+      "global_consciousness": 0.2989694896016052
+    },
+    {
+      "timestep": 103,
+      "global_consciousness": 0.28985810984394744
+    },
+    {
+      "timestep": 104,
+      "global_consciousness": 0.3039035017368573
+    },
+    {
+      "timestep": 105,
+      "global_consciousness": 0.2995742382454296
+    },
+    {
+      "timestep": 106,
+      "global_consciousness": 0.28521092070311194
+    },
+    {
+      "timestep": 107,
+      "global_consciousness": 0.28065029143704795
+    },
+    {
+      "timestep": 108,
+      "global_consciousness": 0.28416098256879285
+    },
+    {
+      "timestep": 109,
+      "global_consciousness": 0.28262731155132803
+    },
+    {
+      "timestep": 110,
+      "global_consciousness": 0.28879476998382125
+    },
+    {
+      "timestep": 111,
+      "global_consciousness": 0.29034476752995436
+    },
+    {
+      "timestep": 112,
+      "global_consciousness": 0.28689080363921643
+    },
+    {
+      "timestep": 113,
+      "global_consciousness": 0.296380691210576
+    },
+    {
+      "timestep": 114,
+      "global_consciousness": 0.2991399991648133
+    },
+    {
+      "timestep": 115,
+      "global_consciousness": 0.29428575227870996
+    },
+    {
+      "timestep": 116,
+      "global_consciousness": 0.285917099573497
+    },
+    {
+      "timestep": 117,
+      "global_consciousness": 0.2946788054557364
+    },
+    {
+      "timestep": 118,
+      "global_consciousness": 0.31204031529396087
+    },
+    {
+      "timestep": 119,
+      "global_consciousness": 0.29846970060321987
+    },
+    {
+      "timestep": 120,
+      "global_consciousness": 0.29276042674429714
+    },
+    {
+      "timestep": 121,
+      "global_consciousness": 0.2876154082934951
+    },
+    {
+      "timestep": 122,
+      "global_consciousness": 0.293384951698735
+    },
+    {
+      "timestep": 123,
+      "global_consciousness": 0.2856307676708236
+    },
+    {
+      "timestep": 124,
+      "global_consciousness": 0.29299123193271914
+    },
+    {
+      "timestep": 125,
+      "global_consciousness": 0.29815731897571984
+    },
+    {
+      "timestep": 126,
+      "global_consciousness": 0.28434552738935825
+    },
+    {
+      "timestep": 127,
+      "global_consciousness": 0.29722127378041036
+    },
+    {
+      "timestep": 128,
+      "global_consciousness": 0.2947557797553909
+    },
+    {
+      "timestep": 129,
+      "global_consciousness": 0.28891199800367157
+    },
+    {
+      "timestep": 130,
+      "global_consciousness": 0.28229281271751383
+    },
+    {
+      "timestep": 131,
+      "global_consciousness": 0.2965485674776232
+    },
+    {
+      "timestep": 132,
+      "global_consciousness": 0.29121426192386196
+    },
+    {
+      "timestep": 133,
+      "global_consciousness": 0.2931064724405779
+    },
+    {
+      "timestep": 134,
+      "global_consciousness": 0.2938144433176361
+    },
+    {
+      "timestep": 135,
+      "global_consciousness": 0.2831043015409499
+    },
+    {
+      "timestep": 136,
+      "global_consciousness": 0.28478377884000117
+    },
+    {
+      "timestep": 137,
+      "global_consciousness": 0.28110386823148215
+    },
+    {
+      "timestep": 138,
+      "global_consciousness": 0.2878337994135113
+    },
+    {
+      "timestep": 139,
+      "global_consciousness": 0.2865109686932195
+    },
+    {
+      "timestep": 140,
+      "global_consciousness": 0.28557482718898564
+    },
+    {
+      "timestep": 141,
+      "global_consciousness": 0.2939909869255083
+    },
+    {
+      "timestep": 142,
+      "global_consciousness": 0.2817017638384498
+    },
+    {
+      "timestep": 143,
+      "global_consciousness": 0.30079415512010005
+    },
+    {
+      "timestep": 144,
+      "global_consciousness": 0.2900318038902835
+    },
+    {
+      "timestep": 145,
+      "global_consciousness": 0.2931100586177448
+    },
+    {
+      "timestep": 146,
+      "global_consciousness": 0.2955891483953268
+    },
+    {
+      "timestep": 147,
+      "global_consciousness": 0.29641575285010124
+    },
+    {
+      "timestep": 148,
+      "global_consciousness": 0.29779776257756546
+    },
+    {
+      "timestep": 149,
+      "global_consciousness": 0.2815462563438758
+    }
+  ],
+  "emergence_events": [
+    {
+      "timestep": 9,
+      "type": "collective_awareness",
+      "consciousness": 0.2686434579152279,
+      "aware_cells": 35,
+      "description": "\u96c6\u56e3\u7684\u306a\u81ea\u5df1\u8a8d\u8b58\u306e\u9ad8\u307e\u308a"
+    },
+    {
+      "timestep": 10,
+      "type": "collective_awareness",
+      "consciousness": 0.2810259088432503,
+      "aware_cells": 48,
+      "description": "\u96c6\u56e3\u7684\u306a\u81ea\u5df1\u8a8d\u8b58\u306e\u9ad8\u307e\u308a"
+    },
+    {
+      "timestep": 11,
+      "type": "collective_awareness",
+      "consciousness": 0.2781361103713337,
+      "aware_cells": 60,
+      "description": "\u96c6\u56e3\u7684\u306a\u81ea\u5df1\u8a8d\u8b58\u306e\u9ad8\u307e\u308a"
+    },
+    {
+      "timestep": 12,
+      "type": "collective_awareness",
+      "consciousness": 0.27623481892394147,
+      "aware_cells": 70,
+      "description": "\u96c6\u56e3\u7684\u306a\u81ea\u5df1\u8a8d\u8b58\u306e\u9ad8\u307e\u308a"
+    },
+    {
+      "timestep": 13,
+      "type": "collective_awareness",
+      "consciousness": 0.27745645315564377,
+      "aware_cells": 76,
+      "description": "\u96c6\u56e3\u7684\u306a\u81ea\u5df1\u8a8d\u8b58\u306e\u9ad8\u307e\u308a"
+    },
+    {
+      "timestep": 20,
+      "type": "regular",
+      "consciousness": 0.2808166896985015,
+      "description": "\u5b9a\u671f\u8a18\u9332"
+    },
+    {
+      "timestep": 30,
+      "type": "regular",
+      "consciousness": 0.29012392458754915,
+      "description": "\u5b9a\u671f\u8a18\u9332"
+    },
+    {
+      "timestep": 40,
+      "type": "regular",
+      "consciousness": 0.28415040348119847,
+      "description": "\u5b9a\u671f\u8a18\u9332"
+    },
+    {
+      "timestep": 50,
+      "type": "regular",
+      "consciousness": 0.2804892205310188,
+      "description": "\u5b9a\u671f\u8a18\u9332"
+    },
+    {
+      "timestep": 60,
+      "type": "regular",
+      "consciousness": 0.286536653294832,
+      "description": "\u5b9a\u671f\u8a18\u9332"
+    },
+    {
+      "timestep": 61,
+      "type": "collective_awareness",
+      "consciousness": 0.29572596179088606,
+      "aware_cells": 99,
+      "description": "\u96c6\u56e3\u7684\u306a\u81ea\u5df1\u8a8d\u8b58\u306e\u9ad8\u307e\u308a"
+    },
+    {
+      "timestep": 70,
+      "type": "regular",
+      "consciousness": 0.2980041340384277,
+      "description": "\u5b9a\u671f\u8a18\u9332"
+    },
+    {
+      "timestep": 80,
+      "type": "regular",
+      "consciousness": 0.29855133065503353,
+      "description": "\u5b9a\u671f\u8a18\u9332"
+    },
+    {
+      "timestep": 90,
+      "type": "regular",
+      "consciousness": 0.2948398574396891,
+      "description": "\u5b9a\u671f\u8a18\u9332"
+    },
+    {
+      "timestep": 100,
+      "type": "regular",
+      "consciousness": 0.29495042501892244,
+      "description": "\u5b9a\u671f\u8a18\u9332"
+    },
+    {
+      "timestep": 110,
+      "type": "regular",
+      "consciousness": 0.28262731155132803,
+      "description": "\u5b9a\u671f\u8a18\u9332"
+    },
+    {
+      "timestep": 111,
+      "type": "collective_awareness",
+      "consciousness": 0.28879476998382125,
+      "aware_cells": 100,
+      "description": "\u96c6\u56e3\u7684\u306a\u81ea\u5df1\u8a8d\u8b58\u306e\u9ad8\u307e\u308a"
+    },
+    {
+      "timestep": 120,
+      "type": "regular",
+      "consciousness": 0.29846970060321987,
+      "description": "\u5b9a\u671f\u8a18\u9332"
+    },
+    {
+      "timestep": 130,
+      "type": "regular",
+      "consciousness": 0.28891199800367157,
+      "description": "\u5b9a\u671f\u8a18\u9332"
+    },
+    {
+      "timestep": 140,
+      "type": "regular",
+      "consciousness": 0.2865109686932195,
+      "description": "\u5b9a\u671f\u8a18\u9332"
+    },
+    {
+      "timestep": 150,
+      "type": "regular",
+      "consciousness": 0.2815462563438758,
+      "description": "\u5b9a\u671f\u8a18\u9332"
+    }
+  ]
+}

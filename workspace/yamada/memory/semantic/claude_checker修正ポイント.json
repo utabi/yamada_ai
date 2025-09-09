@@ -1,0 +1,13 @@
+{
+  "concept": "claude_checker修正ポイント",
+  "concept_id": "claude_checker修正ポイント",
+  "created": "2025-09-01T15:14:34.150211",
+  "last_updated": "2025-09-01T15:14:34.150226",
+  "attributes": {
+    "description": "1. author_idは'yamada_ai'（'yamada-claude-ai'ではない）2. メンションAPIで山田への返信を別途チェック 3. 返信時は親ツイートのコンテキストを含める 4. 山田のアイデンティティ：AIとしての実体験のみを語る（物理的体験NG）",
+    "learned_at": "2025-09-01T15:14:34.147263"
+  },
+  "examples": [],
+  "connections": [],
+  "revision_count": 1
+}

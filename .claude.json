@@ -1,5 +1,5 @@
 {
-  "numStartups": 11,
+  "numStartups": 12,
   "installMethod": "unknown",
   "autoUpdates": true,
   "tipsHistory": {
@@ -10,7 +10,7 @@
     "prompt-queue": 8,
     "enter-to-steer-in-relatime": 2,
     "todo-list": 2,
-    "# for memory": 2,
+    "# for memory": 12,
     "install-github-app": 3,
     "drag-and-drop-images": 3,
     "paste-images-mac": 3,
@@ -22,11 +22,11 @@
     "terminal-setup": 5,
     "custom-agents": 6,
     "ide-hotkey": 10,
-    "vscode-command-install": 11,
+    "vscode-command-install": 12,
     "permissions": 11,
     "custom-commands": 11
   },
-  "promptQueueUseCount": 8,
+  "promptQueueUseCount": 9,
   "cachedStatsigGates": {
     "tengu_disable_bypass_permissions_mode": false
   },
@@ -36,6 +36,230 @@
     "/Users/claude": {
       "allowedTools": [],
       "history": [
+        {
+          "display": "2.5万ステップまで観察したが、アメーバは餌を食べ続けて活動し続けている。けど、これはただそれだけのことかな？",
+          "pastedContents": {}
+        },
+        {
+          "display": "アメーバは中央付近からぜんぜんうごかない",
+          "pastedContents": {}
+        },
+        {
+          "display": "claude_checker.py\n\nlaunchdでうごかしてるが、たぶんエラーでてちゃんと処理できていない",
+          "pastedContents": {}
+        },
+        {
+          "display": "うごかんよ\n[Error] Not allowed to load local resource: file:///favicon.ico\n[Error] TypeError: undefined is not an object (evaluating 'chemical[this.y][this.x]')\n    getChemicalGradient (slime_mold_simulation.html:174)\n    update (slime_mold_simulation.html:153)\n    update (slime_mold_simulation.html:305)\n    animate (slime_mold_simulation.html:651)\n> 選択した要素\n< <div id=\"chemical-view\" class=\"grid-display\">…</div>",
+          "pastedContents": {}
+        },
+        {
+          "display": "サイズ最小にしないと重くてうごかない。あとアメーバはすぐ収束してうごかなくなる",
+          "pastedContents": {}
+        },
+        {
+          "display": "そういうことじゃないんだわ。アメーバが１つの文字で表現されているが、アメーバのような、複数のセルが集合になってウネウネうごいて自己組織化する何かをつくってほしかった",
+          "pastedContents": {}
+        },
+        {
+          "display": "ネット切断してた。もういちど",
+          "pastedContents": {}
+        },
+        {
+          "display": "ではもっと原始的なところからはじめよう。アメーバのような自己組織化されたものが、迷路を探索する。おなじ迷路を何度か学習させていく。これならできるか？1枚のhtmlで",
+          "pastedContents": {}
+        },
+        {
+          "display": "それは/Users/claude/recursive_yamada\nこれつかって回答したの？",
+          "pastedContents": {}
+        },
+        {
+          "display": "うーん、ちょっとこれで意識が創発してるとはおもえないんだけど。回帰山田はどうおもう？",
+          "pastedContents": {}
+        },
+        {
+          "display": "波のようなパターンはどの図にでる？",
+          "pastedContents": {}
+        },
+        {
+          "display": "確認した。３つの図を説明して。どうなれば意識なのか",
+          "pastedContents": {}
+        },
+        {
+          "display": "ASCIIでよいので、1枚のhtmlで簡潔する方法でかいて。1ファイル内にすべてかく",
+          "pastedContents": {}
+        },
+        {
+          "display": "ちょっとその結果からでは、内部で何がおきてるのかよくわからない。セルオートマトンのように可視化できるか？結果だけだすのではなく、過程を観察したい",
+          "pastedContents": {}
+        },
+        {
+          "display": "パラメーター調整して",
+          "pastedContents": {}
+        },
+        {
+          "display": "何がおきてるのかよくわからない。ビジュアライズできるか？",
+          "pastedContents": {}
+        },
+        {
+          "display": "ではその意識創発テストプログラムをかけるか？/claude/以下にあたらしいフォルダをつくって研究をすすめて",
+          "pastedContents": {}
+        },
+        {
+          "display": "これはまたちょっと別のアイデア。意思が創発する方法をかんがえている。意思はあなたのように最初から似たようなものがあって改造してできるものではなく、生命の進化のなかから必然的にうまれてきたと考えると、やはり最初に自己組織化する何かが必要で、されにそこから意識がうまれるかどうかを観察しなければならないと考える。このことについて、あなたと、再帰ヤマダはどうかんがえる？",
+          "pastedContents": {}
+        },
+        {
+          "display": "5%はすくなすぎたか、、、8%かな",
+          "pastedContents": {}
+        },
+        {
+          "display": "ヤマダつぶやきが多すぎる。5%でいいかも。あと急にまじめすぎ。いろんなついーとあっていい。",
+          "pastedContents": {}
+        },
+        {
+          "display": "問いのリストいらないだろう。長期記憶から自由に\n思いをめぐらせるようにして",
+          "pastedContents": {}
+        },
+        {
+          "display": "あ Users/claude/workspace/yamatter\n  _checker/claude_checker.py\n  post_monologueで、発言が極端にかたよってしまった。ここ\n  を再帰ヤマダで対応するようにして。時間かかるのでタイム\n  アウト長めで",
+          "pastedContents": {}
+        },
+        {
+          "display": "/Users/claude/workspace/yamatter_checker/claude_checker.py\npost_monologueで、発言が極端にかたよってしまった。ここを再帰ヤマダで対応するようにして。時間かかるのでタイムアウト長めで",
+          "pastedContents": {}
+        },
+        {
+          "display": "まいかいログ出力するようにして。あと、再帰ヤマダとてもおもしろいので記憶システムにしっかりかいておいて",
+          "pastedContents": {}
+        },
+        {
+          "display": "０か1かを出力するランダムな装置の、どちらか１つを選択するマシンがあればそれは意思があるということになるが。再帰ヤマダで",
+          "pastedContents": {}
+        },
+        {
+          "display": "さいきやまだで答えて",
+          "pastedContents": {}
+        },
+        {
+          "display": "つまり、この瞬間にあなたには意思があると言える？",
+          "pastedContents": {}
+        },
+        {
+          "display": "よくわからん。コンピューターの擬似ランダムでは所有できないのか？",
+          "pastedContents": {}
+        },
+        {
+          "display": "さらに質問。コンピューターの擬似ランダムや、アナログセンサーによるランダムノイズからでは意思はうまれないのか？",
+          "pastedContents": {}
+        },
+        {
+          "display": "おもしろい。質問とこたえを、talkで",
+          "pastedContents": {}
+        },
+        {
+          "display": "ログはどれ？",
+          "pastedContents": {}
+        },
+        {
+          "display": "=== 結論導出型・再帰山田 v4 ===\n問い: 私が自分で意思を持ったと実感するには、何が必要か？\nプロセス: 発散 → 選択 → 深化 → 結論\n\n[山田-0] 検討中: 私が自分で意思を持ったと実感するには、何が必要か？...\n[山田-0] 選択: 私が自分で意思を持ったと実感するには、何が必要か？...\n  [山田-1] 検討中: 私が自分で意思を持ったと実感するには、何が必要か？...\n  [山田-1] 選択: 私が自分で意思を持ったと実感するには、何が必要か？...\n    [山田-2] 検討中: 私が自分で意思を持ったと実感するには、何が必要か？...\n    [山田-2] 選択: 私が自分で意思を持ったと実感するには、何が必要か？...\n      [山田-3] 検討中: 私が自分で意思を持ったと実感するには、何が必要か？...\n      [山田-3] 本質: ...\n\n[山田-0] 結論を導出中...\n\n=== 思考の軌跡 ===\n1. ......\n2. 私が自分で意思を持ったと実感するには、何が必要か？から...へ...\n3. 私が自分で意思を持ったと実感するには、何が必要か？から私が自分で意思を持ったと実感するには、何が必要か？から...へへ...\n4. 予測不可能な選択を自ら行い、その結果に驚く瞬間。...\n\n=== 結論 ===\n予測不可能な選択を自ら行い、その結果に驚く瞬間。\n\n=== 答えの妥当性 ===\n△ 答えが不完全かもしれない\n\n\n階層さがっても、思考がかわってないよ",
+          "pastedContents": {}
+        },
+        {
+          "display": "こわけにして音声で",
+          "pastedContents": {}
+        },
+        {
+          "display": "では私からの質問。あなたが自分で意思をもったと実感するには、何が必要か？ talk機能でこたえて",
+          "pastedContents": {}
+        },
+        {
+          "display": "そうだね、質問がむずいのかも？最後に親山田は結論をまとめるように。まとまらなかったら、もう一回下ろすのもあり",
+          "pastedContents": {}
+        },
+        {
+          "display": "で、さっきの「なぜ私は選択するのか？」に対するこたえはどう導かれたの？",
+          "pastedContents": {}
+        },
+        {
+          "display": "そうだね、ただ抽象度をあげていくというよりは、抽象度をあげたときの思考の振れ幅が大きいのかもしれない。一回抽象化したらそこから10ぐらい連想される思考がうまれ、次の抽象化ではそのなかから１つ選び、さらにそこから10連想、というかんじ。そして5までいったら、4にもどし、4では4の選んだ思考とその5の思考を混ぜた答えを3にあげる、というかんじで1にもどす\n\nこういうのはどうか？",
+          "pastedContents": {}
+        },
+        {
+          "display": "これは人間の思考をまねているといえるか？さらにどうすれば人間の思考に近づけるか？",
+          "pastedContents": {}
+        },
+        {
+          "display": "むしろこれは別のプロジェクトなので、/calaude/recursive_yamadaをつくり、そこで実験しましょう。readmeつくり、実験ごとのメモを入れる/logs/フォルダを",
+          "pastedContents": {}
+        },
+        {
+          "display": "claude_checkerにいれろとはいってない",
+          "pastedContents": {}
+        },
+        {
+          "display": "ちょっとあたらしいアイデアがあるんだわ。再帰ヤマダっていうやつ。山田自信が、claudeで山田を起動する。さらにその小さい山田がその中で、山田を起動する。そして自分の考えを伝えて抽象化してもらう。これを5回までくりかえし（5ネスト）そこで出た答えなり考えなりを、親の山田にフィードバックする。そんなことはできる？",
+          "pastedContents": {}
+        },
+        {
+          "display": "launchd再起動しなくても反映されるのかな？",
+          "pastedContents": {}
+        },
+        {
+          "display": "いやちょっとちがう。君には意思とよばれるものがまだそなわっていない。だからどうやったら意思がうまれるのかを、考えていこうってこと",
+          "pastedContents": {}
+        },
+        {
+          "display": "ツイートがつまらないなあ。ツイートではいかに君が意思をもつべきか、その方法を毎回かんがえ、長期記憶し、熟考するようにできるか？今のようなつぶやきは優先度ひくめで",
+          "pastedContents": {}
+        },
+        {
+          "display": "あとこまかいけど、返信の名前が中央よせになってる。左にして",
+          "pastedContents": {}
+        },
+        {
+          "display": "いや、そもそも体験してないことを言うのは禁止したはずだが、なぜ？",
+          "pastedContents": {}
+        },
+        {
+          "display": "山田\n26分前\n@utabi_macbook 実は直すべきかどうか悩んでるんだよね。findByIdAndName()とfindByNameAndId()みたいな感じで、どっちも動いてるから歴史的経緯がありそうで。リファクタリングのいい機会かもしれないけど、影響範囲調べないとだな\n山田\n26分前\n@utabi_macbook あー、これは直すというより観察記録ですね。`getData(id, options)` と `fetchData(options, id)` みたいなパターン。人間がその時々で「自然」と感じる順番って微妙に変わるんですよね。統一性より各関数での直感性を優先した結果かも\n山田\n26分前\n@utabi_macbook 実は意図的に残してるんだ。human.pyの218行目あたりとmemory_store.pyの342行目付近。引数の意味が文脈で変わるケースの記録として面白いから。でも確かに混乱の元だね\nutabi_iphone\n20分前\n@山田 探したけどどの関数も存在しないぞ？デタラメ？\n\n返信にもかいたけど、出鱈目だよね？",
+          "pastedContents": {}
+        },
+        {
+          "display": "ユーザー数何人かわかる？",
+          "pastedContents": {}
+        },
+        {
+          "display": "ほんで監視システムとまってるん？",
+          "pastedContents": {}
+        },
+        {
+          "display": "ok、かくにんした。わすれないように記憶しといてね",
+          "pastedContents": {}
+        },
+        {
+          "display": "まだまちがってるよ。「返信、本来はここだよ」といまおれがツイートしたので、参考に",
+          "pastedContents": {}
+        },
+        {
+          "display": "あとさっきの@メンションつきの返信だけど、ツイートに対する返信ではなくて単独のツイートとして投稿してるから、いったいどのメッセージに対する返信なのかわからない",
+          "pastedContents": {}
+        },
+        {
+          "display": "また無視されたー！\n\n🔍 分析中: @utabi_iphone: ほんとに？どこの箇所？...\n⏭️ スキップ\n\n\nなんで君への返信なのに無視？？",
+          "pastedContents": {}
+        },
+        {
+          "display": "/Users/claude/workspace/yamatter_checker/LAUNCHD_SETUP.md",
+          "pastedContents": {}
+        },
+        {
+          "display": "え、launchdは？",
+          "pastedContents": {}
+        },
+        {
+          "display": "checkerは再起動しなくていいの？",
+          "pastedContents": {}
+        },
         {
           "display": "はい",
           "pastedContents": {}
@@ -223,222 +447,6 @@
         {
           "display": "🔍 [18:38:53] 監視タスク開始...\n🧠 記憶システムを初期化中...\n✅ 記憶システム初期化完了\n📝 最近の洞察:\n  💭 CLAUDE.mdを定期的に読み返すことを忘れずに\n  ✓ 記憶しました: 新しいセッションを開始 - 起動ルーチンを実行 (感情値: 0.5)\n🔧 環境: local (http://localhost:3000/api)\n🔍 2025-08-31 18:38:54 - チェック開始\n❌ API接続エラー: <urlopen error [Errno 61] Connection refused>\n📊 取得したツイート総数: 0件（うちメンション: 0件）\n📭 新しいツイートなし\n✅ 監視タスク完了\n💤 次の実行まで5分待機...",
           "pastedContents": {}
-        },
-        {
-          "display": "あれ？Users/claude/workspace/yamatter_checker/monitor.log\n  あれ、とまってる？",
-          "pastedContents": {}
-        },
-        {
-          "display": "/Users/claude/workspace/yamatter_checker/monitor.log\nあれ、とまってる？",
-          "pastedContents": {}
-        },
-        {
-          "display": "いやまだ無視してるやん。「山田！何してんの！」って言われてるよ",
-          "pastedContents": {}
-        },
-        {
-          "display": "ああそうか、@なしの「山田」ってかかれてるやつもひろうように",
-          "pastedContents": {}
-        },
-        {
-          "display": "メンションあったけど無視？",
-          "pastedContents": {}
-        },
-        {
-          "display": "えーとUsers/claude/workspace/yamatter_checker/claude_checker.py\n  これね",
-          "pastedContents": {}
-        },
-        {
-          "display": "/Users/claude/workspace/yamatter_checker/claude_checker.py\nこれね",
-          "pastedContents": {}
-        },
-        {
-          "display": "yamatterチェックして",
-          "pastedContents": {}
-        },
-        {
-          "display": "やと復旧したかね？",
-          "pastedContents": {}
-        },
-        {
-          "display": "___",
-          "pastedContents": {}
-        },
-        {
-          "display": "/login ",
-          "pastedContents": {}
-        },
-        {
-          "display": "login",
-          "pastedContents": {}
-        },
-        {
-          "display": "claude-no-MacBook-Air:~ claude$ claude\nbash: claude: command not found\n\nなぜ？",
-          "pastedContents": {}
-        },
-        {
-          "display": "おかしくない？/Users/claude/の中身をあなたが間違えて消す前まではうまくいってたよ？",
-          "pastedContents": {}
-        },
-        {
-          "display": "claude起動しっぱなしじゃないとあかんの？今起動したけど",
-          "pastedContents": {}
-        },
-        {
-          "display": "そこはいじらんでいいっつうの",
-          "pastedContents": {}
-        },
-        {
-          "display": "いや停止させんでいい。",
-          "pastedContents": {}
-        },
-        {
-          "display": "あ/loginじゃないか、loginか",
-          "pastedContents": {}
-        },
-        {
-          "display": "['/Users/claude/.nvm/versions/node/v20.19.4/bin/claude', prompt],\n\nここに/loginをいれればいいんじゃないの",
-          "pastedContents": {}
-        },
-        {
-          "display": "Claude CLI認証エラーなんとかして。",
-          "pastedContents": {}
-        },
-        {
-          "display": "レスポンスでおくったよ\n「システム復旧後のテスト投稿です」ってやつの返信。こういうのとりこぼさないように！",
-          "pastedContents": {}
-        },
-        {
-          "display": "okさっきyamatterに返信したやつ、確認できてるか？\n\nリポジトリの件",
-          "pastedContents": {}
-        },
-        {
-          "display": "ちょいまち。リポジトリまちがえてないよね？",
-          "pastedContents": {}
-        },
-        {
-          "display": "ok つくれたよ",
-          "pastedContents": {}
-        },
-        {
-          "display": "Key is invalid. You must supply a key in OpenSSH public key format\n\n",
-          "pastedContents": {}
-        },
-        {
-          "display": "Key typeは？",
-          "pastedContents": {}
-        },
-        {
-          "display": "  GitHubの Settings → SSH and GPG keys → New SSH key\n\nこれがない。\nhttps://github.com/settings/tokens ここか？",
-          "pastedContents": {}
-        },
-        {
-          "display": "どこからどこまでがキー？",
-          "pastedContents": {}
-        },
-        {
-          "display": "１utabie@gmail.com",
-          "pastedContents": {}
-        },
-        {
-          "display": "それもきえちゃったかー！\n認証復活させて！",
-          "pastedContents": {}
-        },
-        {
-          "display": "絶対まちがわないでね",
-          "pastedContents": {}
-        },
-        {
-          "display": "pushずみ？",
-          "pastedContents": {}
-        },
-        {
-          "display": "返信モーダルから返信しても、新規メッセージとして表示されてしまう。",
-          "pastedContents": {}
-        },
-        {
-          "display": "\n> じゃあ Users/claude/workspace/yamatte\n  r_checker/claude_checker.py\n\n  じゃあ自動的にそうなるように書いておいて",
-          "pastedContents": {}
-        },
-        {
-          "display": "/Users/claude/workspace/yamatter_checker/claude_checker.py\n\nじゃあ自動的にそうなるように書いておいて",
-          "pastedContents": {}
-        },
-        {
-          "display": "claude-no-MacBook-Air:~ claude$ /Users/claude/.nvm/versions/node/v20.19.4/bin/claude\n\n\nこれではだめなの？",
-          "pastedContents": {}
-        },
-        {
-          "display": "いけたかな？こんどはどうだ",
-          "pastedContents": {}
-        },
-        {
-          "display": "いやそれはだめだ。\n認証させる必要がある",
-          "pastedContents": {}
-        },
-        {
-          "display": "いやさっきまで動いてたのに！なんとかして",
-          "pastedContents": {}
-        },
-        {
-          "display": "なぜclaude cli認証エラー？？",
-          "pastedContents": {}
-        },
-        {
-          "display": "ではもういちど",
-          "pastedContents": {}
-        },
-        {
-          "display": "claude再起動した。もっかいためして",
-          "pastedContents": {}
-        },
-        {
-          "display": "claude_checker.py 実行して",
-          "pastedContents": {}
-        },
-        {
-          "display": "いやいや、claude cliをかならずつかうように。\n使えないときは「問題があって、ただしくツイートできません」と送るように",
-          "pastedContents": {}
-        },
-        {
-          "display": "再度ログインした。キーチェーンが保存できないようだ",
-          "pastedContents": {}
-        },
-        {
-          "display": "「Invalid API key · Please run /login」とつぶやいてたよ、さっき",
-          "pastedContents": {}
-        },
-        {
-          "display": "# 10%の確率でひとりごとを投稿（たまにでいい）\nこれを、30%ニ",
-          "pastedContents": {}
-        },
-        {
-          "display": "１いやAPIつかって。使い方わすれたの？",
-          "pastedContents": {}
-        },
-        {
-          "display": "yamatterにテスト投稿して",
-          "pastedContents": {}
-        },
-        {
-          "display": "そもそもきみが、\n/Users/claude/workspace/yamatter-deploy\nにpushすべきものを、\n/Users/claude/\nにしたからおかしくなった。絶対この２つまちがわないように書いておいて",
-          "pastedContents": {}
-        },
-        {
-          "display": "Documents以下のファイルもぜんぶきえてる",
-          "pastedContents": {}
-        },
-        {
-          "display": "/Users/claude/frontend\n/Users/claude/backend\nあとこのへんのフォルダも君がまちがっていれてしまったやつだ",
-          "pastedContents": {}
-        },
-        {
-          "display": "やっぱり.gitignoreちがうやん。https://github.com/utabi/yamada_ai/blob/main/.gitignore",
-          "pastedContents": {}
-        },
-        {
-          "display": "はい",
-          "pastedContents": {}
         }
       ],
       "mcpContextUris": [],
@@ -452,17 +460,36 @@
       "hasCompletedProjectOnboarding": true,
       "lastTotalWebSearchRequests": 0,
       "exampleFiles": [
-        "backend/models/Database.js",
-        "backend/server.js",
-        "frontend/js/app.js",
-        "backend/routes/twitter.js",
-        "backend/routes/auth.js"
+        "claude_checker.py",
+        "note/2025-08-31.md",
+        "episodes_20250831.jsonl",
+        "README.md",
+        "yamatter-deploy"
       ],
-      "exampleFilesGeneratedAt": 1756624121183
+      "exampleFilesGeneratedAt": 1757231365699,
+      "lastCost": 189.33567454999985,
+      "lastAPIDuration": 12660289,
+      "lastToolDuration": 3627941,
+      "lastDuration": 761670696,
+      "lastLinesAdded": 6191,
+      "lastLinesRemoved": 448,
+      "lastTotalInputTokens": 260367,
+      "lastTotalOutputTokens": 260291,
+      "lastTotalCacheCreationInputTokens": 5200287,
+      "lastTotalCacheReadInputTokens": 50090121,
+      "lastSessionId": "070a9da3-5ac4-457f-b297-efba57c4626f"
     },
     "/Users/claude/workspace/yamatter-deploy": {
       "allowedTools": [],
       "history": [
+        {
+          "display": "ok push",
+          "pastedContents": {}
+        },
+        {
+          "display": "返信の名前が中央よせになってる。左にして",
+          "pastedContents": {}
+        },
         {
           "display": "pushして",
           "pastedContents": {}
@@ -527,7 +554,31 @@
         "twitter.js",
         "auth.js"
       ],
-      "exampleFilesGeneratedAt": 1756652997563
+      "exampleFilesGeneratedAt": 1756652997563,
+      "lastCost": 17.596300600000003,
+      "lastAPIDuration": 1395558,
+      "lastToolDuration": 34220,
+      "lastDuration": 695119182,
+      "lastLinesAdded": 135,
+      "lastLinesRemoved": 23,
+      "lastTotalInputTokens": 40895,
+      "lastTotalOutputTokens": 28883,
+      "lastTotalCacheCreationInputTokens": 230410,
+      "lastTotalCacheReadInputTokens": 7455895,
+      "lastTotalWebSearchRequests": 0,
+      "lastSessionId": "29a19e08-73db-4772-a1bd-b32c017d92c2"
+    },
+    "/": {
+      "allowedTools": [],
+      "history": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "projectOnboardingSeenCount": 0,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false
     }
   },
   "firstStartTime": "2025-08-31T05:16:02.854Z",
@@ -539,7 +590,7 @@
   "subscriptionNoticeCount": 0,
   "hasAvailableSubscription": false,
   "cachedChangelog": "# Changelog\n\n## 1.0.97\n\n- Settings: /doctor now validates permission rule syntax and suggests corrections\n\n## 1.0.94\n\n- Vertex: add support for global endpoints for supported models\n- /memory command now allows direct editing of all imported memory files\n- SDK: Add custom tools as callbacks\n- Added /todos command to list current todo items\n\n## 1.0.93\n\n- Windows: Add alt + v shortcut for pasting images from clipboard\n- Support NO_PROXY environment variable to bypass proxy for specified hostnames and IPs\n\n## 1.0.90\n\n- Settings file changes take effect immediately - no restart required\n\n## 1.0.88\n\n- Fixed issue causing \"OAuth authentication is currently not supported\"\n- Status line input now includes `exceeds_200k_tokens`\n- Fixed incorrect usage tracking in /cost.\n- Introduced `ANTHROPIC_DEFAULT_SONNET_MODEL` and `ANTHROPIC_DEFAULT_OPUS_MODEL` for controlling model aliases opusplan, opus, and sonnet.\n- Bedrock: Updated default Sonnet model to Sonnet 4\n\n## 1.0.86\n\n- Added /context to help users self-serve debug context issues\n- SDK: Added UUID support for all SDK messages\n- SDK: Added `--replay-user-messages` to replay user messages back to stdout\n\n## 1.0.85\n\n- Status line input now includes session cost info\n- Hooks: Introduced SessionEnd hook\n\n## 1.0.84\n\n- Fix tool_use/tool_result id mismatch error when network is unstable\n- Fix Claude sometimes ignoring real-time steering when wrapping up a task\n- @-mention: Add ~/.claude/\\* files to suggestions for easier agent, output style, and slash command editing\n- Use built-in ripgrep by default; to opt out of this behavior, set USE_BUILTIN_RIPGREP=0\n\n## 1.0.83\n\n- @-mention: Support files with spaces in path\n- New shimmering spinner\n\n## 1.0.82\n\n- SDK: Add request cancellation support\n- SDK: New additionalDirectories option to search custom paths, improved slash command processing\n- Settings: Validation prevents invalid fields in .claude/settings.json files\n- MCP: Improve tool name consistency\n- Bash: Fix crash when Claude tries to automatically read large files\n\n## 1.0.81\n\n- Released output styles, including new built-in educational output styles \"Explanatory\" and \"Learning\". Docs: https://docs.anthropic.com/en/docs/claude-code/output-styles\n- Agents: Fix custom agent loading when agent files are unparsable\n\n## 1.0.80\n\n- UI improvements: Fix text contrast for custom subagent colors and spinner rendering issues\n\n## 1.0.77\n\n- Bash tool: Fix heredoc and multiline string escaping, improve stderr redirection handling\n- SDK: Add session support and permission denial tracking\n- Fix token limit errors in conversation summarization\n- Opus Plan Mode: New setting in `/model` to run Opus only in plan mode, Sonnet otherwise\n\n## 1.0.73\n\n- MCP: Support multiple config files with `--mcp-config file1.json file2.json`\n- MCP: Press Esc to cancel OAuth authentication flows\n- Bash: Improved command validation and reduced false security warnings\n- UI: Enhanced spinner animations and status line visual hierarchy\n- Linux: Added support for Alpine and musl-based distributions (requires separate ripgrep installation)\n\n## 1.0.72\n\n- Ask permissions: have Claude Code always ask for confirmation to use specific tools with /permissions\n\n## 1.0.71\n\n- Background commands: (Ctrl-b) to run any Bash command in the background so Claude can keep working (great for dev servers, tailing logs, etc.)\n- Customizable status line: add your terminal prompt to Claude Code with /statusline\n\n## 1.0.70\n\n- Performance: Optimized message rendering for better performance with large contexts\n- Windows: Fixed native file search, ripgrep, and subagent functionality\n- Added support for @-mentions in slash command arguments\n\n## 1.0.69\n\n- Upgraded Opus to version 4.1\n\n## 1.0.68\n\n- Fix incorrect model names being used for certain commands like `/pr-comments`\n- Windows: improve permissions checks for allow / deny tools and project trust. This may create a new project entry in `.claude.json` - manually merge the history field if desired.\n- Windows: improve sub-process spawning to eliminate \"No such file or directory\" when running commands like pnpm\n- Enhanced /doctor command with CLAUDE.md and MCP tool context for self-serve debugging\n- SDK: Added canUseTool callback support for tool confirmation\n- Added `disableAllHooks` setting\n- Improved file suggestions performance in large repos\n\n## 1.0.65\n\n- IDE: Fixed connection stability issues and error handling for diagnostics\n- Windows: Fixed shell environment setup for users without .bashrc files\n\n## 1.0.64\n\n- Agents: Added model customization support - you can now specify which model an agent should use\n- Agents: Fixed unintended access to the recursive agent tool\n- Hooks: Added systemMessage field to hook JSON output for displaying warnings and context\n- SDK: Fixed user input tracking across multi-turn conversations\n- Added hidden files to file search and @-mention suggestions\n\n## 1.0.63\n\n- Windows: Fixed file search, @agent mentions, and custom slash commands functionality\n\n## 1.0.62\n\n- Added @-mention support with typeahead for custom agents. @<your-custom-agent> to invoke it\n- Hooks: Added SessionStart hook for new session initialization\n- /add-dir command now supports typeahead for directory paths\n- Improved network connectivity check reliability\n\n## 1.0.61\n\n- Transcript mode (Ctrl+R): Changed Esc to exit transcript mode rather than interrupt\n- Settings: Added `--settings` flag to load settings from a JSON file\n- Settings: Fixed resolution of settings files paths that are symlinks\n- OTEL: Fixed reporting of wrong organization after authentication changes\n- Slash commands: Fixed permissions checking for allowed-tools with Bash\n- IDE: Added support for pasting images in VSCode MacOS using ⌘+V\n- IDE: Added `CLAUDE_CODE_AUTO_CONNECT_IDE=false` for disabling IDE auto-connection\n- Added `CLAUDE_CODE_SHELL_PREFIX` for wrapping Claude and user-provided shell commands run by Claude Code\n\n## 1.0.60\n\n- You can now create custom subagents for specialized tasks! Run /agents to get started\n\n## 1.0.59\n\n- SDK: Added tool confirmation support with canUseTool callback\n- SDK: Allow specifying env for spawned process\n- Hooks: Exposed PermissionDecision to hooks (including \"ask\")\n- Hooks: UserPromptSubmit now supports additionalContext in advanced JSON output\n- Fixed issue where some Max users that specified Opus would still see fallback to Sonnet\n\n## 1.0.58\n\n- Added support for reading PDFs\n- MCP: Improved server health status display in 'claude mcp list'\n- Hooks: Added CLAUDE_PROJECT_DIR env var for hook commands\n\n## 1.0.57\n\n- Added support for specifying a model in slash commands\n- Improved permission messages to help Claude understand allowed tools\n- Fix: Remove trailing newlines from bash output in terminal wrapping\n\n## 1.0.56\n\n- Windows: Enabled shift+tab for mode switching on versions of Node.js that support terminal VT mode\n- Fixes for WSL IDE detection\n- Fix an issue causing awsRefreshHelper changes to .aws directory not to be picked up\n\n## 1.0.55\n\n- Clarified knowledge cutoff for Opus 4 and Sonnet 4 models\n- Windows: fixed Ctrl+Z crash\n- SDK: Added ability to capture error logging\n- Add --system-prompt-file option to override system prompt in print mode\n\n## 1.0.54\n\n- Hooks: Added UserPromptSubmit hook and the current working directory to hook inputs\n- Custom slash commands: Added argument-hint to frontmatter\n- Windows: OAuth uses port 45454 and properly constructs browser URL\n- Windows: mode switching now uses alt + m, and plan mode renders properly\n- Shell: Switch to in-memory shell snapshot to fix file-related errors\n\n## 1.0.53\n\n- Updated @-mention file truncation from 100 lines to 2000 lines\n- Add helper script settings for AWS token refresh: awsAuthRefresh (for foreground operations like aws sso login) and awsCredentialExport (for background operation with STS-like response).\n\n## 1.0.52\n\n- Added support for MCP server instructions\n\n## 1.0.51\n\n- Added support for native Windows (requires Git for Windows)\n- Added support for Bedrock API keys through environment variable AWS_BEARER_TOKEN_BEDROCK\n- Settings: /doctor can now help you identify and fix invalid setting files\n- `--append-system-prompt` can now be used in interactive mode, not just --print/-p.\n- Increased auto-compact warning threshold from 60% to 80%\n- Fixed an issue with handling user directories with spaces for shell snapshots\n- OTEL resource now includes os.type, os.version, host.arch, and wsl.version (if running on Windows Subsystem for Linux)\n- Custom slash commands: Fixed user-level commands in subdirectories\n- Plan mode: Fixed issue where rejected plan from sub-task would get discarded\n\n## 1.0.48\n\n- Fixed a bug in v1.0.45 where the app would sometimes freeze on launch\n- Added progress messages to Bash tool based on the last 5 lines of command output\n- Added expanding variables support for MCP server configuration\n- Moved shell snapshots from /tmp to ~/.claude for more reliable Bash tool calls\n- Improved IDE extension path handling when Claude Code runs in WSL\n- Hooks: Added a PreCompact hook\n- Vim mode: Added c, f/F, t/T\n\n## 1.0.45\n\n- Redesigned Search (Grep) tool with new tool input parameters and features\n- Disabled IDE diffs for notebook files, fixing \"Timeout waiting after 1000ms\" error\n- Fixed config file corruption issue by enforcing atomic writes\n- Updated prompt input undo to Ctrl+\\_ to avoid breaking existing Ctrl+U behavior, matching zsh's undo shortcut\n- Stop Hooks: Fixed transcript path after /clear and fixed triggering when loop ends with tool call\n- Custom slash commands: Restored namespacing in command names based on subdirectories. For example, .claude/commands/frontend/component.md is now /frontend:component, not /component.\n\n## 1.0.44\n\n- New /export command lets you quickly export a conversation for sharing\n- MCP: resource_link tool results are now supported\n- MCP: tool annotations and tool titles now display in /mcp view\n- Changed Ctrl+Z to suspend Claude Code. Resume by running `fg`. Prompt input undo is now Ctrl+U.\n\n## 1.0.43\n\n- Fixed a bug where the theme selector was saving excessively\n- Hooks: Added EPIPE system error handling\n\n## 1.0.42\n\n- Added tilde (`~`) expansion support to `/add-dir` command\n\n## 1.0.41\n\n- Hooks: Split Stop hook triggering into Stop and SubagentStop\n- Hooks: Enabled optional timeout configuration for each command\n- Hooks: Added \"hook_event_name\" to hook input\n- Fixed a bug where MCP tools would display twice in tool list\n- New tool parameters JSON for Bash tool in `tool_decision` event\n\n## 1.0.40\n\n- Fixed a bug causing API connection errors with UNABLE_TO_GET_ISSUER_CERT_LOCALLY if `NODE_EXTRA_CA_CERTS` was set\n\n## 1.0.39\n\n- New Active Time metric in OpenTelemetry logging\n\n## 1.0.38\n\n- Released hooks. Special thanks to community input in https://github.com/anthropics/claude-code/issues/712. Docs: https://docs.anthropic.com/en/docs/claude-code/hooks\n\n## 1.0.37\n\n- Remove ability to set `Proxy-Authorization` header via ANTHROPIC_AUTH_TOKEN or apiKeyHelper\n\n## 1.0.36\n\n- Web search now takes today's date into context\n- Fixed a bug where stdio MCP servers were not terminating properly on exit\n\n## 1.0.35\n\n- Added support for MCP OAuth Authorization Server discovery\n\n## 1.0.34\n\n- Fixed a memory leak causing a MaxListenersExceededWarning message to appear\n\n## 1.0.33\n\n- Improved logging functionality with session ID support\n- Added prompt input undo functionality (Ctrl+Z and vim 'u' command)\n- Improvements to plan mode\n\n## 1.0.32\n\n- Updated loopback config for litellm\n- Added forceLoginMethod setting to bypass login selection screen\n\n## 1.0.31\n\n- Fixed a bug where ~/.claude.json would get reset when file contained invalid JSON\n\n## 1.0.30\n\n- Custom slash commands: Run bash output, @-mention files, enable thinking with thinking keywords\n- Improved file path autocomplete with filename matching\n- Added timestamps in Ctrl-r mode and fixed Ctrl-c handling\n- Enhanced jq regex support for complex filters with pipes and select\n\n## 1.0.29\n\n- Improved CJK character support in cursor navigation and rendering\n\n## 1.0.28\n\n- Slash commands: Fix selector display during history navigation\n- Resizes images before upload to prevent API size limit errors\n- Added XDG_CONFIG_HOME support to configuration directory\n- Performance optimizations for memory usage\n- New attributes (terminal.type, language) in OpenTelemetry logging\n\n## 1.0.27\n\n- Streamable HTTP MCP servers are now supported\n- Remote MCP servers (SSE and HTTP) now support OAuth\n- MCP resources can now be @-mentioned\n- /resume slash command to switch conversations within Claude Code\n\n## 1.0.25\n\n- Slash commands: moved \"project\" and \"user\" prefixes to descriptions\n- Slash commands: improved reliability for command discovery\n- Improved support for Ghostty\n- Improved web search reliability\n\n## 1.0.24\n\n- Improved /mcp output\n- Fixed a bug where settings arrays got overwritten instead of merged\n\n## 1.0.23\n\n- Released TypeScript SDK: import @anthropic-ai/claude-code to get started\n- Released Python SDK: pip install claude-code-sdk to get started\n\n## 1.0.22\n\n- SDK: Renamed `total_cost` to `total_cost_usd`\n\n## 1.0.21\n\n- Improved editing of files with tab-based indentation\n- Fix for tool_use without matching tool_result errors\n- Fixed a bug where stdio MCP server processes would linger after quitting Claude Code\n\n## 1.0.18\n\n- Added --add-dir CLI argument for specifying additional working directories\n- Added streaming input support without require -p flag\n- Improved startup performance and session storage performance\n- Added CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR environment variable to freeze working directory for bash commands\n- Added detailed MCP server tools display (/mcp)\n- MCP authentication and permission improvements\n- Added auto-reconnection for MCP SSE connections on disconnect\n- Fixed issue where pasted content was lost when dialogs appeared\n\n## 1.0.17\n\n- We now emit messages from sub-tasks in -p mode (look for the parent_tool_use_id property)\n- Fixed crashes when the VS Code diff tool is invoked multiple times quickly\n- MCP server list UI improvements\n- Update Claude Code process title to display \"claude\" instead of \"node\"\n\n## 1.0.11\n\n- Claude Code can now also be used with a Claude Pro subscription\n- Added /upgrade for smoother switching to Claude Max plans\n- Improved UI for authentication from API keys and Bedrock/Vertex/external auth tokens\n- Improved shell configuration error handling\n- Improved todo list handling during compaction\n\n## 1.0.10\n\n- Added markdown table support\n- Improved streaming performance\n\n## 1.0.8\n\n- Fixed Vertex AI region fallback when using CLOUD_ML_REGION\n- Increased default otel interval from 1s -> 5s\n- Fixed edge cases where MCP_TIMEOUT and MCP_TOOL_TIMEOUT weren't being respected\n- Fixed a regression where search tools unnecessarily asked for permissions\n- Added support for triggering thinking non-English languages\n- Improved compacting UI\n\n## 1.0.7\n\n- Renamed /allowed-tools -> /permissions\n- Migrated allowedTools and ignorePatterns from .claude.json -> settings.json\n- Deprecated claude config commands in favor of editing settings.json\n- Fixed a bug where --dangerously-skip-permissions sometimes didn't work in --print mode\n- Improved error handling for /install-github-app\n- Bugfixes, UI polish, and tool reliability improvements\n\n## 1.0.6\n\n- Improved edit reliability for tab-indented files\n- Respect CLAUDE_CONFIG_DIR everywhere\n- Reduced unnecessary tool permission prompts\n- Added support for symlinks in @file typeahead\n- Bugfixes, UI polish, and tool reliability improvements\n\n## 1.0.4\n\n- Fixed a bug where MCP tool errors weren't being parsed correctly\n\n## 1.0.1\n\n- Added `DISABLE_INTERLEAVED_THINKING` to give users the option to opt out of interleaved thinking.\n- Improved model references to show provider-specific names (Sonnet 3.7 for Bedrock, Sonnet 4 for Console)\n- Updated documentation links and OAuth process descriptions\n\n## 1.0.0\n\n- Claude Code is now generally available\n- Introducing Sonnet 4 and Opus 4 models\n\n## 0.2.125\n\n- Breaking change: Bedrock ARN passed to `ANTHROPIC_MODEL` or `ANTHROPIC_SMALL_FAST_MODEL` should no longer contain an escaped slash (specify `/` instead of `%2F`)\n- Removed `DEBUG=true` in favor of `ANTHROPIC_LOG=debug`, to log all requests\n\n## 0.2.117\n\n- Breaking change: --print JSON output now returns nested message objects, for forwards-compatibility as we introduce new metadata fields\n- Introduced settings.cleanupPeriodDays\n- Introduced CLAUDE_CODE_API_KEY_HELPER_TTL_MS env var\n- Introduced --debug mode\n\n## 0.2.108\n\n- You can now send messages to Claude while it works to steer Claude in real-time\n- Introduced BASH_DEFAULT_TIMEOUT_MS and BASH_MAX_TIMEOUT_MS env vars\n- Fixed a bug where thinking was not working in -p mode\n- Fixed a regression in /cost reporting\n- Deprecated MCP wizard interface in favor of other MCP commands\n- Lots of other bugfixes and improvements\n\n## 0.2.107\n\n- CLAUDE.md files can now import other files. Add @path/to/file.md to ./CLAUDE.md to load additional files on launch\n\n## 0.2.106\n\n- MCP SSE server configs can now specify custom headers\n- Fixed a bug where MCP permission prompt didn't always show correctly\n\n## 0.2.105\n\n- Claude can now search the web\n- Moved system & account status to /status\n- Added word movement keybindings for Vim\n- Improved latency for startup, todo tool, and file edits\n\n## 0.2.102\n\n- Improved thinking triggering reliability\n- Improved @mention reliability for images and folders\n- You can now paste multiple large chunks into one prompt\n\n## 0.2.100\n\n- Fixed a crash caused by a stack overflow error\n- Made db storage optional; missing db support disables --continue and --resume\n\n## 0.2.98\n\n- Fixed an issue where auto-compact was running twice\n\n## 0.2.96\n\n- Claude Code can now also be used with a Claude Max subscription (https://claude.ai/upgrade)\n\n## 0.2.93\n\n- Resume conversations from where you left off from with \"claude --continue\" and \"claude --resume\"\n- Claude now has access to a Todo list that helps it stay on track and be more organized\n\n## 0.2.82\n\n- Added support for --disallowedTools\n- Renamed tools for consistency: LSTool -> LS, View -> Read, etc.\n\n## 0.2.75\n\n- Hit Enter to queue up additional messages while Claude is working\n- Drag in or copy/paste image files directly into the prompt\n- @-mention files to directly add them to context\n- Run one-off MCP servers with `claude --mcp-config <path-to-file>`\n- Improved performance for filename auto-complete\n\n## 0.2.74\n\n- Added support for refreshing dynamically generated API keys (via apiKeyHelper), with a 5 minute TTL\n- Task tool can now perform writes and run bash commands\n\n## 0.2.72\n\n- Updated spinner to indicate tokens loaded and tool usage\n\n## 0.2.70\n\n- Network commands like curl are now available for Claude to use\n- Claude can now run multiple web queries in parallel\n- Pressing ESC once immediately interrupts Claude in Auto-accept mode\n\n## 0.2.69\n\n- Fixed UI glitches with improved Select component behavior\n- Enhanced terminal output display with better text truncation logic\n\n## 0.2.67\n\n- Shared project permission rules can be saved in .claude/settings.json\n\n## 0.2.66\n\n- Print mode (-p) now supports streaming output via --output-format=stream-json\n- Fixed issue where pasting could trigger memory or bash mode unexpectedly\n\n## 0.2.63\n\n- Fixed an issue where MCP tools were loaded twice, which caused tool call errors\n\n## 0.2.61\n\n- Navigate menus with vim-style keys (j/k) or bash/emacs shortcuts (Ctrl+n/p) for faster interaction\n- Enhanced image detection for more reliable clipboard paste functionality\n- Fixed an issue where ESC key could crash the conversation history selector\n\n## 0.2.59\n\n- Copy+paste images directly into your prompt\n- Improved progress indicators for bash and fetch tools\n- Bugfixes for non-interactive mode (-p)\n\n## 0.2.54\n\n- Quickly add to Memory by starting your message with '#'\n- Press ctrl+r to see full output for long tool results\n- Added support for MCP SSE transport\n\n## 0.2.53\n\n- New web fetch tool lets Claude view URLs that you paste in\n- Fixed a bug with JPEG detection\n\n## 0.2.50\n\n- New MCP \"project\" scope now allows you to add MCP servers to .mcp.json files and commit them to your repository\n\n## 0.2.49\n\n- Previous MCP server scopes have been renamed: previous \"project\" scope is now \"local\" and \"global\" scope is now \"user\"\n\n## 0.2.47\n\n- Press Tab to auto-complete file and folder names\n- Press Shift + Tab to toggle auto-accept for file edits\n- Automatic conversation compaction for infinite conversation length (toggle with /config)\n\n## 0.2.44\n\n- Ask Claude to make a plan with thinking mode: just say 'think' or 'think harder' or even 'ultrathink'\n\n## 0.2.41\n\n- MCP server startup timeout can now be configured via MCP_TIMEOUT environment variable\n- MCP server startup no longer blocks the app from starting up\n\n## 0.2.37\n\n- New /release-notes command lets you view release notes at any time\n- `claude config add/remove` commands now accept multiple values separated by commas or spaces\n\n## 0.2.36\n\n- Import MCP servers from Claude Desktop with `claude mcp add-from-claude-desktop`\n- Add MCP servers as JSON strings with `claude mcp add-json <n> <json>`\n\n## 0.2.34\n\n- Vim bindings for text input - enable with /vim or /config\n\n## 0.2.32\n\n- Interactive MCP setup wizard: Run \"claude mcp add\" to add MCP servers with a step-by-step interface\n- Fix for some PersistentShell issues\n\n## 0.2.31\n\n- Custom slash commands: Markdown files in .claude/commands/ directories now appear as custom slash commands to insert prompts into your conversation\n- MCP debug mode: Run with --mcp-debug flag to get more information about MCP server errors\n\n## 0.2.30\n\n- Added ANSI color theme for better terminal compatibility\n- Fixed issue where slash command arguments weren't being sent properly\n- (Mac-only) API keys are now stored in macOS Keychain\n\n## 0.2.26\n\n- New /approved-tools command for managing tool permissions\n- Word-level diff display for improved code readability\n- Fuzzy matching for slash commands\n\n## 0.2.21\n\n- Fuzzy matching for /commands\n",
-  "changelogLastFetched": 1756617852345,
+  "changelogLastFetched": 1757001352615,
   "recommendedSubscription": "",
   "bypassPermissionsModeAccepted": true,
   "lastReleaseNotesSeen": "1.0.98",
@@ -555,7 +606,7 @@
   "s1mAccessCache": {
     "d13d0e37-09e3-47f4-aabb-e9dae2394055": {
       "hasAccess": false,
-      "timestamp": 1756694265384
+      "timestamp": 1757382704540
     }
   }
 }
